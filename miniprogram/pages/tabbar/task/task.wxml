@@ -1,5 +1,5 @@
 <!--miniprogram/pages/tabbar/task/task.wxml-->
-<van-tabs active="{{ active }}" swipeable bind:change="onChange">
+<van-tabs active="{{ active }}" swipeable bind:change="clickChange">
   <van-tab title="进行中" name="doing"></van-tab>
   <van-tab title="已结束" name="over"></van-tab>
 </van-tabs>
@@ -7,7 +7,11 @@
  <swiper indicator-dots="{{indicatorDots}}"
                autoplay="{{autoplay}}" 
                interval="{{interval}}" 
-               duration="{{duration}}">
+               duration="{{duration}}"
+               current="{{active}}"
+               name="{{name}}"
+               style="height:600px"
+               bind:change="swipeChange" >
   <block wx:for="{{background}}" wx:key="*this">
     <swiper-item>
       <view class="swiper-item {{item}}">

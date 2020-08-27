@@ -5,7 +5,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    active: 1,
+    active: 0,
 
     background: [
       { "img": "https://images.unsplash.com/photo-1551334787-21e6bd3ab135?w=640"},
@@ -18,21 +18,18 @@ Page({
     duration: 500
   },
   
-  onChange(event) {
-    console.log(event.detail.index);
-    if (event.detail.index == '0') {
-      wx.navigateTo({
-        url: 'doingTask/doingTask',
-      })
-    } else {
-      wx.navigateTo({
-        url: 'overTask/overTask',
-      })
-    }
-    // wx.showToast({
-    //   title: `切换到标签 ${event.detail}`,
-    //   icon: 'none',
-    // });
+  clickChange(event) {
+    // console.log(event);
+    // console.log(this.data.active)
+    this.setData({ active: event.detail.index });
+    // console.log(this.data.active)
+  },
+
+  swipeChange(event) {
+    // console.log(event)
+    // console.log(this.data.active)
+    this.setData({ active: event.detail.current });
+    // console.log(this.data.active)
   },
 
   /**
