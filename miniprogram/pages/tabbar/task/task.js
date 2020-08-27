@@ -7,6 +7,8 @@ Page({
   data: {
     active: 0,
 
+    taskList: [1,2,3],
+
     background: [
       {"page": "doingTask/doingTask"},
       {"page": "overTask/overTask"}
@@ -26,10 +28,11 @@ Page({
   },
 
   swipeChange(event) {
-    // console.log(event)
+    console.log(event)
     // console.log(this.data.active)
     this.setData({ active: event.detail.current });
     // console.log(this.data.active)
+
   },
 
   /**

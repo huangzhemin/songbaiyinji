@@ -1,2 +1,26 @@
 <!--miniprogram/pages/tabbar/guess/guess.wxml-->
-<text>miniprogram/pages/tabbar/guess/guess.wxml</text>
+<van-tabs active="{{ active }}" bind:change="clickChange" swipeable sticky>
+  <van-tab title="猜一猜" name="guess"></van-tab>
+  <van-tab title="投票" name="vote"></van-tab>
+  <van-tab title="公告" name="announcement"></van-tab>
+</van-tabs>
+
+<swiper indicator-dots="{{indicatorDots}}"
+               autoplay="{{autoplay}}" 
+               interval="{{interval}}" 
+               duration="{{duration}}"
+               current="{{active}}"
+               name="{{name}}"
+               style="height:600px"
+               bind:change="swipeChange" >
+  <block wx:for="{{background}}" wx:key="*this">
+    <swiper-item>
+      <view class="swiper-item {{item}}">
+        {{item.page}}
+        <!-- <block wx:for='{{taskList}}'>
+          <view style='height:30rpx; background-color:#92a8d1'></view>
+        </block> -->
+      </view>
+    </swiper-item>
+  </block>
+</swiper>

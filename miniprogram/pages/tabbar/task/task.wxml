@@ -15,7 +15,10 @@
   <block wx:for="{{background}}" wx:key="*this">
     <swiper-item>
       <view class="swiper-item {{item}}">
-          {{item.page}}
+        {{item.page}}
+        <!-- <block wx:for='{{taskList}}'>
+          <view style='height:30rpx; background-color:#92a8d1'></view>
+        </block> -->
       </view>
     </swiper-item>
   </block>

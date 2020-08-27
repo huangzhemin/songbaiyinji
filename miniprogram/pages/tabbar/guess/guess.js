@@ -5,6 +5,34 @@ Page({
    * 页面的初始数据
    */
   data: {
+    active: 0,
+
+    taskList: [1,2,3],
+
+    background: [
+      {"page": "doingTask/doingTask"},
+      {"page": "overTask/overTask"},
+      {"page": "overTask/overTask1"}
+    ],
+    indicatorDots: false,
+    vertical: false,
+    autoplay: false,
+    interval: 2000,
+    duration: 500
+  },
+  
+  clickChange(event) {
+    // console.log(event);
+    // console.log(this.data.active)
+    this.setData({ active: event.detail.index });
+    // console.log(this.data.active)
+  },
+
+  swipeChange(event) {
+    console.log(event)
+    // console.log(this.data.active)
+    this.setData({ active: event.detail.current });
+    // console.log(this.data.active)
 
   },
 

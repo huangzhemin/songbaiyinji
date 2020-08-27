@@ -1,2 +1,4 @@
 <!--miniprogram/pages/tabbar/ranking/ranking.wxml-->
-<text>miniprogram/pages/tabbar/ranking/ranking.wxml</text>
+<block wx:for='{{userList}}'>
+  <view style='height:60rpx; background-color:#92a8d1'></view>
+</block>
