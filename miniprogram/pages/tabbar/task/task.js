@@ -8,8 +8,8 @@ Page({
     active: 0,
 
     background: [
-      { "img": "https://images.unsplash.com/photo-1551334787-21e6bd3ab135?w=640"},
-      { "img": "https://images.unsplash.com/photo-1551334787-21e6bd3ab135?w=640"}
+      {"page": "doingTask/doingTask"},
+      {"page": "overTask/overTask"}
     ],
     indicatorDots: false,
     vertical: false,

@@ -1,5 +1,5 @@
 <!--miniprogram/pages/tabbar/task/task.wxml-->
-<van-tabs active="{{ active }}" swipeable bind:change="clickChange">
+<van-tabs active="{{ active }}" bind:change="clickChange" swipeable sticky>
   <van-tab title="进行中" name="doing"></van-tab>
   <van-tab title="已结束" name="over"></van-tab>
 </van-tabs>
@@ -15,7 +15,7 @@
   <block wx:for="{{background}}" wx:key="*this">
     <swiper-item>
       <view class="swiper-item {{item}}">
-          <image src="{{item.img}}" mode="aspectFill"></image>
+          {{item.page}}
       </view>
     </swiper-item>
   </block>
