@@ -3,7 +3,9 @@
     "pages/tabbar/task/task",
     "pages/tabbar/ranking/ranking",
     "pages/tabbar/personal/personal",
-    "pages/tabbar/guess/guess"
+    "pages/tabbar/guess/guess",
+    "pages/tabbar/task/doingTask/doingTask",
+    "pages/tabbar/task/overTask/overTask"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",
@@ -18,7 +20,9 @@
     "van-cell-group": "vant-weapp/cell-group",
     "van-tabbar": "vant-weapp/tabbar/index",
     "van-tabbar-item": "vant-weapp/tabbar-item/index",
-    "van-icon": "vant-weapp/icon/index"
+    "van-icon": "vant-weapp/icon/index",
+    "van-tab": "vant-weapp/tab/index",
+    "van-tabs": "vant-weapp/tabs/index"
   },
   "tabBar": {
     "color": "#000000",

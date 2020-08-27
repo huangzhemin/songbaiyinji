@@ -1,2 +1,18 @@
 <!--miniprogram/pages/tabbar/task/task.wxml-->
-<text>miniprogram/pages/tabbar/task/task.wxml</text>
+<van-tabs active="{{ active }}" swipeable bind:change="onChange">
+  <van-tab title="进行中" name="doing"></van-tab>
+  <van-tab title="已结束" name="over"></van-tab>
+</van-tabs>
+
+ <swiper indicator-dots="{{indicatorDots}}"
+               autoplay="{{autoplay}}" 
+               interval="{{interval}}" 
+               duration="{{duration}}">
+  <block wx:for="{{background}}" wx:key="*this">
+    <swiper-item>
+      <view class="swiper-item {{item}}">
+          <image src="{{item.img}}" mode="aspectFill"></image>
+      </view>
+    </swiper-item>
+  </block>
+</swiper>
