@@ -18,8 +18,7 @@
     "van-cell-group": "vant-weapp/cell-group",
     "van-tabbar": "vant-weapp/tabbar/index",
     "van-tabbar-item": "vant-weapp/tabbar-item/index",
-    "van-icon": "vant-weapp/icon/index",
-    "self-tabbar": "components/testComponents/testComponents"
+    "van-icon": "vant-weapp/icon/index"
   },
   "tabBar": {
     "color": "#000000",

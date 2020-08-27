@@ -27,11 +27,11 @@ Page({
    */
   onShow: function () {
     console.log("guess page");
-    // const guessPage = this.selectComponent('#guess')
-    // console.log(guessPage.onChange);
-    // if (typeof guessPage.onChange === 'function') {
-    //   guessPage.onChange('guess');
-    // }
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({
+          active: 1
+      });
+    }
   },
 
   /**
