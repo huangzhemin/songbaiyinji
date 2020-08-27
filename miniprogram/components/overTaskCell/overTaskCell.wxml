@@ -1,4 +1,11 @@
 <!--components/overTaskCell/overTaskCell.wxml-->
 <van-cell-group>
-  <van-cell title="单元格" value="内容" />
+  <van-cell
+  is-link
+  title="单元格"
+  label="描述信息"
+  border="{{ false }}"
+  link-type="navigateTo"
+  url="/pages/taskDetail/taskDetail"
+  />
 </van-cell-group>

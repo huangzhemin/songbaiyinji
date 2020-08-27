@@ -1,4 +1,11 @@
 <!--components/rankingCell/rankingCell.wxml-->
 <van-cell-group>
-  <van-cell title="单元格" value="内容" label="描述信息" border="{{ false }}" />
+  <van-cell
+  is-link
+  title="单元格"
+  label="描述信息"
+  border="{{ false }}"
+  link-type="navigateTo"
+  url="/pages/userDetail/userDetail"
+  />
 </van-cell-group>
