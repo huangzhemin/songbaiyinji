@@ -7,9 +7,6 @@ Page({
   data: {
     active: 0,
 
-    doingTaskList: [1,2],
-    overTaskList: [1,2,3],
-
     background: [
       {"page": "doingTask/doingTask"},
       {"page": "overTask/overTask"}

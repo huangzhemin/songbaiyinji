@@ -1,0 +1,5 @@
+<!--components/doingTaskList/doingTaskList.wxml-->
+<block wx:for='{{doingTaskList}}' wx:key="*this">
+  <pm-doing-task-cell></pm-doing-task-cell>
+  <pm-splite-line wx:if="{{index < doingTaskList.length - 1}}"></pm-splite-line>
+</block>

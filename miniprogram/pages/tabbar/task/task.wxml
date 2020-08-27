@@ -16,16 +16,10 @@
     <swiper-item>
       <view class="swiper-item {{item}}">
         <block wx:if="{{active==0}}">
-          <block wx:for='{{doingTaskList}}' wx:key="*this">
-            <pm-doing-task-cell></pm-doing-task-cell>
-            <pm-splite-line wx:if="{{index < doingTaskList.length - 1}}"></pm-splite-line>
-          </block>
+          <pm-doing-task-list></pm-doing-task-list>
         </block>
         <block wx:if="{{active==1}}">
-          <block wx:for='{{overTaskList}}' wx:key="*this">
-            <pm-over-task-cell></pm-over-task-cell>
-            <pm-splite-line wx:if="{{index < overTaskList.length - 1}}"></pm-splite-line>
-          </block>
+          <pm-over-task-list></pm-over-task-list>
         </block>
       </view>
     </swiper-item>

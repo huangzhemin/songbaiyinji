@@ -7,10 +7,6 @@ Page({
   data: {
     active: 0,
 
-    guessList: [1],
-    voteList: [1,2],
-    announcement: [1,2,3],
-
     background: [
       {"page": "doingTask/doingTask"},
       {"page": "overTask/overTask"},

@@ -17,22 +17,13 @@
     <swiper-item>
       <view class="swiper-item {{item}}">
           <block wx:if="{{active==0}}">
-            <block wx:for='{{guessList}}' wx:key="*this">
-              <pm-guess-cell></pm-guess-cell>
-              <pm-splite-line wx:if="{{index < guessList.length - 1}}"></pm-splite-line>
-            </block>
+            <pm-guess-list></pm-guess-list>
           </block>
           <block wx:if="{{active==1}}">
-            <block wx:for='{{voteList}}' wx:key="*this">
-              <pm-vote-cell></pm-vote-cell>
-              <pm-splite-line wx:if="{{index < voteList.length - 1}}"></pm-splite-line>
-            </block>
+            <pm-vote-list></pm-vote-list>
           </block>
           <block wx:if="{{active==2}}">
-            <block wx:for='{{announcement}}' wx:key="*this">
-              <pm-announcement-cell></pm-announcement-cell>
-              <pm-splite-line wx:if="{{index < announcement.length - 1}}"></pm-splite-line>
-            </block>
+            <pm-announcement-list></pm-announcement-list>
           </block>
       </view>
     </swiper-item>

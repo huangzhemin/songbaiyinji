@@ -1,0 +1,5 @@
+<!--components/userRankingList/userRankingList.wxml-->
+<block wx:for='{{userRankingList}}' wx:key="*this">
+  <pm-ranking-cell></pm-ranking-cell>
+  <pm-splite-line wx:if="{{index < userRankingList.length - 1}}"></pm-splite-line>
+</block>

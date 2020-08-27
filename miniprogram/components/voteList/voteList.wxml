@@ -1,0 +1,5 @@
+<!--components/voteList/voteList.wxml-->
+<block wx:for='{{voteList}}' wx:key="*this">
+  <pm-vote-cell></pm-vote-cell>
+  <pm-splite-line wx:if="{{index < voteList.length - 1}}"></pm-splite-line>
+</block>

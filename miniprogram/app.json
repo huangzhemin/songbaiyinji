@@ -4,8 +4,6 @@
     "pages/tabbar/ranking/ranking",
     "pages/tabbar/personal/personal",
     "pages/tabbar/guess/guess",
-    "pages/tabbar/task/doingTask/doingTask",
-    "pages/tabbar/task/overTask/overTask",
     "pages/taskDetail/taskDetail",
     "pages/guessDetail/guessDetail",
     "pages/voteDetail/voteDetail",
@@ -33,7 +31,13 @@
     "pm-vote-cell": "components/voteCell/voteCell",
     "pm-announcement-cell": "components/announcementCell/announcementCell",
     "pm-ranking-cell": "components/rankingCell/rankingCell",
-    "pm-splite-line": "components/splitLine/splitLine"
+    "pm-splite-line": "components/splitLine/splitLine",
+    "pm-doing-task-list": "components/doingTaskList/doingTaskList",
+    "pm-over-task-list": "components/overTaskList/overTaskList",
+    "pm-guess-list": "components/guessList/guessList",
+    "pm-vote-list": "components/voteList/voteList",
+    "pm-announcement-list": "components/announcementList/announcementList",
+    "pm-ranking-list": "components/userRankingList/userRankingList"
   },
   "tabBar": {
     "color": "#000000",
