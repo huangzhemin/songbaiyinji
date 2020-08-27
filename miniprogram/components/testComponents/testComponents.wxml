@@ -1,0 +1,8 @@
+<!--components/testComponents/testComponents.wxml-->
+<van-tabbar active="{{ active }}" 
+            bind:change="onChange">
+  <van-tabbar-item name="task" icon="home-o" info="3">任务</van-tabbar-item>
+  <van-tabbar-item name="guess" icon="question-o">猜一猜</van-tabbar-item>
+  <van-tabbar-item name="ranking" icon="label-o">排行榜</van-tabbar-item>
+  <van-tabbar-item name="personal" icon="user-circle-o">我</van-tabbar-item>
+</van-tabbar>

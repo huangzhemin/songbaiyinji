@@ -1,6 +1,9 @@
 {
   "pages": [
-    "pages/index/index"
+    "pages/tabbar/task/task",
+    "pages/tabbar/ranking/ranking",
+    "pages/tabbar/personal/personal",
+    "pages/tabbar/guess/guess"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",
@@ -14,7 +17,40 @@
     "van-cell": "vant-weapp/cell",
     "van-cell-group": "vant-weapp/cell-group",
     "van-tabbar": "vant-weapp/tabbar/index",
-    "van-tabbar-item": "vant-weapp/tabbar-item/index"
+    "van-tabbar-item": "vant-weapp/tabbar-item/index",
+    "van-icon": "vant-weapp/icon/index",
+    "self-tabbar": "components/testComponents/testComponents"
+  },
+  "tabBar": {
+    "color": "#000000",
+    "selectedColor": "#000000",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/tabbar/task/task",
+        "text": "任务",
+        "iconPath": "images/icon/task.png",
+        "selectedIconPath": "images/icon/taskSelect.png"
+      },
+      {
+        "pagePath": "pages/tabbar/guess/guess",
+        "text": "猜一猜",
+        "iconPath": "images/icon/guess.png",
+        "selectedIconPath": "images/icon/guessSelect.png"
+      },
+      {
+        "pagePath": "pages/tabbar/ranking/ranking",
+        "text": "排行榜",
+        "iconPath": "images/icon/ranking.png",
+        "selectedIconPath": "images/icon/ranking.png"
+      },
+      {
+        "pagePath": "pages/tabbar/personal/personal",
+        "text": "我",
+        "iconPath": "images/icon/personal.png",
+        "selectedIconPath": "images/icon/personalSelect.png"
+      }
+    ]
   },
   "sitemapLocation": "sitemap.json"
 }

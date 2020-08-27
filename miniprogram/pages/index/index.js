@@ -8,7 +8,12 @@ Page({
    * 页面的初始数据
    */
   data: {
-      userList:[]
+      userList:[],
+      active: 0,
+      icon: {
+        normal: 'https://img.yzcdn.cn/vant/user-inactive.png',
+        active: 'https://img.yzcdn.cn/vant/user-active.png',
+      }
   },
 
   /**
@@ -34,14 +39,18 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-
+    console.log(this);
+    // if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+    //     this.getTabBar().setData({
+    //         active: 0
+    //     });
+    // }
   },
 
   /**
    * 生命周期函数--监听页面隐藏
    */
   onHide: function () {
-
   },
 
   /**
@@ -74,6 +83,29 @@ Page({
 
   navigateTo:function(event) {
 
+  },
+
+  ///////
+  //tabbar切换
+  onChange(event) {
+    wx.showToast({
+      title: `点击标签 ${event.detail}`,
+      icon: 'none',
+    });
+
+    if (event.detail == 'task') {
+      wx.switchTab("pages/task/task");
+    } else if (event.detail == 'guess') {
+      wx.switchTab("pages/guess/guess");
+    } else if (event.detail == 'ranking') {
+      wx.switchTab('pages/ranking/ranking');
+    } else if (event.detail == 'personal') {
+      // wx.switchTab("pages/tabbar/personal/personal");
+      wx.navigateTo({
+        url: "../tabbar/personal/personal",
+      })
+    }
+    this.setData({ active: event.detail });
   },
 
   //获取用户的信息
