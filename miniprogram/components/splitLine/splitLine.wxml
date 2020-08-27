@@ -1,0 +1,2 @@
+<!--components/splitLine/splitLine.wxml-->
+<view style='height:30rpx; background-color:AliceBlue'></view>

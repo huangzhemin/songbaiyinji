@@ -23,8 +23,17 @@
     "van-icon": "vant-weapp/icon/index",
     "van-tab": "vant-weapp/tab/index",
     "van-tabs": "vant-weapp/tabs/index",
-    "van-cell": "vant-weapp/cell/index",
-    "van-cell-group": "vant-weapp/cell-group/index"
+
+    "pm-doing-task-cell": "components/doingTaskCell/doingTaskCell",
+    "pm-over-task-cell": "components/overTaskCell/overTaskCell",
+
+    "pm-guess-cell": "components/guessCell/guessCell",
+    "pm-vote-cell": "components/voteCell/voteCell",
+    "pm-announcement-cell": "components/announcementCell/announcementCell",
+
+    "pm-ranking-cell": "components/rankingCell/rankingCell",
+
+    "pm-splite-line": "components/splitLine/splitLine"
   },
   "tabBar": {
     "color": "#000000",

@@ -16,10 +16,24 @@
   <block wx:for="{{background}}" wx:key="*this">
     <swiper-item>
       <view class="swiper-item {{item}}">
-        {{item.page}}
-        <!-- <block wx:for='{{taskList}}'>
-          <view style='height:30rpx; background-color:#92a8d1'></view>
-        </block> -->
+          <block wx:if="{{active==0}}">
+            <block wx:for='{{guessList}}' wx:key="*this">
+              <pm-guess-cell></pm-guess-cell>
+              <pm-splite-line wx:if="{{index < guessList.length - 1}}"></pm-splite-line>
+            </block>
+          </block>
+          <block wx:if="{{active==1}}">
+            <block wx:for='{{voteList}}' wx:key="*this">
+              <pm-vote-cell></pm-vote-cell>
+              <pm-splite-line wx:if="{{index < voteList.length - 1}}"></pm-splite-line>
+            </block>
+          </block>
+          <block wx:if="{{active==2}}">
+            <block wx:for='{{announcement}}' wx:key="*this">
+              <pm-announcement-cell></pm-announcement-cell>
+              <pm-splite-line wx:if="{{index < announcement.length - 1}}"></pm-splite-line>
+            </block>
+          </block>
       </view>
     </swiper-item>
   </block>

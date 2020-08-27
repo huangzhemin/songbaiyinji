@@ -5,7 +5,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-    userList: [1, 2, 3, 4, 5]
+    userRankingList: [1, 2, 3, 4, 5]
   },
 
   /**

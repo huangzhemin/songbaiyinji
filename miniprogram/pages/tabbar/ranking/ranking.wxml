@@ -1,4 +1,5 @@
 <!--miniprogram/pages/tabbar/ranking/ranking.wxml-->
-<block wx:for='{{userList}}'>
-  <view style='height:60rpx; background-color:#92a8d1'></view>
+<block wx:for='{{userRankingList}}' wx:key="*this">
+  <pm-ranking-cell></pm-ranking-cell>
+  <pm-splite-line wx:if="{{index < userRankingList.length - 1}}"></pm-splite-line>
 </block>

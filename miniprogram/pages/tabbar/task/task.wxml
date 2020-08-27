@@ -15,10 +15,18 @@
   <block wx:for="{{background}}" wx:key="*this">
     <swiper-item>
       <view class="swiper-item {{item}}">
-        {{item.page}}
-        <!-- <block wx:for='{{taskList}}'>
-          <view style='height:30rpx; background-color:#92a8d1'></view>
-        </block> -->
+        <block wx:if="{{active==0}}">
+          <block wx:for='{{doingTaskList}}' wx:key="*this">
+            <pm-doing-task-cell></pm-doing-task-cell>
+            <pm-splite-line wx:if="{{index < doingTaskList.length - 1}}"></pm-splite-line>
+          </block>
+        </block>
+        <block wx:if="{{active==1}}">
+          <block wx:for='{{overTaskList}}' wx:key="*this">
+            <pm-over-task-cell></pm-over-task-cell>
+            <pm-splite-line wx:if="{{index < overTaskList.length - 1}}"></pm-splite-line>
+          </block>
+        </block>
       </view>
     </swiper-item>
   </block>
