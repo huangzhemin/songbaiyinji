@@ -1,31 +1,35 @@
 <!--miniprogram/pages/tabbar/guess/guess.wxml-->
-<van-tabs active="{{ active }}" bind:change="clickChange" swipeable sticky>
-  <van-tab title="猜一猜" name="guess"></van-tab>
-  <van-tab title="投票" name="vote"></van-tab>
-  <van-tab title="公告" name="announcement"></van-tab>
-</van-tabs>
+<view>
+  <van-tabs active="{{ active }}" bind:change="clickChange" swipeable sticky>
+    <van-tab title="猜一猜" name="guess"></van-tab>
+    <van-tab title="投票" name="vote"></van-tab>
+    <van-tab title="公告" name="announcement"></van-tab>
+  </van-tabs>
 
-<swiper indicator-dots="{{indicatorDots}}"
-               autoplay="{{autoplay}}" 
-               interval="{{interval}}" 
-               duration="{{duration}}"
-               current="{{active}}"
-               name="{{name}}"
-               style="height:600px"
-               bind:change="swipeChange" >
-  <block wx:for="{{background}}" wx:for-index="idx" wx:key="idx">
-    <swiper-item>
-      <view class="swiper-item {{item}}">
-          <block wx:if="{{active==0}}">
-            <pm-guess-list></pm-guess-list>
-          </block>
-          <block wx:if="{{active==1}}">
-            <pm-vote-list></pm-vote-list>
-          </block>
-          <block wx:if="{{active==2}}">
-            <pm-announcement-list></pm-announcement-list>
-          </block>
-      </view>
-    </swiper-item>
-  </block>
-</swiper>
+  <swiper indicator-dots="{{indicatorDots}}"
+                autoplay="{{autoplay}}" 
+                interval="{{interval}}" 
+                duration="{{duration}}"
+                current="{{active}}"
+                name="{{name}}"
+                style="height:600px"
+                bind:change="swipeChange" >
+    <block wx:for="{{background}}" wx:for-index="idx" wx:key="idx">
+      <swiper-item>
+        <view class="swiper-item {{item}}">
+          <pm-guess-list></pm-guess-list>
+        </view>
+      </swiper-item>
+      <swiper-item>
+        <view class="swiper-item {{item}}">
+          <pm-vote-list></pm-vote-list>
+        </view>
+      </swiper-item>
+      <swiper-item>
+        <view class="swiper-item {{item}}">
+          <pm-announcement-list></pm-announcement-list>
+        </view>
+      </swiper-item>
+    </block>
+  </swiper>
+</view>

@@ -1,6 +1,6 @@
 <!--miniprogram/pages/tabbar/task/task.wxml-->
 <view>
-  <van-tabs active="{{ swiperItem.active }}" bind:change="clickChange" swipeable sticky>
+  <van-tabs active="{{ active }}" bind:change="clickChange" swipeable sticky>
     <van-tab title="进行中" name="doing"></van-tab>
     <van-tab title="已结束" name="over"></van-tab>
   </van-tabs>
@@ -13,20 +13,17 @@
               current="{{active}}"
               style="height:600px"
               bind:change="swipeChange" >
-    <block wx:for="{{background}}" wx:for-index="idx" wx:key="idx">
       <swiper-item>
         <view class="swiper-item {{item}}">
-          <block wx:if="{{active==0}}">
-            <pm-doing-task-list></pm-doing-task-list>
-          </block>
-          <block wx:if="{{active==1}}">
-            <pm-over-task-list></pm-over-task-list>
-          </block>
+          <pm-doing-task-list></pm-doing-task-list>
         </view>
       </swiper-item>
-    </block>
+      <swiper-item>
+        <view class="swiper-item {{item}}">
+          <pm-over-task-list></pm-over-task-list>
+        </view>
+      </swiper-item>
   </swiper>
-  
 </view>
 
 

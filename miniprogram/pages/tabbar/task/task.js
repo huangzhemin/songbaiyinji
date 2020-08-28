@@ -6,7 +6,7 @@ Page({
    */
   data: {
     active: 0,
-
+    
     background: [
       {"page": "doingTask/doingTask"},
       {"page": "overTask/overTask"}
