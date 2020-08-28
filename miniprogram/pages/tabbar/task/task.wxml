@@ -1,27 +1,35 @@
 <!--miniprogram/pages/tabbar/task/task.wxml-->
-<van-tabs active="{{ active }}" bind:change="clickChange" swipeable sticky>
-  <van-tab title="进行中" name="doing"></van-tab>
-  <van-tab title="已结束" name="over"></van-tab>
-</van-tabs>
+<view>
+  <van-tabs active="{{ swiperItem.active }}" bind:change="clickChange" swipeable sticky>
+    <van-tab title="进行中" name="doing"></van-tab>
+    <van-tab title="已结束" name="over"></van-tab>
+  </van-tabs>
 
- <swiper indicator-dots="{{indicatorDots}}"
-               autoplay="{{autoplay}}" 
-               interval="{{interval}}" 
-               duration="{{duration}}"
-               current="{{active}}"
-               name="{{name}}"
-               style="height:600px"
-               bind:change="swipeChange" >
-  <block wx:for="{{background}}" wx:key="*this">
-    <swiper-item>
-      <view class="swiper-item {{item}}">
-        <block wx:if="{{active==0}}">
-          <pm-doing-task-list></pm-doing-task-list>
-        </block>
-        <block wx:if="{{active==1}}">
-          <pm-over-task-list></pm-over-task-list>
-        </block>
-      </view>
-    </swiper-item>
-  </block>
-</swiper>
+  <!-- <template is="taskTemplate" data="{{...{active: 0}, ...swiperItem}}"/> -->
+  <swiper indicator-dots="{{indicatorDots}}"
+              autoplay="{{autoplay}}" 
+              interval="{{interval}}" 
+              duration="{{duration}}"
+              current="{{active}}"
+              style="height:600px"
+              bind:change="swipeChange" >
+    <block wx:for="{{background}}" wx:for-index="idx" wx:key="idx">
+      <swiper-item>
+        <view class="swiper-item {{item}}">
+          <block wx:if="{{active==0}}">
+            <pm-doing-task-list></pm-doing-task-list>
+          </block>
+          <block wx:if="{{active==1}}">
+            <pm-over-task-list></pm-over-task-list>
+          </block>
+        </view>
+      </swiper-item>
+    </block>
+  </swiper>
+  
+</view>
+
+
+
+
+

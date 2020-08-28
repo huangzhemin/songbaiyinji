@@ -13,7 +13,7 @@
                name="{{name}}"
                style="height:600px"
                bind:change="swipeChange" >
-  <block wx:for="{{background}}" wx:key="*this">
+  <block wx:for="{{background}}" wx:for-index="idx" wx:key="idx">
     <swiper-item>
       <view class="swiper-item {{item}}">
           <block wx:if="{{active==0}}">

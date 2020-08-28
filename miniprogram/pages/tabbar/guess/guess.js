@@ -27,7 +27,7 @@ Page({
   },
 
   swipeChange(event) {
-    console.log(event)
+    // console.log(event)
     // console.log(this.data.active)
     this.setData({ active: event.detail.current });
     // console.log(this.data.active)
@@ -52,12 +52,6 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
-    console.log("guess page");
-    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
-      this.getTabBar().setData({
-          active: 1
-      });
-    }
   },
 
   /**
