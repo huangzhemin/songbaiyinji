@@ -1,5 +1,5 @@
 <!--components/doingTaskCell/doingTaskCell.wxml-->
-<view class="doingTaskCell">
+<view class="doingTaskCell" bind:tap="onClick">
   <view class="flex-wrp" >
     <view class="leftContent" >
       <view class="titleContent" >
