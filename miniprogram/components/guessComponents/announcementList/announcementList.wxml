@@ -1,5 +1,4 @@
 <!--components/announcementList/announcementList.wxml-->
 <block wx:for='{{announcement}}' wx:key="*this">
   <pm-announcement-cell></pm-announcement-cell>
-  <pm-splite-line wx:if="{{index < announcement.length - 1}}"></pm-splite-line>
 </block>

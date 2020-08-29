@@ -1,5 +1,5 @@
-<!--components/overTaskCell/overTaskCell.wxml-->
-<view class="overTaskCell" bind:tap="onClick">
+<!--components/personalComponents/taskCell/taskCell.wxml-->
+<view class="taskCell" bind:tap="onClick">
   <view class="flex-wrp" >
     <view class="leftContent" >
       <view class="titleContent" >

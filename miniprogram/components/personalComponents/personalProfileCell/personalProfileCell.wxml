@@ -1,0 +1,17 @@
+<!--components/personalComponents/personalProfileCell/personalProfileCell.wxml-->
+
+<view>
+  <view class="flex-wrp">
+    <van-icon name="user-circle-o" class="avatar" size="100rpx" bind:tap="onClick"/>
+    <!-- <van-image
+      round
+      width="5rem"
+      height="5rem"
+      src="https://img.yzcdn.cn/vant/cat.jpeg"
+      bind:tap="onClick"
+    /> -->
+    <view class="name">小黄</view>
+    <view class="desc">小黄要加油~</view>
+    <view class="rankingAndPoints">第1名 100积分</view>
+  </view>
+</view>

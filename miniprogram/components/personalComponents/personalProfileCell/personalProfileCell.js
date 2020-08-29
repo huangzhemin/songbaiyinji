@@ -1,4 +1,4 @@
-// components/userRankingList/userRankingList.js
+// components/personalComponents/personalProfileCell/personalProfileCell.js
 Component({
   /**
    * 组件的属性列表
@@ -11,13 +11,17 @@ Component({
    * 组件的初始数据
    */
   data: {
-    userRankingList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
-
+    onClick(event) {
+      wx.navigateTo({
+        url: '/pages/userDetail/userDetail',
+      })
+    }
   }
 })

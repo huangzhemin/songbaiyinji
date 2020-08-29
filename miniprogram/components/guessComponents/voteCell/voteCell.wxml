@@ -1,11 +1,15 @@
 <!--components/voteCell/voteCell.wxml-->
-<van-cell-group>
-  <van-cell
-  is-link
-  title="单元格"
-  label="描述信息"
-  border="{{ false }}"
-  link-type="navigateTo"
-  url="/pages/voteDetail/voteDetail"
-  />
-</van-cell-group>
+<view class="voteCell" bind:tap="onClick">
+  <view class="flex-wrp" >
+    <view class="leftContent" >
+      <view class="titleContent" >
+        <text wx:if="{{status==0}}" class="icon-doing">{{tag}}</text>
+        <text wx:elif="{{status==1}}" class="icon-success">{{tag}}</text>
+        <text wx:elif="{{status==2}}" class="icon-fail">{{tag}}</text>
+        <text class="title" >{{title}}</text>
+      </view>
+      <view class="desc" >{{desc}}</view>
+    </view>
+    <image wx:if="{{true}}" class="rightContent" src="/images/create-collection.png" />
+  </view>
+</view>

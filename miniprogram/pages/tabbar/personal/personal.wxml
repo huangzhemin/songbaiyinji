@@ -1,2 +1,5 @@
 <!--miniprogram/pages/tabbar/personal/personal.wxml-->
-<text>miniprogram/pages/tabbar/personal/personal.wxml</text>
+<pm-personal-profile-cell></pm-personal-profile-cell>
+<block wx:for='{{taskList}}' wx:key="*this">
+  <pm-task-cell></pm-task-cell>
+</block>

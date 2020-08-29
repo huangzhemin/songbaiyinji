@@ -30,7 +30,7 @@ Component({
   methods: {
     onClick(event) {
       wx.navigateTo({
-        url: '../../../pages/taskDetail/taskDetail',
+        url: '/pages/taskDetail/taskDetail',
       })
     }
   }

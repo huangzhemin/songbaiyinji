@@ -5,7 +5,7 @@ Page({
    * 页面的初始数据
    */
   data: {
-
+    taskList: [1,2,3]
   },
 
   /**
@@ -55,6 +55,8 @@ Page({
   onReachBottom: function () {
 
   },
+
+  
 
   /**
    * 用户点击右上角分享
