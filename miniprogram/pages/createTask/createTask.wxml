@@ -2,12 +2,14 @@
 <van-row>
   <van-col class='taskTitle' span="24" >
     <van-field
-      value="{{ message }}"
+      value="{{ taskTitle }}"
       label="计划标题"
       type="textarea"
       placeholder="请输入计划标题"
       autosize
       border="{{ true }}"
+      id="taskTitle"
+      bind:input="onContentChange"
     />
   </van-col>
 </van-row>
@@ -17,12 +19,14 @@
 <van-row>
   <van-col class='taskPlanDesc' span="24">
     <van-field
-      value="{{ message }}"
+      value="{{ taskPlan.taskDesc }}"
       label="计划描述"
       type="textarea"
       placeholder="请输入计划描述"
       autosize
       border="{{ true }}"
+      id="taskPlanDesc"
+      bind:input="onContentChange"
     />
   </van-col>
 </van-row>
@@ -30,9 +34,9 @@
 <!-- 计划资料上传部分 -->
 <van-row>
   <van-field
-    value="{{ value }}"
     label="计划资料上传"
     border="{{ false }}"
+    readonly
   />
   <van-col class='taskPlanUpload' offset="2" span="20">
     <block wx:for="{{taskPlan.uploadMediaList}}" wx:key="*this">
@@ -53,12 +57,14 @@
 <van-row>
   <van-col class='taskCompleteDesc' span="24">
     <van-field
-      value="{{ message }}"
+      value="{{ taskComplete.taskDesc }}"
       label="计划完成描述"
       type="textarea"
       placeholder="请输入计划完成描述"
       autosize
       border="{{ true }}"
+      id="taskCompleteDesc"
+      bind:input="onContentChange"
     />
   </van-col>
 </van-row>
@@ -69,6 +75,7 @@
     value="{{ value }}"
     label="完成资料上传"
     border="{{ false }}"
+    readonly
   />
   <van-col class='taskCompleteUpload' offset="2" span="20">
     <block wx:for="{{taskComplete.uploadMediaList}}" wx:key="*this">
@@ -86,9 +93,9 @@
 <!-- 提交放弃 -->
 <van-row>
   <van-col offset="3" span="8">
-    <van-button type="primary" plain size="large">提交</van-button>
+    <van-button type="primary" plain size="large" bindtap="onSubmitClick">提交</van-button>
   </van-col>
   <van-col offset="2" span="8">
-    <van-button type="warning" plain size="large">放弃</van-button>
+    <van-button type="warning" plain size="large" bindtap="onCancelClick">放弃</van-button>
   </van-col>
 </van-row>

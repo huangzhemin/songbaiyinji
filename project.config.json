@@ -96,6 +96,13 @@
 					"pathName": "pages/tabbar/guess/guess",
 					"query": "",
 					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "tcbRouterTest",
+					"pathName": "pages/tcbRouterTest/tcbRouterTest",
+					"query": "",
+					"scene": null
 				}
 			]
 		}
