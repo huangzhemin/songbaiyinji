@@ -1,1 +1,5 @@
 /* miniprogram/pages/voteDetail/voteDetail.wxss */
+.taskTitle {
+  font-size: 50rpx;
+  text-align: center;
+}

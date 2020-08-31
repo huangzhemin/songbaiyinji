@@ -1,3 +1,6 @@
+/* @import "components/utilComponents/icon.wxss";
+@import "components/utilComponents/main.wxss"; */
+
 /**app.wxss**/
 .container {
   display: flex;

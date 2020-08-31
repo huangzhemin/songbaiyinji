@@ -2,16 +2,18 @@
 
 <view>
   <view class="flex-wrp">
-    <van-icon name="user-circle-o" class="avatar" size="100rpx" bind:tap="onClick"/>
-    <!-- <van-image
+    <!-- <image class="avatar" src="{{(currentLoginUserData && currentLoginUserData.avatarUrl.length != 0) ? currentLoginUserData.avatarUrl : defaultAvatar}}" bind:tap="onClick"></image> -->
+    <van-image
       round
       width="5rem"
       height="5rem"
-      src="https://img.yzcdn.cn/vant/cat.jpeg"
+      src="{{(currentLoginUserData && currentLoginUserData.avatarUrl.length != 0) ? currentLoginUserData.avatarUrl : defaultAvatar}}"
       bind:tap="onClick"
-    /> -->
-    <view class="name">小黄</view>
-    <view class="desc">小黄要加油~</view>
-    <view class="rankingAndPoints">第1名 100积分</view>
+    />
+    <view class="name">{{(currentLoginUserData && currentLoginUserData.nickName.length != 0) ? currentLoginUserData.nickName : '登录'}}</view>
+    <block wx:if="{{currentLoginUserData && currentLoginUserData.avatarUrl.length != 0 && currentLoginUserData.nickName.length != 0}}">
+      <view class="desc">小黄要加油~</view>
+      <view class="rankingAndPoints">第1名 100积分</view>
+    </block>
   </view>
 </view>

@@ -7,7 +7,8 @@
     "pages/taskDetail/taskDetail",
     "pages/guessDetail/guessDetail",
     "pages/voteDetail/voteDetail",
-    "pages/userDetail/userDetail"
+    "pages/userDetail/userDetail",
+    "pages/createTask/createTask"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",
@@ -17,17 +18,20 @@
     "navigationBarTextStyle": "black"
   },
   "usingComponents": {
-    "van-button": "/@vant/weapp/button",
-    "van-cell": "/@vant/weapp/cell",
-    "van-cell-group": "/@vant/weapp/cell-group",
-    "van-tabbar": "/@vant/weapp/tabbar/index",
-    "van-tabbar-item": "/@vant/weapp/tabbar-item/index",
-    "van-icon": "/@vant/weapp/icon/index",
-    "van-tab": "/@vant/weapp/tab/index",
-    "van-tabs": "/@vant/weapp/tabs/index",
-    "van-card": "/@vant/weapp/card/index",
-    "van-tag": "/@vant/weapp/tag/index",
-    "van-image": "/@vant/weapp/image/index",
+    "van-cell": "@vant/weapp/cell",
+    "van-cell-group": "@vant/weapp/cell-group",
+    "van-tabbar": "vant-weapp/tabbar/index",
+    "van-tabbar-item": "vant-weapp/tabbar-item/index",
+    "van-icon": "vant-weapp/icon/index",
+    "van-tab": "vant-weapp/tab/index",
+    "van-tabs": "vant-weapp/tabs/index",
+    "van-row": "vant-weapp/row/index",
+    "van-col": "vant-weapp/col/index",
+    "van-button": "vant-weapp/button/index",
+    "van-field": "@vant/weapp/field/index",
+    "van-image": "@vant/weapp/image/index",
+    "van-uploader": "@vant/weapp/uploader/index",
+    "van-share-sheet": "@vant/weapp/share-sheet/index",
     "pm-doing-task-cell": "components/taskComponents/doingTaskCell/doingTaskCell",
     "pm-over-task-cell": "components/taskComponents/overTaskCell/overTaskCell",
     "pm-guess-cell": "components/guessComponents/guessCell/guessCell",
@@ -62,10 +66,16 @@
         "selectedIconPath": "images/icon/guessSelect.png"
       },
       {
+        "pagePath": "pages/createTask/createTask",
+        "text": "创建任务",
+        "iconPath": "images/icon/addTask.png",
+        "selectedIconPath": "images/icon/addTask.png"
+      },
+      {
         "pagePath": "pages/tabbar/ranking/ranking",
         "text": "排行榜",
         "iconPath": "images/icon/ranking.png",
-        "selectedIconPath": "images/icon/ranking.png"
+        "selectedIconPath": "images/icon/rankingSelect.png"
       },
       {
         "pagePath": "pages/tabbar/personal/personal",

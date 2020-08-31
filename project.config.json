@@ -30,7 +30,7 @@
 	},
 	"appid": "wx0c256066d5729114",
 	"projectname": "%E6%9D%BE%E6%9F%8F%E5%8D%B0%E8%AE%B01.0",
-	"libVersion": "2.12.1",
+	"libVersion": "2.11.1",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
 	"condition": {
@@ -49,13 +49,53 @@
 		"game": {
 			"list": []
 		},
+		"gamePlugin": {
+			"current": -1,
+			"list": []
+		},
 		"miniprogram": {
 			"current": 0,
 			"list": [
 				{
 					"id": -1,
 					"name": "db guide",
-					"pathName": "pages/databaseGuide/databaseGuide"
+					"pathName": "pages/databaseGuide/databaseGuide",
+					"query": ""
+				},
+				{
+					"id": 1,
+					"name": "创建任务",
+					"pathName": "pages/createTask/createTask",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "猜一猜详情页",
+					"pathName": "pages/guessDetail/guessDetail",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "投票页面",
+					"pathName": "pages/voteDetail/voteDetail",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "任务详情页",
+					"pathName": "pages/taskDetail/taskDetail",
+					"query": "",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "公告页",
+					"pathName": "pages/tabbar/guess/guess",
+					"query": "",
+					"scene": null
 				}
 			]
 		}

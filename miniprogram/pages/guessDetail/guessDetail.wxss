@@ -1,1 +1,5 @@
 /* miniprogram/pages/guessDetail/guessDetail.wxss */
+.taskTitle {
+  font-size: 50rpx;
+  text-align: center;
+}

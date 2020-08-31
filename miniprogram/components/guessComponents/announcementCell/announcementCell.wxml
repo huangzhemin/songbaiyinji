@@ -1,1 +1,5 @@
-
+<van-cell icon="{{avatar}}"
+          title="{{nickName}}" 
+          label="{{desc}}"          
+          value="{{msgTime}}"
+          titleWidth="75%" />

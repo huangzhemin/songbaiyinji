@@ -1,1 +1,6 @@
 /* miniprogram/pages/taskDetail/taskDetail.wxss */
+
+.taskTitle {
+  font-size: 50rpx;
+  text-align: center;
+}

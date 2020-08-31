@@ -5,7 +5,31 @@ Page({
    * 页面的初始数据
    */
   data: {
+    taskTitle: "",
+    taskPlan: {
+      taskDesc: "就爱上了咖啡骄傲戴老师开发老大时空裂缝家傲的世间法开始发酵",
+      uploadMediaList: [],
+      showUpload: true,
+    },
+    taskComplete: {
+      taskDesc: "1克里斯丁监控了对方水晶开发当时房价第三个会撒娇可感受到科技公司看反馈",
+      uploadMediaList: [],
+      showUpload: true,
+    },
 
+    showShare: false,
+    options: [
+      [
+        { name: '微信', icon: 'wechat' },
+        { name: '微博', icon: 'weibo' },
+        { name: 'QQ', icon: 'qq' },
+      ],
+      [
+        { name: '复制链接', icon: 'link' },
+        { name: '分享海报', icon: 'poster' },
+        { name: '二维码', icon: 'qrcode' },
+      ],
+    ],
   },
 
   /**
@@ -60,7 +84,29 @@ Page({
   /**
    * 用户点击右上角分享
    */
-  onShareAppMessage: function () {
+  onShareAppMessage: function (res) {
+    console.log(res)
+    if (res.from === 'sharePannel') {
+      // 来自页面内转发按钮
+      console.log(res.target)
+    }
+    return {
+      title: this.data.taskTitle,
+      path: '/page/guessDetail/guessDetail'
+    }
+  },
 
-  }
+  onShareBtnClick: function(event) {
+    this.setData({ showShare: true });
+  },
+
+  onSharePannelClose: function(event) {
+    this.setData({ showShare: false });
+  },
+
+  onSharePannelSelect: function(event) {
+    let res = {from: "sharePannel", target:event.detail["icon"]};
+    this.onShareAppMessage(res);
+    this.onSharePannelClose();
+  },
 })

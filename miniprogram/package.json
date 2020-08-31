@@ -4,8 +4,9 @@
   "description": "",
   "main": "app.js",
   "dependencies": {
-    "@vant/weapp": "^1.4.4",
-    "vant-weapp": "^0.5.28"
+    "@vant/weapp": "^1.5.0",
+    "vant-weapp": "^0.5.28",
+    "weui": "^2.3.0"
   },
   "devDependencies": {},
   "scripts": {

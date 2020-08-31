@@ -11,7 +11,20 @@ Component({
    * 组件的初始数据
    */
   data: {
-    announcement: [1,2,3]
+    announcementList:[
+      {
+        avatar: 'smile-o',
+        nickName: '小黄',
+        desc: '支持了你的计划xxx',
+        msgTime: 123,
+      },
+      {
+        avatar: 'thumb-circle-o',
+        nickName: '小白',
+        desc: '投票了你的计划yyy 已完成',
+        msgTime: 456,
+      },
+    ]
   },
 
   /**

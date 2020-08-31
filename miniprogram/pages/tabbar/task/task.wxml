@@ -5,7 +5,6 @@
     <van-tab title="已结束" name="over"></van-tab>
   </van-tabs>
 
-  <!-- <template is="taskTemplate" data="{{...{active: 0}, ...swiperItem}}"/> -->
   <swiper indicator-dots="{{indicatorDots}}"
               autoplay="{{autoplay}}" 
               interval="{{interval}}" 
