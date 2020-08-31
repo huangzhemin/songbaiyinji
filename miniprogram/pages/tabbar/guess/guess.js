@@ -7,11 +7,6 @@ Page({
   data: {
     active: 0,
 
-    background: [
-      {"page": "doingTask/doingTask"},
-      {"page": "overTask/overTask"},
-      {"page": "overTask/overTask1"}
-    ],
     indicatorDots: false,
     vertical: false,
     autoplay: false,
