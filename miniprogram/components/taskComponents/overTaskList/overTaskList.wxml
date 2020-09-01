@@ -1,5 +1,11 @@
 <!--components/overTaskList/overTaskList.wxml-->
-<block wx:for='{{overTaskList}}' wx:key="*this">
-  <pm-over-task-cell></pm-over-task-cell>
+<block wx:for='{{taskList}}' wx:key="*this">
+  <pm-task-cell 
+    title='{{item.taskTitle}}'
+    desc='{{item.taskDesc}}'
+    status='{{item.status}}'
+    thumbImg='{{item.thumbImg}}'
+    location='task-over'>
+  </pm-task-cell>
   <pm-splite-line wx:if="{{index < overTaskList.length - 1}}"></pm-splite-line>
 </block>

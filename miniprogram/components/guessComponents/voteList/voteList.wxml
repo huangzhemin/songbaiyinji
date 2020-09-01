@@ -1,5 +1,11 @@
 <!--components/voteList/voteList.wxml-->
-<block wx:for='{{voteList}}' wx:key="*this">
-  <pm-vote-cell></pm-vote-cell>
+<block wx:for='{{taskList}}' wx:key="*this">
+  <pm-task-cell 
+    title='{{item.taskTitle}}'
+    desc='{{item.taskDesc}}'
+    status='{{item.status}}'
+    thumbImg='{{item.thumbImg}}'
+    location='task-vote'>
+  </pm-task-cell>
   <pm-splite-line wx:if="{{index < voteList.length - 1}}"></pm-splite-line>
 </block>

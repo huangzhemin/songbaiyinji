@@ -8,7 +8,22 @@ Component({
    * 组件的属性列表
    */
   properties: {
-
+    avatarUrl: {
+      type: String,
+      value: 'https://b.yzcdn.cn/vant/icon-demo-1126.png',
+    },
+    nickName: {
+      type: String,
+      value: '',
+    },
+    userRanking: {
+      type: String,
+      value: '',
+    },
+    userPoints: {
+      type: String,
+      value: '0',
+    },
   },
 
   /**
@@ -16,13 +31,12 @@ Component({
    */
   data: {
     currentLoginUserData: {},
-    defaultAvatar: 'https://b.yzcdn.cn/vant/icon-demo-1126.png',
   },
 
   lifetimes: {
     attached: function() {
       // 在组件实例进入页面节点树时执行
-      console.log("personalProfile attached");
+      // console.log("personalProfile attached");
       currentLoginUserInfo.doc('currentSDKUserInfo').get({
         }).then( res => {
           this.setData({
@@ -36,21 +50,6 @@ Component({
       // 在组件实例被从页面节点树移除时执行
       // console.log("personalProfile detached");
     },
-  },
-
-  pageLifetimes: {
-    show: function() {
-      // 页面被展示
-      console.log("page show");
-    },
-    hide: function() {
-      // 页面被隐藏
-      console.log("page hide");
-    },
-    resize: function(size) {
-      // 页面尺寸变化
-      console.log("page resize");
-    }
   },
 
   /**

@@ -1,5 +1,11 @@
 <!--components/doingTaskList/doingTaskList.wxml-->
-<block wx:for='{{doingTaskList}}' wx:key="*this">
-  <pm-doing-task-cell></pm-doing-task-cell>
+<block wx:for='{{taskList}}' wx:key="*this">
+  <pm-task-cell 
+    title='{{item.taskTitle}}'
+    desc='{{item.taskDesc}}'
+    status='{{item.status}}'
+    thumbImg='{{item.thumbImg}}'
+    location='task-doing'>
+  </pm-task-cell>
   <pm-splite-line wx:if="{{index < doingTaskList.length - 1}}"></pm-splite-line>
 </block>

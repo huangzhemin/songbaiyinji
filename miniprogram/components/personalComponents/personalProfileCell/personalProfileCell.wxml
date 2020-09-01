@@ -4,16 +4,16 @@
   <view class="flex-wrp">
     <!-- <image class="avatar" src="{{(currentLoginUserData && currentLoginUserData.avatarUrl.length != 0) ? currentLoginUserData.avatarUrl : defaultAvatar}}" bind:tap="onClick"></image> -->
     <van-image
+      class="avatar"
       round
       width="5rem"
       height="5rem"
-      src="{{(currentLoginUserData && currentLoginUserData.avatarUrl.length != 0) ? currentLoginUserData.avatarUrl : defaultAvatar}}"
+      src="{{avatarUrl}}"
       bind:tap="onClick"
     />
-    <view class="name">{{(currentLoginUserData && currentLoginUserData.nickName.length != 0) ? currentLoginUserData.nickName : '登录'}}</view>
+    <view class="name">{{nickName}}</view>
     <block wx:if="{{currentLoginUserData && currentLoginUserData.avatarUrl.length != 0 && currentLoginUserData.nickName.length != 0}}">
-      <view class="desc">小黄要加油~</view>
-      <view class="rankingAndPoints">第1名 100积分</view>
+      <view class="rankingAndPoints">第{{userRanking}}名 {{userPoints}}积分</view>
     </block>
   </view>
 </view>

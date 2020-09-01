@@ -1,5 +1,11 @@
 <!--components/guessList/guessList.wxml-->
-<block wx:for='{{guessList}}' wx:key="*this">
-  <pm-guess-cell></pm-guess-cell>
+<block wx:for='{{taskList}}' wx:key="*this">
+  <pm-task-cell 
+    title='{{item.taskTitle}}'
+    desc='{{item.taskDesc}}'
+    status='{{item.status}}'
+    thumbImg='{{item.thumbImg}}'
+    location='task-guess'>
+  </pm-task-cell>
   <pm-splite-line wx:if="{{index < guessList.length - 1}}"></pm-splite-line>
 </block>

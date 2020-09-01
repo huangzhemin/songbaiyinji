@@ -11,7 +11,26 @@ Component({
    * 组件的初始数据
    */
   data: {
-    voteList: [1,2]
+    taskList: [
+      {
+        taskTitle:'这是任务标题任务标题任务标题',
+        taskDesc: '这是任务描述这是任务描述这是任务描述这是任务描述',
+        status: '2',
+        thumbImg: '/images/create-collection.png',
+      },
+      {
+        taskTitle:'这是任务标题任务标题任务标题',
+        taskDesc: '这是任务描述这是任务描述这是任务描述这是任务描述',
+        status: '2',
+        thumbImg: '/images/create-collection.png',
+      },
+      {
+        taskTitle:'这是任务标题任务标题任务标题',
+        taskDesc: '这是任务描述这是任务描述这是任务描述这是任务描述',
+        status: '2',
+        thumbImg: '/images/create-collection.png',
+      },
+    ]
   },
 
   /**
