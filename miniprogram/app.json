@@ -44,6 +44,7 @@
     "pm-vote-list": "components/guessComponents/voteList/voteList",
     "pm-announcement-list": "components/guessComponents/announcementList/announcementList",
     "pm-ranking-list": "components/rankingComponents/userRankingList/userRankingList",
+    "pm-user-detail-task-list": "components/personalComponents/userDetailTaskList/userDetailTaskList",
     "pm-splite-line": "components/utilComponents/splitLine/splitLine",
     "pm-space-line": "components/utilComponents/spaceLine/spaceLine"
   },
@@ -77,7 +78,7 @@
         "selectedIconPath": "images/icon/rankingSelect.png"
       },
       {
-        "pagePath": "pages/tabbar/personal/personal",
+        "pagePath": "pages/userDetail/userDetail",
         "text": "我",
         "iconPath": "images/icon/personal.png",
         "selectedIconPath": "images/icon/personalSelect.png"

@@ -1,0 +1,10 @@
+<!--components/personalComponents/userDetailTaskList/userDetailTaskList.wxml-->
+<block wx:for='{{taskList}}' wx:key="*this">
+  <pm-task-cell 
+    title='{{item.taskTitle}}'
+    desc='{{item.taskDesc}}'
+    status='{{item.status}}'
+    thumbImg='{{item.thumbImg}}'
+    location='user-personal'>
+  </pm-task-cell>
+</block>
