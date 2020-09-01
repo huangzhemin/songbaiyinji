@@ -37,36 +37,40 @@
   background-color: #AB84BB;
   color: #ffffff;
   border-radius: 8rpx;
-  padding: 5rpx 10rpx 5rpx 10rpx;
+  padding: 4rpx 8rpx 4rpx 8rpx;
   font-size: 36rpx;
-  margin-right: 20rpx;
+  margin-left: 15rpx;
+  margin-right: 10rpx;
 }
 
 .icon-vote {
   background-color: #ffa931;
   color: #ffffff;
   border-radius: 8rpx;
-  padding: 5rpx 10rpx 5rpx 10rpx;
+  padding: 4rpx 8rpx 4rpx 8rpx;
   font-size: 36rpx;
-  margin-right: 20rpx;
+  margin-left: 15rpx;
+  margin-right: 10rpx;
 }
 
 .icon-success {
   background-color: #649d66;
   color: #ffffff;
   border-radius: 8rpx;
-  padding: 5rpx 10rpx 5rpx 10rpx;
+  padding: 4rpx 8rpx 4rpx 8rpx;
   font-size: 36rpx;
-  margin-right: 20rpx;
+  margin-left: 15rpx;
+  margin-right: 10rpx;
 }
 
 .icon-fail {
   background-color: #ed6663;
   color: #ffffff;
   border-radius: 8rpx;
-  padding: 5rpx 10rpx 5rpx 10rpx;
+  padding: 4rpx 8rpx 4rpx 8rpx;
   font-size: 36rpx;
-  margin-right: 20rpx;
+  margin-left: 15rpx;
+  margin-right: 10rpx;
 }
 
 .title {

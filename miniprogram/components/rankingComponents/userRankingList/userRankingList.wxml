@@ -1,5 +1,11 @@
 <!--components/userRankingList/userRankingList.wxml-->
-<block wx:for='{{userRankingList}}' wx:key="*this">
-  <pm-ranking-cell></pm-ranking-cell>
+<block wx:for='{{rankingList}}'  wx:for-index="idx" wx:key="*this">
+  <pm-ranking-cell
+    ranking='{{idx + 1}}'
+    avatar='{{item.avatar}}'
+    nickName='{{item.nickName}}'
+    points='{{item.points}}'
+    jumpUrl='{{item.jumpUrl}}'>
+  </pm-ranking-cell>
 </block>
 

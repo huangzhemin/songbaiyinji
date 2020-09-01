@@ -1,6 +1,7 @@
 <!--components/rankingCell/rankingCell.wxml-->
-<van-cell icon="user-circle-o" 
-          title="小黄" 
-          value="100" 
+<van-cell ranking='{{ranking}}'
+          icon='{{avatar}}'
+          title='{{nickName}}'
+          value='{{points}}'
           link-type="navigateTo"
-          url="/pages/userDetail/userDetail"/>
+          url="{{jumpUrl}}"/>

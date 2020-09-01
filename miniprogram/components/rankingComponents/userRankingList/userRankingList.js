@@ -11,7 +11,26 @@ Component({
    * 组件的初始数据
    */
   data: {
-    userRankingList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+    rankingList:[
+      {
+        avatar: 'user-circle-o',
+        nickName: '小黄',
+        points: '100',
+        jumpUrl: '/pages/userDetail/userDetail',
+      },
+      {
+        avatar: 'user-circle-o',
+        nickName: '小白',
+        points: '99',
+        jumpUrl: '/pages/userDetail/userDetail',
+      },
+      {
+        avatar: 'user-circle-o',
+        nickName: '小蓝',
+        points: '98',
+        jumpUrl: '/pages/userDetail/userDetail',
+      },
+    ],
   },
 
   /**

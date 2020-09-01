@@ -117,6 +117,13 @@
 					"pathName": "pages/tabbar/personal/personal",
 					"query": "",
 					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "排行榜",
+					"pathName": "pages/tabbar/ranking/ranking",
+					"query": "",
+					"scene": null
 				}
 			]
 		}
