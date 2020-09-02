@@ -31,7 +31,6 @@ Page({
       title: 'loading...',
     })
     taskInfo.doc('f241f5fe5f4f67ab0011a3e826d8a99d').get().then(res => {
-      console.log(res);
       this.data.taskMediaList = res.data['taskMediaList'];
       let uploadMediaListDic = util.getUploadMediaList(this.data.taskMediaList);
       this.setData({

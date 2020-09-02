@@ -1,4 +1,8 @@
 // miniprogram/pages/voteDetail/voteDetail.js
+const db = wx.cloud.database()
+const taskInfo = db.collection('taskInfo')
+var util = require('../../util.js')
+
 Page({
 
   /**
@@ -7,15 +11,16 @@ Page({
   data: {
     taskTitle: "",
     taskPlan: {
-      taskDesc: "就爱上了咖啡骄傲戴老师开发老大时空裂缝家傲的世间法开始发酵",
+      taskDesc: "",
       uploadMediaList: [],
       showUpload: true,
     },
     taskComplete: {
-      taskDesc: "1克里斯丁监控了对方水晶开发当时房价第三个会撒娇可感受到科技公司看反馈",
+      taskDesc: "",
       uploadMediaList: [],
       showUpload: true,
     },
+    taskMediaList: [],
 
     showShare: false,
     options: [
@@ -36,55 +41,50 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
+    wx.showLoading({
+      title: 'loading...',
+    })
+    taskInfo.doc('f241f5fe5f4f67ab0011a3e826d8a99d').get().then(res => {
+      this.data.taskMediaList = res.data['taskMediaList'];
+      let uploadMediaListDic = util.getUploadMediaList(this.data.taskMediaList);
+      this.setData({
+        taskTitle: res.data['taskTitle'],
+        ['taskPlan.taskDesc']: res.data['taskPlanDesc'],
+        ['taskPlan.uploadMediaList']: uploadMediaListDic['taskPlan'],
+        ['taskComplete.taskDesc']: res.data['taskCompleteDesc'],
+        ['taskComplete.uploadMediaList']: uploadMediaListDic['taskComplete'],
+      });
+    }).then(res1 => {
+      wx.hideLoading();
+    })
   },
 
   /**
    * 用户点击右上角分享
    */
-  onShareAppMessage: function () {
+  onShareAppMessage: function (res) {
+    console.log(res)
+    if (res.from === 'sharePannel') {
+      // 来自页面内转发按钮
+      console.log(res.target)
+    }
+    return {
+      title: this.data.taskTitle,
+      path: '/page/voteDetail/voteDetail'
+    }
+  },
 
-  }
+  onShareBtnClick: function(event) {
+    this.setData({ showShare: true });
+  },
+
+  onSharePannelClose: function(event) {
+    this.setData({ showShare: false });
+  },
+
+  onSharePannelSelect: function(event) {
+    let res = {from: "sharePannel", target:event.detail["icon"]};
+    this.onShareAppMessage(res);
+    this.onSharePannelClose();
+  },
 })
