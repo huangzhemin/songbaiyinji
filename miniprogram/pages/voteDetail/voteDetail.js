@@ -9,6 +9,9 @@ Page({
    * 页面的初始数据
    */
   data: {
+    taskId: "",
+    status: 2,  //投票状态
+
     taskTitle: "",
     taskPlan: {
       taskDesc: "",

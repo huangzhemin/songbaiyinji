@@ -34,6 +34,7 @@
     "van-image": "@vant/weapp/image/index",
     "van-uploader": "@vant/weapp/uploader/index",
     "van-share-sheet": "@vant/weapp/share-sheet/index",
+    "van-divider": "@vant/weapp/divider/index",
     "pm-announcement-cell": "components/guessComponents/announcementCell/announcementCell",
     "pm-ranking-cell": "components/rankingComponents/rankingCell/rankingCell",
     "pm-personal-profile-cell": "components/personalComponents/personalProfileCell/personalProfileCell",

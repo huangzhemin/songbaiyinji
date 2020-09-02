@@ -7,5 +7,5 @@
     thumbImg='{{item.thumbImg}}'
     location='task-guess'>
   </pm-task-cell>
-  <pm-splite-line wx:if="{{index < guessList.length - 1}}"></pm-splite-line>
+  <pm-splite-line wx:if="{{index < taskList.length - 1}}"></pm-splite-line>
 </block>

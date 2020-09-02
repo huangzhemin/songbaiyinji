@@ -9,6 +9,9 @@ Page({
    * 页面的初始数据
    */
   data: {
+    taskId: "",
+    status: 0,  //warning 此处不确定状态，需要读取 0、3、4三种状态
+
     taskTitle: "",
     taskPlan: {
       taskDesc: "",

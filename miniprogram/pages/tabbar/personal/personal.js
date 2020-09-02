@@ -1,3 +1,5 @@
+const util = require("../../../util")
+
 // miniprogram/pages/tabbar/personal/personal.js
 const db = wx.cloud.database()
 const userInfo = db.collection('userInfo')
@@ -42,22 +44,20 @@ Page({
 
   onLoad: function(options) {
     // Do some initialize when page load.
-    wx.getStorage({
-      key: 'openid',
-    }).then(res => {
-      userInfo.where({
-        _openid: res.data // 填入当前用户 openid
-      }).get().then(userInfoRes => {
+    var that = this;
+    util.getCurrentUserInfo({
+      success: function(userInfoRes) {
         let currentUserInfo = userInfoRes.data[0];
-        this.setData({
+        that.setData({
           ['userInfo.sdkUserInfo.avatarUrl']: currentUserInfo['avatarUrl'],
           ['userInfo.sdkUserInfo.nickName']: currentUserInfo['nickName'],
           ['userInfo.customUserInfo.userRanking']: currentUserInfo['userRanking'],
           ['userInfo.customUserInfo.userPoints']: currentUserInfo['userPoints'],
         })
-      }).catch(err => {
+      },
+      fail: function(err) {
         console.error(err)
-      })
+      }
     })
   },
 })

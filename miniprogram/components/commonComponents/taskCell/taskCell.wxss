@@ -12,6 +12,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  padding: 15rpx 0 15rpx 0;
 }
 
 .titleContent {

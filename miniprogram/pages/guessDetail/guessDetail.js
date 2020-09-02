@@ -8,6 +8,9 @@ Page({
    * 页面的初始数据
    */
   data: {
+    taskId: "",
+    status: 1,  //猜一猜状态
+
     taskTitle: "",
     taskPlan: {
       taskDesc: "",

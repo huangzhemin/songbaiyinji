@@ -1,22 +1,36 @@
+const db = wx.cloud.database()
+const taskInfo = db.collection('taskInfo')
+const userInfo = db.collection('userInfo')
+
 var convertInnerTaskToDatabaseTask = function(innerTaskData) {
   // console.log(innerTaskData);
   let databaseTaskData = {
+    'taskId': innerTaskData['taskId'],
+    'status': innerTaskData['status'],
     'taskTitle': innerTaskData['taskTitle'],
     'taskPlanDesc': innerTaskData['taskPlan']['taskDesc'],
     'taskCompleteDesc': innerTaskData['taskComplete']['taskDesc'],
     'taskMediaList': innerTaskData['taskMediaList'],
+    'thumbImg': innerTaskData['thumbImg'],
   };
   // console.log(databaseTaskData);
   return databaseTaskData;
 }
 
-var convertDatabaseTaskToInnerTask = function(databaseTask) {
+var convertDatabaseTaskToInnerTask = function(databaseTaskData) {
   // console.log(databaseTaskData);
   let innerTaskData = {
+    'taskId': databaseTaskData['taskId'],
+    'status': databaseTaskData['status'],
     'taskTitle': databaseTaskData['taskTitle'],
-    'taskPlan.taskDesc': databaseTaskData['taskPlanDesc'],
-    'taskComplete.taskDesc': databaseTaskData['taskCompleteDesc'],
+    'taskPlan': {
+      'taskDesc': databaseTaskData['taskPlanDesc'],
+    },
+    'taskComplete': {
+      'taskDesc': databaseTaskData['taskCompleteDesc'],
+    },
     'taskMediaList': databaseTaskData['taskMediaList'],
+    'thumbImg': databaseTaskData['thumbImg'],
   };
   // console.log(innerTaskData);
   return innerTaskData;
@@ -48,8 +62,40 @@ var getUploadMediaList = function(taskMediaList) {
   }; 
 }
 
+var getCurrentUserTaskList = function(event) {
+  wx.getStorage({
+    key: 'openid',
+    success: (res => {
+      taskInfo.where({
+        _openid: res.data // 填入当前用户 openid
+      }).get({
+        success: (taskInfoRes => {
+          event.success(taskInfoRes)
+        })
+      })
+    })
+  });
+}
+
+var getCurrentUserInfo = function(event) {
+  wx.getStorage({
+    key: 'openid',
+    success: (res => {
+      userInfo.where({
+        _openid: res.data // 填入当前用户 openid
+      }).get({
+        success: (userInfoRes => {
+          event.success(userInfoRes)
+        })
+      })
+    })
+  });
+}
+
 module.exports={
   convertInnerTaskToDatabaseTask: convertInnerTaskToDatabaseTask,
   convertDatabaseTaskToInnerTask: convertDatabaseTaskToInnerTask,
   getUploadMediaList: getUploadMediaList,
+  getCurrentUserTaskList: getCurrentUserTaskList,
+  getCurrentUserInfo: getCurrentUserInfo,
 }

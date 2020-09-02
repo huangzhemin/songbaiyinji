@@ -7,5 +7,5 @@
     thumbImg='{{item.thumbImg}}'
     location='task-over'>
   </pm-task-cell>
-  <pm-splite-line wx:if="{{index < overTaskList.length - 1}}"></pm-splite-line>
+  <pm-splite-line wx:if="{{index < taskList.length - 1}}"></pm-splite-line>
 </block>

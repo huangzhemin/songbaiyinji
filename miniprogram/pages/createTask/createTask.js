@@ -9,6 +9,9 @@ Page({
    * 页面的初始数据
    */
   data: {
+    taskId: "",
+    status: 0,  //进行中
+
     taskTitle: "",
     taskPlan: {
       taskDesc: "",
@@ -20,6 +23,7 @@ Page({
       uploadMediaList: [],
       showUpload: true,
     },
+    thumbImg: "",
     taskMediaList: [],
 
     promiseArr: [],
@@ -55,12 +59,16 @@ Page({
         for (const key in res) {
           if (res.hasOwnProperty(key)) {
             const element = res[key];
+            if (element['fileID'].match('plan_0')) {
+              that.data.thumbImg = element['fileID'];
+            }
             that.data.taskMediaList.push(element['fileID']);
           }
         }
         that.addTaskToDatabase({
           success: function(res1) {
             that.clearTaskContent();
+            wx.hideLoading();
             wx.switchTab({
               url: '/pages/tabbar/task/task',
             })
@@ -78,11 +86,27 @@ Page({
   },
 
   addTaskToDatabase: function(event) {
-    taskInfo.add({
-      data: util.convertInnerTaskToDatabaseTask(this.data),
-    }).then(res => {
-      console.log(res);
-      event.success(res);
+    //在添加之前，需要使用当前用户已经创建的task数量，计算出当前的taskid
+    let that = this;
+    this.data.taskId = this.getTaskId({
+      success:function(res1) {
+        taskInfo.add({
+          data: util.convertInnerTaskToDatabaseTask(that.data),
+        }).then(res => {
+          event.success(res);
+        });
+      }
+    });
+  },
+
+  getTaskId: function(event) {
+    var that = this;
+    util.getCurrentUserTaskList({
+      success: function(taskInfoRes) {
+        console.log(taskInfoRes)
+        that.data.taskId = 'task'+taskInfoRes.data.length;
+        event.success();
+      }
     });
   },
   
@@ -132,7 +156,6 @@ Page({
     Promise.all(this.data.promiseArr).then((result) => {
       this.data.promiseArr = [];
       event.success(result);
-      wx.hideLoading();
     });
   },
 
