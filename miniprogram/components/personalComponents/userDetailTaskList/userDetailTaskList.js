@@ -4,14 +4,20 @@ Component({
    * 组件的属性列表
    */
   properties: {
-
+    taskList: {
+      type: Array,
+      value: [],
+    },
+    location: {
+      type: String,
+      value: '',
+    }
   },
 
   /**
    * 组件的初始数据
    */
   data: {
-
   },
 
   /**

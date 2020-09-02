@@ -1,5 +1,5 @@
 <!--components/voteList/voteList.wxml-->
-<block wx:for='{{taskList}}' wx:key="*this">
+<block wx:for='{{taskList}}' wx:for-index="idx" wx:key="idx">
   <pm-task-cell 
     title='{{item.taskTitle}}'
     desc='{{item.taskDesc}}'

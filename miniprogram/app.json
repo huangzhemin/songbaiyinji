@@ -78,7 +78,7 @@
         "selectedIconPath": "images/icon/rankingSelect.png"
       },
       {
-        "pagePath": "pages/userDetail/userDetail",
+        "pagePath": "pages/tabbar/personal/personal",
         "text": "我",
         "iconPath": "images/icon/personal.png",
         "selectedIconPath": "images/icon/personalSelect.png"

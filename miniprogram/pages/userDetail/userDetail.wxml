@@ -5,14 +5,9 @@
   userRanking="{{userInfo.customUserInfo.userRanking}}" 
   userPoints="{{userInfo.customUserInfo.userPoints}}">
 </pm-personal-profile-cell>
-
 <pm-space-line></pm-space-line>
-<block wx:for='{{taskList}}' wx:key="*this">
-  <pm-task-cell 
-    title='{{item.taskTitle}}'
-    desc='{{item.taskDesc}}'
-    status='{{item.status}}'
-    thumbImg='{{item.thumbImg}}'
-    location='user-personal'>
-  </pm-task-cell>
-</block>
+<!-- 此处需要添加location判断逻辑 -->
+<pm-user-detail-task-list
+  taskList='{{taskList}}'
+  location='user-detail'>
+</pm-user-detail-task-list>

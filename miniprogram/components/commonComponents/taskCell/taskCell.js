@@ -41,7 +41,7 @@ Component({
       });
     }
   },
-
+  
   // onShareAppMessage() {
   //   return {
   //     title: 'cover-view',
@@ -86,6 +86,7 @@ Component({
       var url = '/pages/taskDetail/taskDetail';
       switch (this.properties.location) {
         case 'user-personal':
+        case 'user-detail':
         case 'task-doing':
         case 'task-over':
           url = '/pages/taskDetail/taskDetail';
