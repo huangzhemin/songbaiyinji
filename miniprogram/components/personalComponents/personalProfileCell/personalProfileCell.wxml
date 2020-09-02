@@ -12,7 +12,7 @@
       bind:tap="onClick"
     />
     <view class="name">{{nickName}}</view>
-    <block wx:if="{{currentLoginUserData && currentLoginUserData.avatarUrl.length != 0 && currentLoginUserData.nickName.length != 0}}">
+    <block wx:if="{{avatarUrl && avatarUrl.length != 0}}">
       <view class="rankingAndPoints">第{{userRanking}}名 {{userPoints}}积分</view>
     </block>
   </view>

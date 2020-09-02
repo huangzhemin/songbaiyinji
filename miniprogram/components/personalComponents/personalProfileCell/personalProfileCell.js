@@ -30,26 +30,10 @@ Component({
    * 组件的初始数据
    */
   data: {
-    currentLoginUserData: {},
-  },
-
-  lifetimes: {
-    attached: function() {
-      // 在组件实例进入页面节点树时执行
-      // console.log("personalProfile attached");
-      // userInfo.doc('_openid').get({
-      //   }).then(res => {
-      //     this.setData({
-      //       currentLoginUserData: res.data,
-      //     })
-      //   }).catch(err => {
-      //     console.error(err)
-      //   })
-    },
-    detached: function() {
-      // 在组件实例被从页面节点树移除时执行
-      // console.log("personalProfile detached");
-    },
+    avatarUrl: '',
+    nickName: '',
+    userRanking: '',
+    userPoints: '',
   },
 
   /**
@@ -59,7 +43,7 @@ Component({
     onClick(event) {
       // this.logout();
       // return;
-      wx:wx.getSetting({
+      wx.getSetting({
         withSubscriptions: true,
         success: (result) => {
           //此处需要判断是否已经获取到用户登录权限
@@ -69,7 +53,7 @@ Component({
               scope: 'scope.userInfo',
             }).then(res => {
               //此时成功授权
-              console.log('');
+              console.log('authorize success');
               this.getUserAuth();
             }).catch(err => {
               //授权失败
@@ -87,15 +71,9 @@ Component({
             //   url: '/pages/userDetail/userDetail',
             // })
             console.log('user has login');
-            this.getUserAuth();
           }
         }
       })
-    },
-
-    logout: function() {
-      wx.clearStorage();
-      wx.clearStorageSync();
     },
 
     getUserAuth: function() {
@@ -105,20 +83,21 @@ Component({
       wx.getUserInfo({
       }).then(userInfoRes => {
         //获取用户信息成功
-        console.log(userInfoRes.userInfo['_openid']);
+        // console.log(userInfoRes.userInfo);
         //此处需要写入用户数据
-        // userInfo.doc('_openid').update({
-        //   data: res.userInfo
-        // }).then( res => {
-        //   console.log(res);
-        // }).catch(err => {
-        //   console.error(err)
-        // })
-        if (userInfoRes.encryptedData && userInfoRes.iv) {
-          wx.login({
-          }).then(loginRes => {
-            //将用户基本信息回传给服务器，并获取access_token
-            console.log(loginRes);
+        userInfo.add({
+          data: userInfoRes.userInfo
+        }).then( userInfoDatabaseRes => {
+          console.log(userInfoDatabaseRes);
+        }).catch(err => {
+          console.error(err)
+        })
+        console.log(userInfoRes)
+        // if (userInfoRes.encryptedData && userInfoRes.iv) {
+          // wx.login({
+          // }).then(loginRes => {
+          //   //将用户基本信息回传给服务器，并获取access_token
+          //   console.log(loginRes);
             // if (loginRes.code) {
             //   wx.request({
             //     url: 'https://test.com/onLogin',
@@ -152,8 +131,8 @@ Component({
             // } else {
             //   console.log("123");
             // }
-          })
-        }
+          // })
+        // }
       })
     }
   }
