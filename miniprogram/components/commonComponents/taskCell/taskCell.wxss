@@ -14,6 +14,10 @@
   align-items: flex-start;
 }
 
+.titleContent {
+  margin-left: 15rpx;
+}
+
 .icon-default {
   background-color: #6190e8;
   color: #ffffff;
@@ -29,7 +33,6 @@
   border-radius: 8rpx;
   padding: 4rpx 8rpx 4rpx 8rpx;
   font-size: 36rpx;
-  margin-left: 15rpx;
   margin-right: 10rpx;
 }
 
@@ -39,7 +42,6 @@
   border-radius: 8rpx;
   padding: 4rpx 8rpx 4rpx 8rpx;
   font-size: 36rpx;
-  margin-left: 15rpx;
   margin-right: 10rpx;
 }
 
@@ -49,7 +51,6 @@
   border-radius: 8rpx;
   padding: 4rpx 8rpx 4rpx 8rpx;
   font-size: 36rpx;
-  margin-left: 15rpx;
   margin-right: 10rpx;
 }
 
@@ -59,7 +60,6 @@
   border-radius: 8rpx;
   padding: 4rpx 8rpx 4rpx 8rpx;
   font-size: 36rpx;
-  margin-left: 15rpx;
   margin-right: 10rpx;
 }
 
@@ -69,7 +69,6 @@
   border-radius: 8rpx;
   padding: 4rpx 8rpx 4rpx 8rpx;
   font-size: 36rpx;
-  margin-left: 15rpx;
   margin-right: 10rpx;
 }
 
