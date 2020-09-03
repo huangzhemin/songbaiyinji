@@ -26,6 +26,7 @@ Page({
     thumbImg: "",
     taskMediaList: [],
 
+    openId: '',
     avatar: '',
     nickName: '',
     pubTime: '',
@@ -108,10 +109,10 @@ Page({
     var that = this;
     util.getCurrentUserTaskList({
       success: function(taskInfoRes) {
-        console.log(taskInfoRes)
         that.data.taskId = 'task'+taskInfoRes.data.length;
         util.getCurrentUserInfo({
-          success: function(userInfoRes) {
+          success: function(openId, userInfoRes) {
+            that.data.openId = openId;
             that.data.avatar = userInfoRes.data[0].avatarUrl;
             that.data.nickName = userInfoRes.data[0].nickName;
             that.data.pubTime = (new Date()).toLocaleTimeString();

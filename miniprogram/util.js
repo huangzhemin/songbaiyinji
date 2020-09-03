@@ -12,11 +12,12 @@ var convertInnerTaskToDatabaseTask = function(innerTaskData) {
     'taskCompleteDesc': innerTaskData['taskComplete']['taskDesc'],
     'taskMediaList': innerTaskData['taskMediaList'],
     'thumbImg': innerTaskData['thumbImg'],
+    'openId': innerTaskData['openId'],
     'avatar': innerTaskData['avatar'],
     'nickName': innerTaskData['nickName'],
     'pubTime': innerTaskData['pubTime'],
   };
-  // console.log(databaseTaskData);
+  console.log(databaseTaskData);
   return databaseTaskData;
 }
 
@@ -34,6 +35,7 @@ var convertDatabaseTaskToInnerTask = function(databaseTaskData) {
     },
     'taskMediaList': databaseTaskData['taskMediaList'],
     'thumbImg': databaseTaskData['thumbImg'],
+    'openId': databaseTaskData['openId'],
     'avatar': databaseTaskData['avatar'],
     'nickName': databaseTaskData['nickName'],
     'pubTime': databaseTaskData['pubTime'],
@@ -87,6 +89,15 @@ var getAllTaskList = function(event) {
   })
 }
 
+var getCurrentUserOpenId = function(event) {
+  wx.getStorage({
+    key: 'openid',
+    success: (res => {
+      event.success(res.data);
+    })
+  });
+}
+
 var getCurrentUserTaskList = function(event) {
   wx.getStorage({
     key: 'openid',
@@ -102,6 +113,7 @@ var getCurrentUserTaskList = function(event) {
   });
 }
 
+//返回用户的openId 及 当前用户的其他信息
 var getCurrentUserInfo = function(event) {
   wx.getStorage({
     key: 'openid',
@@ -110,7 +122,7 @@ var getCurrentUserInfo = function(event) {
         _openid: res.data // 填入当前用户 openid
       }).get({
         success: (userInfoRes => {
-          event.success(userInfoRes)
+          event.success(res.data, userInfoRes)
         })
       })
     })
@@ -123,6 +135,7 @@ module.exports={
   batchConvertDatabaseTaskToInnerTask: batchConvertDatabaseTaskToInnerTask,
   getUploadMediaList: getUploadMediaList,
   getAllTaskList: getAllTaskList,
+  getCurrentUserOpenId: getCurrentUserOpenId,
   getCurrentUserTaskList: getCurrentUserTaskList,
   getCurrentUserInfo: getCurrentUserInfo,
 }

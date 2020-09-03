@@ -31,12 +31,12 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    updateTaskWithTaskId: function(taskId, taskElement) {
+    updateTaskWithOpenIdAndTaskId: function(openId, taskId, taskElement) {
       let replaceIndex = -1;
       var taskList = this.data.taskList;
       for (let index = 0; index < taskList.length; index++) {
         const element = taskList[index];
-        if (element.taskId == taskId) {
+        if (element.openId == openId && element.taskId == taskId) {
           replaceIndex = index;
           break;
         }
@@ -59,7 +59,7 @@ Component({
             if (taskInfoRes.data.hasOwnProperty(key)) {
               const element = taskInfoRes.data[key];
               if (element.status == 0) {
-                that.updateTaskWithTaskId(element.taskId, util.convertDatabaseTaskToInnerTask(element));  
+                that.updateTaskWithOpenIdAndTaskId(element.openId, element.taskId, util.convertDatabaseTaskToInnerTask(element));  
               }
             }
           }
