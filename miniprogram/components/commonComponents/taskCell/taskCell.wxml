@@ -1,18 +1,37 @@
 <!--components/personalComponents/taskCell/taskCell.wxml-->
 <view class="taskCell" bind:tap="onClick">
-  <view class="flex-wrp" >
-    <view class="leftContent" >
-      <view class="titleContent" >
-        <text wx:if="{{status==0}}" class="icon-doing">{{tag}}</text>
-        <text wx:elif="{{status==1}}" class="icon-guess">{{tag}}</text>
-        <text wx:elif="{{status==2}}" class="icon-vote">{{tag}}</text>
-        <text wx:elif="{{status==3}}" class="icon-success">{{tag}}</text>
-        <text wx:elif="{{status==4}}" class="icon-fail">{{tag}}</text>
-        <text wx:else class="icon-default">{{tag}}</text>
-        <text class="title" >{{title}}</text>
+  <van-row>
+    <van-col span="24">
+      <view class="flex-wrp" >
+        <view class="leftContent" >
+          <view class="titleContent" >
+            <text wx:if="{{status==0}}" class="icon-doing">{{tag}}</text>
+            <text wx:elif="{{status==1}}" class="icon-guess">{{tag}}</text>
+            <text wx:elif="{{status==2}}" class="icon-vote">{{tag}}</text>
+            <text wx:elif="{{status==3}}" class="icon-success">{{tag}}</text>
+            <text wx:elif="{{status==4}}" class="icon-fail">{{tag}}</text>
+            <text wx:else class="icon-default">{{tag}}</text>
+            <text class="title" >{{title}}</text>
+          </view>
+          <view class="desc" >{{desc}}</view>
+        </view>
+        <image wx:if="{{thumbImg}}" class="rightContent" src="{{thumbImg}}" />
       </view>
-      <view class="desc" >{{desc}}</view>
-    </view>
-    <image wx:if="{{thumbImg}}" class="rightContent" src="{{thumbImg}}" />
-  </view>
+    </van-col>
+  </van-row>
+
+  <van-row class='bottomBar'>
+    <van-col span="2">
+      <van-image
+        class='avatar'
+        round
+        width="50rpx"
+        height="50rpx"
+        src="https://img.yzcdn.cn/vant/cat.jpeg"
+      />
+    </van-col>
+    <van-col span="22">
+      <view class='flagInfo'>昵称 创建时间</view>
+    </van-col>
+  </van-row>
 </view>

@@ -12,7 +12,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 15rpx 0 15rpx 0;
+  padding: 10rpx 0 15rpx 0;
 }
 
 .titleContent {
@@ -96,14 +96,20 @@
   height: 200rpx;
   flex-shrink: 0;
 }
-.demo-text-1 {
-  background: rgba(26, 173, 25, 0.7);
+
+.bottomBar {
+  line-height: 50rpx;
 }
 
-.demo-text-2 {
-  background: rgba(39, 130, 215, 0.7);
+.avatar {
+  margin-left: 15rpx;
+  vertical-align: middle;
 }
 
-.demo-text-3 {
-  background: rgba(255, 255, 255, 0.7);
+.flagInfo {
+  padding-left: 10rpx;
+  font-size: 30rpx;
+  color: #999999;
+  text-align: left;
+  vertical-align: middle;
 }
