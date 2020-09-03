@@ -30,22 +30,36 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
+    //获取传入参数
+    const eventChannel = this.getOpenerEventChannel()
+    var currentOpenId = '';
+    var currentTaskId = '';
+    // 监听acceptDataFromOpenerPage事件，获取上一页面通过eventChannel传送到当前页面的数据
+    eventChannel.on('acceptDataFromOpenerPage', function(data) {
+      currentOpenId = data.openId;
+      currentTaskId = data.taskId;
+    })
+
     wx.showLoading({
       title: 'loading...',
     })
-    taskInfo.doc('f241f5fe5f4f67ab0011a3e826d8a99d').get().then(res => {
-      this.data.taskMediaList = res.data['taskMediaList'];
+    //通过传入的openId和taskId，拉取用户数据
+    taskInfo.where({
+      openId: currentOpenId,
+      taskId: currentTaskId,
+    }).get().then(res => {
+      this.data.taskMediaList = res.data[0]['taskMediaList'];
       let uploadMediaListDic = util.getUploadMediaList(this.data.taskMediaList);
       this.setData({
-        taskTitle: res.data['taskTitle'],
-        ['taskPlan.taskDesc']: res.data['taskPlanDesc'],
+        taskTitle: res.data[0]['taskTitle'],
+        ['taskPlan.taskDesc']: res.data[0]['taskPlanDesc'],
         ['taskPlan.uploadMediaList']: uploadMediaListDic['taskPlan'],
-        ['taskComplete.taskDesc']: res.data['taskCompleteDesc'],
+        ['taskComplete.taskDesc']: res.data[0]['taskCompleteDesc'],
         ['taskComplete.uploadMediaList']: uploadMediaListDic['taskComplete'],
       });
     }).then(res1 => {
       wx.hideLoading();
-    })
+    });
   },
 
   /**

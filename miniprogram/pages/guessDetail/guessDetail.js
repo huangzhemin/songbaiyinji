@@ -46,7 +46,7 @@ Page({
     wx.showLoading({
       title: 'loading...',
     })
-    taskInfo.doc('f241f5fe5f4f67ab0011a3e826d8a99d').get().then(res => {
+    taskInfo.doc('74b3e15b5f5061710014e0920a7545f2').get().then(res => {
       this.data.taskMediaList = res.data['taskMediaList'];
       let uploadMediaListDic = util.getUploadMediaList(this.data.taskMediaList);
       this.setData({

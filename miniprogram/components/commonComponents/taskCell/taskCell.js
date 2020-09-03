@@ -116,6 +116,13 @@ Component({
       }
       wx.navigateTo({
         url: url,
+        success: function(res) {
+          // 通过eventChannel向被打开页面传送数据
+          res.eventChannel.emit('acceptDataFromOpenerPage', { 
+            'openId': 'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
+            'taskId': 'task4',
+           })
+        }
       })
     }
   }
