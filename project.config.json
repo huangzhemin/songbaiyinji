@@ -77,7 +77,7 @@
 					"scene": null
 				},
 				{
-					"id": -1,
+					"id": 3,
 					"name": "投票页面",
 					"pathName": "pages/voteDetail/voteDetail",
 					"query": "",
@@ -129,6 +129,7 @@
 					"id": -1,
 					"name": "发现页",
 					"pathName": "pages/tabbar/find/find",
+					"query": "",
 					"scene": null
 				}
 			]
