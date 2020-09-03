@@ -36,6 +36,17 @@ var convertDatabaseTaskToInnerTask = function(databaseTaskData) {
   return innerTaskData;
 }
 
+var batchConvertDatabaseTaskToInnerTask = function(databaseTaskDataList) {
+  var innerTaskList = [];
+  for (const key in databaseTaskDataList) {
+    if (databaseTaskDataList.hasOwnProperty(key)) {
+      const element = databaseTaskDataList[key];
+      innerTaskList.push(this.convertDatabaseTaskToInnerTask(element));
+    }
+  }
+  return innerTaskList;
+}
+
 //该方法，传入taskMediaList，标识数据库媒体列表
 //将处理并且排序后的 plan和complete两个list打包返回
 var getUploadMediaList = function(taskMediaList) {
@@ -60,6 +71,14 @@ var getUploadMediaList = function(taskMediaList) {
     'taskPlan': taskPlanUploadMediaList,
     'taskComplete': taskCompleteUploadMediaList,
   }; 
+}
+
+var getAllTaskList = function(event) {
+  taskInfo.get({
+    success:(taskInfoRes => {
+      event.success(taskInfoRes);
+    })
+  })
 }
 
 var getCurrentUserTaskList = function(event) {
@@ -95,7 +114,9 @@ var getCurrentUserInfo = function(event) {
 module.exports={
   convertInnerTaskToDatabaseTask: convertInnerTaskToDatabaseTask,
   convertDatabaseTaskToInnerTask: convertDatabaseTaskToInnerTask,
+  batchConvertDatabaseTaskToInnerTask: batchConvertDatabaseTaskToInnerTask,
   getUploadMediaList: getUploadMediaList,
+  getAllTaskList: getAllTaskList,
   getCurrentUserTaskList: getCurrentUserTaskList,
   getCurrentUserInfo: getCurrentUserInfo,
 }

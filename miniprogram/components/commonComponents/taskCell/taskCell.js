@@ -84,9 +84,11 @@ Component({
 
     onClick(event) {
       var url = '/pages/taskDetail/taskDetail';
+      //warning 此处需要跟进具体的用户情况来判断进入页面
       switch (this.properties.location) {
         case 'user-personal':
         case 'user-detail':
+        case 'task-all':
         case 'task-doing':
         case 'task-over':
           url = '/pages/taskDetail/taskDetail';

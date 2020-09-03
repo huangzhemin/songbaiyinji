@@ -124,6 +124,12 @@
 					"pathName": "pages/tabbar/ranking/ranking",
 					"query": "",
 					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "发现页",
+					"pathName": "pages/tabbar/find/find",
+					"scene": null
 				}
 			]
 		}

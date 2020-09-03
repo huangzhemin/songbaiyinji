@@ -1,0 +1,11 @@
+<!--components/taskComponents/findTaskList/findTaskList.wxml-->
+<block wx:for='{{taskList}}' wx:for-index="idx" wx:key="idx">
+  <pm-task-cell 
+    title='{{item.taskTitle}}'
+    desc='{{item.taskPlan.taskDesc}}'
+    status='{{item.status}}'
+    thumbImg='{{item.thumbImg}}'
+    location='task-all'>
+  </pm-task-cell>
+  <pm-splite-line wx:if="{{index < taskList.length - 1}}"></pm-splite-line>
+</block>

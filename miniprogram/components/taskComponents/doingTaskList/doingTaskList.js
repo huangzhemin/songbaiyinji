@@ -55,7 +55,6 @@ Component({
       var that = this;
       util.getCurrentUserTaskList({
         success: function(taskInfoRes) {
-
           for (const key in taskInfoRes.data) {
             if (taskInfoRes.data.hasOwnProperty(key)) {
               const element = taskInfoRes.data[key];
