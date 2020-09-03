@@ -35,7 +35,15 @@ Component({
     pubTime: {
       type: String,
       value: '创建时间',
-    }
+    },
+    taskUserOpenId: {
+      type: String,
+      value: '',
+    },
+    taskId: {
+      type: String,
+      value: '',
+    },
   },
 
   /**
@@ -114,13 +122,14 @@ Component({
         default:
           break;
       }
+      var that = this;
       wx.navigateTo({
         url: url,
         success: function(res) {
           // 通过eventChannel向被打开页面传送数据
           res.eventChannel.emit('acceptDataFromOpenerPage', { 
-            'openId': 'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
-            'taskId': 'task4',
+            'openId': that.properties.taskUserOpenId,//'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
+            'taskId': that.properties.taskId,// 'task4',
            })
         }
       })

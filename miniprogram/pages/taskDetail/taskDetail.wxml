@@ -53,4 +53,24 @@
       </block>
     </van-col>
   </van-row>
+
+  <van-cell title="显示分享面板" bind:click="onShareBtnClick" />
+  <van-share-sheet
+    show="{{ showShare }}"
+    title="立即分享给好友"
+    options="{{ options }}"
+    bind:select="onSharePannelSelect"
+    bind:close="onSharePannelClose"
+    open-type="share"
+  />
+
+  <!-- 修改放弃 -->
+  <van-row>
+    <van-col offset="3" span="8">
+      <van-button type="primary" plain size="large" bindtap="onSubmitClick">修改</van-button>
+    </van-col>
+    <van-col offset="2" span="8">
+      <van-button type="warning" plain size="large" bindtap="onCancelClick">放弃</van-button>
+    </van-col>
+  </van-row>
 </view>

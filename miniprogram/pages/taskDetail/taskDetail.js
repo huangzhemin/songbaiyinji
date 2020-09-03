@@ -65,7 +65,30 @@ Page({
   /**
    * 用户点击右上角分享
    */
-  onShareAppMessage: function () {
+  onShareAppMessage: function (res) {
+    console.log(res)
+    if (res.from === 'sharePannel') {
+      // 来自页面内转发按钮
+      console.log(res.target)
+    }
+    return {
+      title: this.data.taskTitle,
+      path: '/page/taskDetail/taskDetail'
+    }
+  },
+
+  onShareBtnClick: function(event) {
+    this.setData({ showShare: true });
+  },
+
+  onSharePannelClose: function(event) {
+    this.setData({ showShare: false });
+  },
+
+  onSharePannelSelect: function(event) {
+    let res = {from: "sharePannel", target:event.detail["icon"]};
+    this.onShareAppMessage(res);
+    this.onSharePannelClose();
   },
 
   chooseImage: function(event) {

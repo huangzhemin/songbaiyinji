@@ -8,7 +8,9 @@
     location='task-over'
     avatar='{{item.avatar}}'
     nickName='{{item.nickName}}'
-    pubTime='{{item.pubTime}}'>
+    pubTime='{{item.pubTime}}'
+    taskUserOpenId='{{item.openId}}'
+    taskId='{{item.taskId}}'>
   </pm-task-cell>
   <pm-splite-line wx:if="{{index < taskList.length - 1}}"></pm-splite-line>
 </block>
