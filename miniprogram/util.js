@@ -103,7 +103,7 @@ var getCurrentUserTaskList = function(event) {
     key: 'openid',
     success: (res => {
       taskInfo.where({
-        _openid: res.data // 填入当前用户 openid
+        openId: res.data // 填入当前用户 openid
       }).get({
         success: (taskInfoRes => {
           event.success(taskInfoRes)
@@ -119,7 +119,7 @@ var getCurrentUserInfo = function(event) {
     key: 'openid',
     success: (res => {
       userInfo.where({
-        _openid: res.data // 填入当前用户 openid
+        openId: res.data // 填入当前用户 openid
       }).get({
         success: (userInfoRes => {
           event.success(res.data, userInfoRes)
