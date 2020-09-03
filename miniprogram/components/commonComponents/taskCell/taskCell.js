@@ -105,7 +105,7 @@ Component({
             url = '/pages/taskDetail/taskDetail';
           } else {
             //其他人：传入openId与自身openId不同
-            if (false && userInfoRes.data[0]['canVote']) {
+            if (userInfoRes.data[0]['canVote']) {
               //具有投票权限的用户
               url = '/pages/voteDetail/voteDetail';
             } else {
