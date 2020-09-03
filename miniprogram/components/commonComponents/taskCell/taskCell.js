@@ -99,7 +99,7 @@ Component({
       util.getCurrentUserInfo({
         success: function(currentUserOpenId, userInfoRes) {
           //此处判断需要跳转的链接
-          //warning 记得改回来
+          //warning 
           if (currentUserOpenId == that.properties.taskUserOpenId) {
             //自身：传入的openId与自身openId是同一个
             url = '/pages/taskDetail/taskDetail';

@@ -59,31 +59,15 @@ Page({
     });
 
     var that = this;
-    this.uploadMedias({
-      success: function(res) {
-        for (const key in res) {
-          if (res.hasOwnProperty(key)) {
-            const element = res[key];
-            if (element['fileID'].match('plan_0')) {
-              that.data.thumbImg = element['fileID'];
-            }
-            that.data.taskMediaList.push(element['fileID']);
-          }
-        }
-        that.addTaskToDatabase({
-          success: function(res1) {
-            that.clearTaskContent();
-            wx.hideLoading();
-            wx.switchTab({
-              url: '/pages/tabbar/task/task',
-            })
-          }
+    this.addTaskToDatabase({
+      success: function(res1) {
+        that.clearTaskContent();
+        wx.hideLoading();
+        wx.switchTab({
+          url: '/pages/tabbar/task/task',
         })
-      },
-      fail: function(err) {
-        console.error(err);
       }
-    });
+    })
   },
 
   onCancelClick: function(event) {
@@ -94,11 +78,30 @@ Page({
     //在添加之前，需要使用当前用户已经创建的task数量，计算出当前的taskid
     let that = this;
     this.getTaskInfo({
-      success:function(res1) {
-        taskInfo.add({
-          data: util.convertInnerTaskToDatabaseTask(that.data),
-        }).then(res => {
-          event.success(res);
+      success:function(res) {
+        that.uploadMedias({
+          openId: that.data.openId,
+          taskId: that.data.taskId,
+          success: function(res1) {
+            for (const key in res1) {
+              if (res1.hasOwnProperty(key)) {
+                const element = res1[key];
+                if (element['fileID'].match('plan_0')) {
+                  that.data.thumbImg = element['fileID'];
+                }
+                that.data.taskMediaList.push(element['fileID']);
+              }
+            }
+
+            taskInfo.add({
+              data: util.convertInnerTaskToDatabaseTask(that.data),
+            }).then(res2 => {
+              event.success(res2);
+            });
+          },
+          fail: function(err) {
+            console.error(err);
+          }
         });
       }
     });
@@ -157,11 +160,15 @@ Page({
     this.data.promiseArr = [];
 
     this.uploadBatchMedia({
+      openId: event.openId,
+      taskId: event.taskId,
       uploadMediaList:this.data.taskPlan.uploadMediaList, 
       type:'plan',
     })
 
     this.uploadBatchMedia({
+      openId: event.openId,
+      taskId: event.taskId,
       uploadMediaList:this.data.taskComplete.uploadMediaList, 
       type:'complete',
     })
@@ -178,7 +185,7 @@ Page({
     for (var i = 0; i < uploadMediaList.length; i ++) {
       let promise = new Promise((resolve, reject) => {
         //此处后续需要优化为 openid + taskid + plan/complete + index
-        let userMediaCloudPath = 'openid_' + 'taskid_' + type + '_' + i.toString() + '.png'; //此处需要结合用户登录态的openid，随机函数也需要优化
+        let userMediaCloudPath = event.openId + '_' + event.taskId + '_' + type + '_' + i.toString() + '.png'; //此处需要结合用户登录态的openid，随机函数也需要优化
         wx.cloud.uploadFile({
           cloudPath: userMediaCloudPath,
           filePath: uploadMediaList[i],

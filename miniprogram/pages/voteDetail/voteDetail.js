@@ -63,7 +63,7 @@ Page({
       taskId: currentTaskId,
     }).get().then(res => {
       this.data.taskMediaList = res.data[0]['taskMediaList'];
-      let uploadMediaListDic = util.getUploadMediaList(this.data.taskMediaList);
+      let uploadMediaListDic = util.getUploadMediaList(currentOpenId, currentTaskId, this.data.taskMediaList); 
       this.setData({
         taskTitle: res.data[0]['taskTitle'],
         ['taskPlan.taskDesc']: res.data[0]['taskPlanDesc'],

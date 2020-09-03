@@ -11,5 +11,5 @@
     taskUserOpenId='{{item.openId}}'
     taskId='{{item.taskId}}'>
   </pm-task-cell>
-  <pm-splite-line wx:if="{{index < taskList.length - 1}}"></pm-splite-line>
+  <van-divider></van-divider>
 </block>

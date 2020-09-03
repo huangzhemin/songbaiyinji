@@ -10,7 +10,7 @@ Page({
    */
   data: {
     taskId: "",
-    status: 0,  //warning 此处不确定状态，需要读取 0、3、4三种状态
+    status: 0,
 
     taskTitle: "",
     taskPlan: {
@@ -49,7 +49,7 @@ Page({
       taskId: currentTaskId,
     }).get().then(res => {
       this.data.taskMediaList = res.data[0]['taskMediaList'];
-      let uploadMediaListDic = util.getUploadMediaList(this.data.taskMediaList);
+      let uploadMediaListDic = util.getUploadMediaList(currentOpenId, currentTaskId, this.data.taskMediaList);
       this.setData({
         taskTitle: res.data[0]['taskTitle'],
         status: res.data[0]['status'],
@@ -61,6 +61,14 @@ Page({
     }).then(res1 => {
       wx.hideLoading();
     });
+  },
+
+  onSubmitClick: function(event) {
+    console.log(event);
+  },
+
+  onCancelClick: function(event) {
+    console.log(event);
   },
 
   /**
