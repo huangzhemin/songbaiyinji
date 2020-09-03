@@ -16,6 +16,8 @@
         placeholder="请输入计划描述"
         autosize
         border="{{ true }}"
+        id="taskPlanDesc"
+        bind:input="onContentChange"
       />
     </van-col>
   </van-row>
@@ -50,6 +52,8 @@
         placeholder="请输入计划完成描述"
         autosize
         border="{{ true }}"
+        id="taskCompleteDesc"
+        bind:input="onContentChange"
       />
     </van-col>
   </van-row>

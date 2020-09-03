@@ -90,6 +90,10 @@ var addTaskToDatabase = function(event) {
   // });
 }
 
+var updateTaskToDatabase = function() {
+  
+}
+
 var getAllTaskList = function(event) {
   taskInfo.get({
     success:(taskInfoRes => {
