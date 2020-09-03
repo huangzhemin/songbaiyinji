@@ -96,7 +96,6 @@ Page({
     var that = this;
     this.updateTaskToDatabase({
       success: function(res) {
-        console.log(111111);
         that.clearTaskContent();
         wx.hideLoading();
         wx.navigateBack();
@@ -138,41 +137,35 @@ Page({
   updateTaskToDatabase: function(event) {
     var that = this;
     //先清理历史的taskMediaList，保证从当前的图片列表中，二次
-    this.data.taskMediaList = [];
-    this.uploadMedias({
-      openId: that.data.currentOpenId,
-      taskId: that.data.currentTaskId,
-      success: function(res) {
-        for (const key in res) {
-          if (res.hasOwnProperty(key)) {
-            const element = res[key];
-            if (element['fileID'].match('plan_0')) {
-              that.data.thumbImg = element['fileID'];
-            }
-            that.data.taskMediaList.push(element['fileID']);
-          }
-        }
-
-        // console.log(that.data);
-        // console.log(util.convertInnerTaskToDatabaseTask(that.data));
-
-        taskInfo.where({
+    this.getTaskInfo({
+      success:function(res) {
+        that.uploadMedias({
           openId: that.data.currentOpenId,
           taskId: that.data.currentTaskId,
-        }).update({
-          data: util.convertInnerTaskToDatabaseTask(that.data),
-        }).then(res1 => {
-          event.success(res1);
-        });
+          success: function(res) {
+            for (const key in res) {
+              if (res.hasOwnProperty(key)) {
+                const element = res[key];
+                if (element['fileID'].match('plan_0')) {
+                  that.data.thumbImg = element['fileID'];
+                }
+                that.data.taskMediaList.push(element['fileID']);
+              }
+            }
 
-        // taskInfo.add({
-        //   data: util.convertInnerTaskToDatabaseTask(that.data),
-        // }).then(res1 => {
-        //   event.success(res1);
-        // });
-      },
-      fail: function(err) {
-        console.error(err);
+            taskInfo.where({
+              openId: that.data.currentOpenId,
+              taskId: that.data.currentTaskId,
+            }).update({
+              data: util.convertInnerTaskToDatabaseTask(that.data),
+            }).then(res1 => {
+              event.success(res1);
+            });
+          },
+          fail: function(err) {
+            console.error(err);
+          }
+        });
       }
     });
   },
@@ -203,17 +196,21 @@ Page({
   uploadBatchMedia: function(event) {
     let type = event['type'];
     let uploadMediaList = event['uploadMediaList'];
-
-    console.log(type)
-    console.log(uploadMediaList)
-
+    
     for (var i = 0; i < uploadMediaList.length; i ++) {
+      //此处需要判断当前的filePath的前缀是否符合预期
+      let filePath = uploadMediaList[i];
+      if (filePath.match('cloud://')) {
+        //如果当前的filePath的前缀为cloud://，说明已经是fileId形式，跳过
+        //我们只需要关注前缀为http的文件并上传
+        continue;
+      }
       let promise = new Promise((resolve, reject) => {
         //此处后续需要优化为 openid + taskid + plan/complete + index
         let userMediaCloudPath = event.openId + '_' + event.taskId + '_' + type + '_' + i.toString() + '.png'; //此处需要结合用户登录态的openid，随机函数也需要优化
         wx.cloud.uploadFile({
           cloudPath: userMediaCloudPath,
-          filePath: uploadMediaList[i],
+          filePath: filePath,
         }).then(res => {
           // get resource ID
           resolve(res);
@@ -254,6 +251,25 @@ Page({
     let res = {from: "sharePannel", target:event.detail["icon"]};
     this.onShareAppMessage(res);
     this.onSharePannelClose();
+  },
+
+  //包含 taskId, avatar，nickName，pubTime
+  getTaskInfo: function(event) {
+    var that = this;
+    util.getCurrentUserTaskList({
+      success: function(taskInfoRes) {
+        that.data.taskId = that.data.currentTaskId;
+        util.getCurrentUserInfo({
+          success: function(openId, userInfoRes) {
+            that.data.openId = openId;
+            that.data.avatar = userInfoRes.data[0].avatarUrl;
+            that.data.nickName = userInfoRes.data[0].nickName;
+            that.data.pubTime = (new Date()).toLocaleTimeString();
+            event.success();
+          },
+        })
+      }
+    });
   },
 
   chooseImage: function (event) {
