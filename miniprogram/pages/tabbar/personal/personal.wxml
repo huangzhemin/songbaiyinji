@@ -1,4 +1,5 @@
 <!--miniprogram/pages/tabbar/personal/personal.wxml-->
+<van-icon class="msgEntrance" name="envelop-o" size="20px" bindtap="onMsgClick"/>
 <pm-personal-profile-cell 
   avatarUrl="{{userInfo.sdkUserInfo.avatarUrl}}" 
   nickName="{{userInfo.sdkUserInfo.nickName}}" 

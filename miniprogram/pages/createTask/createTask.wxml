@@ -90,12 +90,12 @@
   </van-col>
 </van-row>
 
-<!-- 提交放弃 -->
+<!-- 提交取消 -->
 <van-row>
   <van-col offset="3" span="8">
     <van-button type="primary" plain size="large" bindtap="onSubmitClick">提交</van-button>
   </van-col>
   <van-col offset="2" span="8">
-    <van-button type="warning" plain size="large" bindtap="onCancelClick">放弃</van-button>
+    <van-button type="warning" plain size="large" bindtap="onCancelClick">取消</van-button>
   </van-col>
 </van-row>

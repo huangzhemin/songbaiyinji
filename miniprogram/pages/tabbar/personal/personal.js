@@ -60,4 +60,11 @@ Page({
       }
     })
   },
+
+  // 跳转至消息页
+  onMsgClick: function(event) {
+    wx.navigateTo({
+      url: '/pages/msgDetail/msgDetail',
+    })
+  }
 })

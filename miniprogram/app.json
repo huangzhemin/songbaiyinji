@@ -10,7 +10,9 @@
     "pages/userDetail/userDetail",
     "pages/createTask/createTask",
     "pages/tcbRouterTest/tcbRouterTest",
-    "pages/test/test"
+    "pages/test/test",
+    "pages/tabbar/find/find",
+    "pages/msgDetail/msgDetail"
   ],
   "window": {
     "backgroundColor": "#F6F6F6",
@@ -55,16 +57,16 @@
     "backgroundColor": "#ffffff",
     "list": [
       {
+        "pagePath": "pages/tabbar/find/find",
+        "text": "发现",
+        "iconPath": "images/icon/find.png",
+        "selectedIconPath": "images/icon/findSelect.png"
+      },
+      {
         "pagePath": "pages/tabbar/task/task",
         "text": "任务",
         "iconPath": "images/icon/task.png",
         "selectedIconPath": "images/icon/taskSelect.png"
-      },
-      {
-        "pagePath": "pages/tabbar/guess/guess",
-        "text": "猜一猜",
-        "iconPath": "images/icon/guess.png",
-        "selectedIconPath": "images/icon/guessSelect.png"
       },
       {
         "pagePath": "pages/createTask/createTask",
