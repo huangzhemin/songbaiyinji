@@ -104,6 +104,11 @@ Page({
   },
 
   onCancelClick: function(event) {
+    //展示loadingview
+    wx.showLoading({
+      title: '上传中...',
+      mask: true,
+    });
     //退出当前页面，需要更新后退出
     //根据当前的用户openId 和 taskId，来定位更新的列表
     var that = this;
@@ -136,6 +141,8 @@ Page({
 
   updateTaskToDatabase: function(event) {
     var that = this;
+    //此处赋值任务状态，是继续进行，还是放弃
+    that.data.status = event.status;
     //先清理历史的taskMediaList，保证从当前的图片列表中，二次
     this.getTaskInfo({
       success:function(res) {
@@ -301,4 +308,11 @@ Page({
       console.error(err)
     })
   },
+
+  previewImage: function (event) {
+    wx.previewImage({
+      // current: '', // 当前显示图片的http链接
+      urls: this.data.taskMediaList // 需要预览的图片http链接列表
+    })
+  }
 })

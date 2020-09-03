@@ -222,7 +222,7 @@ Page({
   previewImage: function (event) {
     wx.previewImage({
       // current: '', // 当前显示图片的http链接
-      urls: this.data.taskPlanUploadMediaList // 需要预览的图片http链接列表
+      urls: this.data.taskMediaList // 需要预览的图片http链接列表
     })
   }
 })
