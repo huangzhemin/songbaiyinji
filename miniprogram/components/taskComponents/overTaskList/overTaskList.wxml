@@ -5,7 +5,10 @@
     desc='{{item.taskDesc}}'
     status='{{item.status}}'
     thumbImg='{{item.thumbImg}}'
-    location='task-over'>
+    location='task-over'
+    avatar='{{item.avatar}}'
+    nickName='{{item.nickName}}'
+    pubTime='{{item.pubTime}}'>
   </pm-task-cell>
   <pm-splite-line wx:if="{{index < taskList.length - 1}}"></pm-splite-line>
 </block>

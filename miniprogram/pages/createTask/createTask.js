@@ -26,6 +26,10 @@ Page({
     thumbImg: "",
     taskMediaList: [],
 
+    avatar: '',
+    nickName: '',
+    pubTime: '',
+
     promiseArr: [],
   },
 
@@ -88,7 +92,7 @@ Page({
   addTaskToDatabase: function(event) {
     //在添加之前，需要使用当前用户已经创建的task数量，计算出当前的taskid
     let that = this;
-    this.data.taskId = this.getTaskId({
+    this.data.taskId = this.getTaskInfo({
       success:function(res1) {
         taskInfo.add({
           data: util.convertInnerTaskToDatabaseTask(that.data),
@@ -99,13 +103,21 @@ Page({
     });
   },
 
-  getTaskId: function(event) {
+  //包含 taskId, avatar，nickName，pubTime
+  getTaskInfo: function(event) {
     var that = this;
     util.getCurrentUserTaskList({
       success: function(taskInfoRes) {
         console.log(taskInfoRes)
         that.data.taskId = 'task'+taskInfoRes.data.length;
-        event.success();
+        util.getCurrentUserInfo({
+          success: function(userInfoRes) {
+            that.data.avatar = userInfoRes.data[0].avatarUrl;
+            that.data.nickName = userInfoRes.data[0].nickName;
+            that.data.pubTime = (new Date()).toLocaleTimeString();
+            event.success();
+          },
+        })
       }
     });
   },

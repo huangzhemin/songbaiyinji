@@ -12,6 +12,9 @@ var convertInnerTaskToDatabaseTask = function(innerTaskData) {
     'taskCompleteDesc': innerTaskData['taskComplete']['taskDesc'],
     'taskMediaList': innerTaskData['taskMediaList'],
     'thumbImg': innerTaskData['thumbImg'],
+    'avatar': innerTaskData['avatar'],
+    'nickName': innerTaskData['nickName'],
+    'pubTime': innerTaskData['pubTime'],
   };
   // console.log(databaseTaskData);
   return databaseTaskData;
@@ -31,6 +34,9 @@ var convertDatabaseTaskToInnerTask = function(databaseTaskData) {
     },
     'taskMediaList': databaseTaskData['taskMediaList'],
     'thumbImg': databaseTaskData['thumbImg'],
+    'avatar': databaseTaskData['avatar'],
+    'nickName': databaseTaskData['nickName'],
+    'pubTime': databaseTaskData['pubTime'],
   };
   // console.log(innerTaskData);
   return innerTaskData;

@@ -27,11 +27,11 @@
         round
         width="50rpx"
         height="50rpx"
-        src="https://img.yzcdn.cn/vant/cat.jpeg"
+        src="{{avatar}}"
       />
     </van-col>
     <van-col span="22">
-      <view class='flagInfo'>昵称 创建时间</view>
+      <view class='flagInfo'>{{nickName}} {{pubTime}}</view>
     </van-col>
   </van-row>
 </view>

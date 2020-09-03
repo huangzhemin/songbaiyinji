@@ -23,6 +23,18 @@ Component({
     location: {
       type: String,
       value: '',
+    },
+    avatar: {
+      type: String,
+      value: '',
+    },
+    nickName: {
+      type: String,
+      value: '昵称',
+    },
+    pubTime: {
+      type: String,
+      value: '创建时间',
     }
   },
 
