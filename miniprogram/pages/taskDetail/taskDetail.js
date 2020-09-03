@@ -96,7 +96,6 @@ Page({
     var that = this;
     this.updateTaskToDatabase({
       success: function(res) {
-        that.clearTaskContent();
         wx.hideLoading();
         wx.navigateBack();
       }
@@ -115,28 +114,10 @@ Page({
     this.updateTaskToDatabase({
       status: 4,
       success: function(res) {
-        that.clearTaskContent();
         wx.hideLoading();
         wx.navigateBack();
       }
     })
-  },
-
-  clearTaskContent: function(event) {
-    this.setData({
-      taskTitle: '',
-      taskPlan: {
-        taskDesc: '',
-        uploadMediaList: '',
-        showUpload: true,
-      },
-      taskComplete: {
-        taskDesc: '',
-        uploadMediaList: '',
-        showUpload: true,
-      },
-      taskMediaList: [],
-    });
   },
 
   updateTaskToDatabase: function(event) {

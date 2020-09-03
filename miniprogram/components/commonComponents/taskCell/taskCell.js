@@ -100,12 +100,12 @@ Component({
         success: function(currentUserOpenId, userInfoRes) {
           //此处判断需要跳转的链接
           //warning 
-          if (currentUserOpenId == that.properties.taskUserOpenId) {
+          if ('currentUserOpenId' == that.properties.taskUserOpenId) {
             //自身：传入的openId与自身openId是同一个
             url = '/pages/taskDetail/taskDetail';
           } else {
             //其他人：传入openId与自身openId不同
-            if (userInfoRes.data[0]['canVote']) {
+            if (false && userInfoRes.data[0]['canVote']) {
               //具有投票权限的用户
               url = '/pages/voteDetail/voteDetail';
             } else {
