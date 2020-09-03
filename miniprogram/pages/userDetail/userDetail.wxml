@@ -6,8 +6,7 @@
   userPoints="{{userInfo.customUserInfo.userPoints}}">
 </pm-personal-profile-cell>
 <pm-space-line></pm-space-line>
-<!-- 此处需要添加location判断逻辑 -->
+
 <pm-user-detail-task-list
-  taskList='{{taskList}}'
-  location='user-detail'>
+  taskList='{{taskList}}'>
 </pm-user-detail-task-list>

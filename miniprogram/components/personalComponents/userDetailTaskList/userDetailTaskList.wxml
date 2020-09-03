@@ -6,7 +6,6 @@
     desc='{{item.taskDesc}}'
     status='{{item.status}}'
     thumbImg='{{item.thumbImg}}'
-    location='{{location}}'
     avatar='{{item.avatar}}'
     nickName='{{item.nickName}}'
     pubTime='{{item.pubTime}}'>

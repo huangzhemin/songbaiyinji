@@ -64,6 +64,21 @@
     open-type="share"
   />
 
+  <!-- 支持中立反对 -->
+  <van-row>
+    <van-col offset="1" span="6">
+      <van-button type="primary" plain size="large">支持</van-button>
+    </van-col>
+    <van-col offset="2" span="6">
+      <van-button type="warning" plain size="large">中立</van-button>
+    </van-col>
+    <van-col offset="2" span="6">
+      <van-button type="danger" plain size="large">反对</van-button>
+    </van-col>
+  </van-row>
+
+  <pm-space-line></pm-space-line>
+
   <!-- 完成失败 -->
   <van-row>
     <van-col offset="3" span="8">

@@ -1,3 +1,5 @@
+const util = require("../../../util");
+
 // components/personalComponents/taskCell/taskCell.js
 Component({
   /**
@@ -19,10 +21,6 @@ Component({
     status: {
       type: Number,
       value: 0,
-    },
-    location: {
-      type: String,
-      value: '',
     },
     avatar: {
       type: String,
@@ -61,13 +59,6 @@ Component({
       });
     }
   },
-  
-  // onShareAppMessage() {
-  //   return {
-  //     title: 'cover-view',
-  //     path: 'page/component/pages/cover-view/cover-view'
-  //   }
-  // },
 
   /**
    * 组件的方法列表
@@ -104,35 +95,38 @@ Component({
 
     onClick(event) {
       var url = '/pages/taskDetail/taskDetail';
-      //warning 此处需要跟进具体的用户情况来判断进入页面
-      switch (this.properties.location) {
-        case 'user-personal':
-        case 'user-detail':
-        case 'task-all':
-        case 'task-doing':
-        case 'task-over':
-          url = '/pages/taskDetail/taskDetail';
-          break;
-        case 'task-guess':
-          url = '/pages/guessDetail/guessDetail';
-          break;
-        case 'task-vote':
-          url = '/pages/voteDetail/voteDetail';
-          break;
-        default:
-          break;
-      }
       var that = this;
-      wx.navigateTo({
-        url: url,
-        success: function(res) {
-          // 通过eventChannel向被打开页面传送数据
-          res.eventChannel.emit('acceptDataFromOpenerPage', { 
-            'openId': that.properties.taskUserOpenId,   //类似'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
-            'taskId': that.properties.taskId,           //类似'task0','task1'
-           })
-        }
-      })
+      util.getCurrentUserInfo({
+        success: function(currentUserOpenId, userInfoRes) {
+          //此处判断需要跳转的链接
+          //warning 记得改回来
+          if (currentUserOpenId == that.properties.taskUserOpenId) {
+            //自身：传入的openId与自身openId是同一个
+            url = '/pages/taskDetail/taskDetail';
+          } else {
+            //其他人：传入openId与自身openId不同
+            if (userInfoRes.data[0]['canVote']) {
+              //具有投票权限的用户
+              url = '/pages/voteDetail/voteDetail';
+            } else {
+              //普通用户
+              url = '/pages/guessDetail/guessDetail';
+            }
+          }
+          //跳转逻辑
+          wx.navigateTo({
+            url: url,
+            success: function(res) {
+              // 通过eventChannel向被打开页面传送数据
+              res.eventChannel.emit('acceptDataFromOpenerPage', { 
+                'openId': that.properties.taskUserOpenId,   //类似'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
+                'taskId': that.properties.taskId,           //类似'task0','task1'
+               })
+            }
+          })
+        },
+       }
+      );
     }
   }
 })

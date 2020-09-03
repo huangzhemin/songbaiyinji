@@ -8,10 +8,6 @@ Component({
       type: Array,
       value: [],
     },
-    location: {
-      type: String,
-      value: '',
-    }
   },
 
   /**
