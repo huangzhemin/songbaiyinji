@@ -81,6 +81,16 @@ var getUploadMediaList = function(taskMediaList) {
   }; 
 }
 
+var addTaskToDatabase = function(event) {
+  console.log(event);
+  // taskInfo.add({
+  //   data: this.convertInnerTaskToDatabaseTask(that.data),
+  //   success:(res => {
+  //     event.success(res);
+  //   })
+  // });
+}
+
 var getAllTaskList = function(event) {
   taskInfo.get({
     success:(taskInfoRes => {
@@ -119,7 +129,7 @@ var getCurrentUserInfo = function(event) {
     key: 'openid',
     success: (res => {
       userInfo.where({
-        openId: res.data // 填入当前用户 openid
+        _openid: res.data // 填入当前用户 openid
       }).get({
         success: (userInfoRes => {
           event.success(res.data, userInfoRes)
@@ -134,6 +144,7 @@ module.exports={
   convertDatabaseTaskToInnerTask: convertDatabaseTaskToInnerTask,
   batchConvertDatabaseTaskToInnerTask: batchConvertDatabaseTaskToInnerTask,
   getUploadMediaList: getUploadMediaList,
+  addTaskToDatabase: addTaskToDatabase,
   getAllTaskList: getAllTaskList,
   getCurrentUserOpenId: getCurrentUserOpenId,
   getCurrentUserTaskList: getCurrentUserTaskList,

@@ -63,6 +63,7 @@ App({
       console.log(userInfoRes.userInfo);
       //在写入之前需要先查询用户数据，是否存在
       //此处需要写入用户数据
+      
       userInfo.add({
         data: userInfoRes.userInfo
       }).then( userInfoDatabaseRes => {

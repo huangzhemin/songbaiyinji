@@ -1,8 +1,5 @@
-const util = require("../../../util")
-
 // miniprogram/pages/tabbar/personal/personal.js
-const db = wx.cloud.database()
-const userInfo = db.collection('userInfo')
+const util = require("../../../util")
 
 Page({
 

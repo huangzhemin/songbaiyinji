@@ -93,7 +93,7 @@ Page({
   addTaskToDatabase: function(event) {
     //在添加之前，需要使用当前用户已经创建的task数量，计算出当前的taskid
     let that = this;
-    this.data.taskId = this.getTaskInfo({
+    this.getTaskInfo({
       success:function(res1) {
         taskInfo.add({
           data: util.convertInnerTaskToDatabaseTask(that.data),
