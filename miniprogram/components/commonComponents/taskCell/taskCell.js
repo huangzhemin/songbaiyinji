@@ -128,8 +128,8 @@ Component({
         success: function(res) {
           // 通过eventChannel向被打开页面传送数据
           res.eventChannel.emit('acceptDataFromOpenerPage', { 
-            'openId': that.properties.taskUserOpenId,//'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
-            'taskId': that.properties.taskId,// 'task4',
+            'openId': that.properties.taskUserOpenId,   //类似'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
+            'taskId': that.properties.taskId,           //类似'task0','task1'
            })
         }
       })
