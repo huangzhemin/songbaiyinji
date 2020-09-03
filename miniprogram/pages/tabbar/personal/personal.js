@@ -8,32 +8,47 @@ Page({
    */
   data: {
     openId: '',
-    taskList: [
-    ],
+    taskList: [],
     userInfo: {
       sdkUserInfo: {
-        avatarUrl: 'https://b.yzcdn.cn/vant/icon-demo-1126.png',
-        nickName: '小黄',
+        avatarUrl: '',
+        nickName: '',
       },
       customUserInfo: {
-        userRanking: '1',
-        userPoints: '100',
+        userRanking: '',
+        userPoints: '',
       },
     },
   },
 
   onLoad: function(options) {
     // Do some initialize when page load.
+    wx.showLoading({
+      title: '加载中...',
+    })
+
     var that = this;
     util.getCurrentUserInfo({
       success: function(openId, userInfoRes) {
         let currentUserInfo = userInfoRes.data[0];
-        that.setData({
+        util.getCurrentUserTaskList({
           openId: openId,
-          ['userInfo.sdkUserInfo.avatarUrl']: currentUserInfo['avatarUrl'],
-          ['userInfo.sdkUserInfo.nickName']: currentUserInfo['nickName'],
-          ['userInfo.customUserInfo.userRanking']: currentUserInfo['userRanking'],
-          ['userInfo.customUserInfo.userPoints']: currentUserInfo['userPoints'],
+          success: function(taskInfoRes) {
+            console.log(userInfoRes);
+            console.log(taskInfoRes);
+            that.setData({
+              //当前用户的openId
+              openId: openId, 
+              //用户头像数据
+              ['userInfo.sdkUserInfo.avatarUrl']: currentUserInfo['avatarUrl'],
+              ['userInfo.sdkUserInfo.nickName']: currentUserInfo['nickName'],
+              ['userInfo.customUserInfo.userRanking']: 1,//currentUserInfo['userRanking'], warning 此处需要在计算排名之后，做赋值
+              ['userInfo.customUserInfo.userPoints']: 100,//currentUserInfo['userPoints'],
+              //用户任务列表数据
+              taskList: util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data),
+            })
+            wx.hideLoading();
+          }
         })
       },
       fail: function(err) {

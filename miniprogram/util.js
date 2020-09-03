@@ -109,18 +109,28 @@ var getCurrentUserOpenId = function(event) {
 }
 
 var getCurrentUserTaskList = function(event) {
-  wx.getStorage({
-    key: 'openid',
-    success: (res => {
-      taskInfo.where({
-        openId: res.data // 填入当前用户 openid
-      }).get({
-        success: (taskInfoRes => {
-          event.success(taskInfoRes)
-        })
+  if (event.openId) {
+    taskInfo.where({
+      openId: event.openId // 填入当前用户 openid
+    }).get({
+      success: (taskInfoRes => {
+        event.success(taskInfoRes)
       })
     })
-  });
+  } else {
+    wx.getStorage({
+      key: 'openid',
+      success: (res => {
+        taskInfo.where({
+          openId: res.data // 填入当前用户 openid
+        }).get({
+          success: (taskInfoRes => {
+            event.success(taskInfoRes)
+          })
+        })
+      })
+    });
+  }
 }
 
 //返回用户的openId 及 当前用户的其他信息

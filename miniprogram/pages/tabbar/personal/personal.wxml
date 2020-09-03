@@ -1,14 +1,17 @@
 <!--miniprogram/pages/tabbar/personal/personal.wxml-->
-<van-icon class="msgEntrance" name="envelop-o" size="20px" bindtap="onMsgClick"/>
-<pm-personal-profile-cell 
-  avatarUrl="{{userInfo.sdkUserInfo.avatarUrl}}" 
-  nickName="{{userInfo.sdkUserInfo.nickName}}" 
-  userRanking="{{userInfo.customUserInfo.userRanking}}" 
-  userPoints="{{userInfo.customUserInfo.userPoints}}">
-</pm-personal-profile-cell>
-<pm-space-line></pm-space-line>
-<!-- 此处需要添加location判断逻辑 -->
-<pm-user-detail-task-list
-  taskList='{{taskList}}'
-  location='user-personal'>
-</pm-user-detail-task-list>
+<view wx:if="{{userInfo.sdkUserInfo.avatarUrl}}">
+  <van-icon class="msgEntrance" name="envelop-o" size="20px" bindtap="onMsgClick"/>
+  <pm-personal-profile-cell 
+    avatarUrl="{{userInfo.sdkUserInfo.avatarUrl}}" 
+    nickName="{{userInfo.sdkUserInfo.nickName}}" 
+    userRanking="{{userInfo.customUserInfo.userRanking}}" 
+    userPoints="{{userInfo.customUserInfo.userPoints}}">
+  </pm-personal-profile-cell>
+  <pm-space-line></pm-space-line>
+  <!-- 此处需要添加location判断逻辑 -->
+  <pm-user-detail-task-list
+    taskList='{{taskList}}'
+    location='user-personal'>
+  </pm-user-detail-task-list>
+</view>
+
