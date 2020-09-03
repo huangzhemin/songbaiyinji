@@ -65,7 +65,7 @@
   />
 
   <!-- 修改放弃 -->
-  <van-row>
+  <van-row wx:if="{{status==0}}">
     <van-col offset="3" span="8">
       <van-button type="primary" plain size="large" bindtap="onSubmitClick">修改</van-button>
     </van-col>

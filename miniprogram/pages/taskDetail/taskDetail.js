@@ -50,8 +50,10 @@ Page({
     }).get().then(res => {
       this.data.taskMediaList = res.data[0]['taskMediaList'];
       let uploadMediaListDic = util.getUploadMediaList(this.data.taskMediaList);
+      console.log(res.data);
       this.setData({
         taskTitle: res.data[0]['taskTitle'],
+        status: res.data[0]['status'],
         ['taskPlan.taskDesc']: res.data[0]['taskPlanDesc'],
         ['taskPlan.uploadMediaList']: uploadMediaListDic['taskPlan'],
         ['taskComplete.taskDesc']: res.data[0]['taskCompleteDesc'],
