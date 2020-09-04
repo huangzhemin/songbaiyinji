@@ -108,7 +108,7 @@ Component({
                 'openId': that.properties.taskUserOpenId,   //类似'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
                 'taskId': that.properties.taskId,           //类似'task0','task1'
                 'canJudge': userInfoRes.data[0]['canJudge'],  //判断是否可以裁定，志愿者可裁定、普通用户只支持投票
-                'isSelf': currentUserOpenId == that.properties.taskUserOpenId,  //自身：传入的openId与自身openId是同一个
+                'isSelf': false,//currentUserOpenId == that.properties.taskUserOpenId,  //自身：传入的openId与自身openId是同一个
                })
             }
           })

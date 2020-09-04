@@ -17,7 +17,6 @@ var convertInnerTaskToDatabaseTask = function(innerTaskData) {
     'nickName': innerTaskData['nickName'],
     'pubTime': innerTaskData['pubTime'],
     'supportUserList': innerTaskData['supportUserList'],
-    'neutralUserList': innerTaskData['neutralUserList'],
     'opposeUserList': innerTaskData['opposeUserList'],
   };
   // console.log(databaseTaskData);
@@ -43,7 +42,6 @@ var convertDatabaseTaskToInnerTask = function(databaseTaskData) {
     'nickName': databaseTaskData['nickName'],
     'pubTime': databaseTaskData['pubTime'],
     'supportUserList': databaseTaskData['supportUserList'],
-    'neutralUserList': databaseTaskData['neutralUserList'],
     'opposeUserList': databaseTaskData['opposeUserList'],
   };
   // console.log(innerTaskData);

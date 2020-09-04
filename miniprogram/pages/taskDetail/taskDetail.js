@@ -167,20 +167,7 @@ Page({
               title: '您已支持过',
             });
           }
-        } else if (targetId == 'neutral') {
-          //中立不做任何操作，后续可以做一些通知操作
-          if (that.data.neutralUserList.indexOf(openId) == -1) {
-            that.data.neutralUserList.push(openId);
-            guessSuccess = true;
-            wx.showLoading({
-              title: '中立成功...',
-            });
-          } else {
-            wx.showToast({
-              title: '您已中立过',
-            });
-          }
-        } else if (target == 'oppose') {
+        } else if (targetId == 'oppose') {
           //如果反对的话，将当前用户的openId，加入到反对数据列表
           if (that.data.opposeUserList.indexOf(openId) == -1) {
             that.data.opposeUserList.push(openId);
