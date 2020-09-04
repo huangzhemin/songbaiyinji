@@ -30,7 +30,6 @@ Page({
     var that = this;
     util.getCurrentUserInfo({
       success: function(openId, userInfoRes) {
-        console.log('11111')
         let currentUserInfo = userInfoRes.data[0];
         that.p_refreshPersonalPage(openId, currentUserInfo);
       },
