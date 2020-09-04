@@ -22,7 +22,7 @@ Page({
   },
 
   onLoad: function(options) {
-    // Do some initialize when page load.
+    // // Do some initialize when page load.
     wx.showLoading({
       title: '加载中...',
     })
@@ -30,31 +30,46 @@ Page({
     var that = this;
     util.getCurrentUserInfo({
       success: function(openId, userInfoRes) {
+        console.log('11111')
         let currentUserInfo = userInfoRes.data[0];
-        util.getCurrentUserTaskList({
-          openId: openId,
-          success: function(taskInfoRes) {
-            console.log(userInfoRes);
-            console.log(taskInfoRes);
-            that.setData({
-              //当前用户的openId
-              openId: openId, 
-              //用户头像数据
-              ['userInfo.sdkUserInfo.avatarUrl']: currentUserInfo['avatarUrl'],
-              ['userInfo.sdkUserInfo.nickName']: currentUserInfo['nickName'],
-              ['userInfo.customUserInfo.userRanking']: 1,//currentUserInfo['userRanking'], warning 此处需要在计算排名之后，做赋值
-              ['userInfo.customUserInfo.userPoints']: 100,//currentUserInfo['userPoints'],
-              //用户任务列表数据
-              taskList: util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data),
-            })
-            wx.hideLoading();
-          }
-        })
+        that.p_refreshPersonalPage(openId, currentUserInfo);
       },
       fail: function(err) {
-        console.error(err)
+        console.error(err);
+        wx.showToast({
+          title: '请登录',
+        })
+        wx.hideLoading();
       }
     })
+  },
+
+  refreshPersonalPage: function(event) {
+    this.p_refreshPersonalPage(event.detail.openId, event.detail.userInfo);
+  },
+
+  p_refreshPersonalPage: function(openId, userInfo) {
+    let currentUserInfo = userInfo;
+    let that = this;
+    util.getCurrentUserTaskList({
+      openId: openId,
+      success: function(taskInfoRes) {
+        // console.log(currentUserInfo);
+        // console.log(taskInfoRes);
+        that.setData({
+          //当前用户的openId
+          openId: openId,
+          //用户头像数据
+          ['userInfo.sdkUserInfo.avatarUrl']: currentUserInfo['avatarUrl'],
+          ['userInfo.sdkUserInfo.nickName']: currentUserInfo['nickName'],
+          ['userInfo.customUserInfo.userRanking']: 1,//currentUserInfo['userRanking'], warning 此处需要在计算排名之后，做赋值
+          ['userInfo.customUserInfo.userPoints']: 100,//currentUserInfo['userPoints'],
+          //用户任务列表数据
+          taskList: util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data),
+        })
+        wx.hideLoading();
+      }
+    });
   },
 
   // 跳转至消息页

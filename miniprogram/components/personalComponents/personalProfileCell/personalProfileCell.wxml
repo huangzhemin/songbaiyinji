@@ -3,15 +3,31 @@
 <view>
   <view class="flex-wrp">
     <!-- <image class="avatar" src="{{(currentLoginUserData && currentLoginUserData.avatarUrl.length != 0) ? currentLoginUserData.avatarUrl : defaultAvatar}}" bind:tap="onClick"></image> -->
-    <van-image
-      class="avatar"
-      round
-      width="5rem"
-      height="5rem"
-      src="{{avatarUrl}}"
-      bind:tap="onClick"
-    />
-    <view class="name">{{nickName}}</view>
+    <block wx:if='{{avatarUrl.length==0}}'>
+      <button 
+        open-type="getUserInfo"
+        bindgetuserinfo="getUserInfo">
+        <van-image
+        class="avatar"
+        round
+        width="5rem"
+        height="5rem"
+        src="https://b.yzcdn.cn/vant/icon-demo-1126.png"
+      />
+    </button>
+      <view class="name">点击头像登录</view>
+    </block>
+    <block wx:else>
+      <van-image
+        class="avatar"
+        round
+        width="5rem"
+        height="5rem"
+        src="{{avatarUrl}}"
+      />
+      <view class="name">{{nickName}}</view>
+    </block>
+
     <block wx:if="{{avatarUrl && avatarUrl.length != 0}}">
       <view class="rankingAndPoints">第{{userRanking}}名 {{userPoints}}积分</view>
     </block>

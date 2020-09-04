@@ -2,6 +2,7 @@
 const db = wx.cloud.database()
 const userInfo = db.collection('userInfo')
 var config = require('../../../config.js')
+const util = require('../../../util.js')
 
 Component({
   /**
@@ -34,106 +35,110 @@ Component({
     nickName: '',
     userRanking: '',
     userPoints: '',
+
+    currentOpenId: '',
   },
 
   /**
    * 组件的方法列表
    */
   methods: {
-    onClick(event) {
-      // this.logout();
-      // return;
+  
+    getUserInfo:function(event) {
+      //获取用户的授权情况
       wx.getSetting({
         withSubscriptions: true,
         success: (result) => {
+          wx.showLoading({
+            title: '登录中..',
+          })
           //此处需要判断是否已经获取到用户登录权限
-          if (!result.authSetting['scope.userInfo']) {
-            //此时未授权，需要询问用户获取授权
-            wx.authorize({
-              scope: 'scope.userInfo',
-            }).then(res => {
-              //此时成功授权
-              console.log('authorize success');
-              this.getUserAuth();
-            }).catch(err => {
-              //授权失败
-              console.error(err);
-              //此处没有必要跳转到授权页，直接弹出弹窗即可
-              wx.showToast({
-                title: '需要登录才可查看',
-                icon: 'fail',
-                duration: 2000
-              })
-            })
+          //userInfo只能在getUserInfo中输出
+          if (result.authSetting['scope.userInfo']) {
+            console.log('user has Authorize and login');
+            this.userHasAuthorize(event.detail.userInfo);
           } else {
-            //此时已授权，则直接跳转用户个人信息底层页，1.0版本先禁掉跳转
-            // wx.navigateTo({
-            //   url: '/pages/userDetail/userDetail',
-            // })
-            console.log('user has login');
+            console.log('user no Authorize');
+            this.getUserAuthorize(event.detail.userInfo);
           }
         }
       })
     },
 
-    getUserAuth: function() {
-      wx.showLoading({
-        title: '加载中',
-      })
-      wx.getUserInfo({
-      }).then(userInfoRes => {
-        //获取用户信息成功
-        // console.log(userInfoRes.userInfo);
-        //此处需要写入用户数据
-        userInfo.add({
-          data: userInfoRes.userInfo
-        }).then( userInfoDatabaseRes => {
-          console.log(userInfoDatabaseRes);
-        }).catch(err => {
-          console.error(err)
+    userHasAuthorize:function(latestUserInfo) {
+      //此时已授权，则拉取用户的登录数据，检查是否需要 写入或者更新数据库
+      var that = this;
+      this.writeLocalStorage({
+        success: function(openId) {
+          latestUserInfo['openId'] = openId;
+          that.getUserAuth(openId, latestUserInfo);
+        },
+      });
+    },
+
+    getUserAuthorize:function(openId, latestUserInfo) {
+      //此时未授权，需要询问用户获取授权
+      wx.authorize({
+        scope: 'scope.userInfo',
+      }).then(res => {
+        //此时成功授权
+        console.log('authorize success');
+        //授权成功后第一步操作，使用云函数，请求用户对应的openId，该openId是用户的唯一标记
+        that.writeLocalStorage({
+          success: function(openId) {
+            that.getUserAuth(openId);
+          },
+        });
+      }).catch(err => {
+        //授权失败
+        console.error(err);
+        //此处没有必要跳转到授权页，直接弹出弹窗即可
+        wx.showToast({
+          title: '需要登录才可查看',
+          icon: 'fail',
+          duration: 2000
         })
-        console.log(userInfoRes)
-        // if (userInfoRes.encryptedData && userInfoRes.iv) {
-          // wx.login({
-          // }).then(loginRes => {
-          //   //将用户基本信息回传给服务器，并获取access_token
-          //   console.log(loginRes);
-            // if (loginRes.code) {
-            //   wx.request({
-            //     url: 'https://test.com/onLogin',
-            //     data: {
-            //       code: loginRes.code
-            //     }
-            //   })
-            // } else {
-            //   console.log('登录失败！' + loginRes.errMsg)
-            // }
-            //   console.log(config.getBaseUrl);
-            //   wx.request({
-            //     url: config.getBaseUrl + '/auth/api/token',
-            //     method: 'POST',
-            //     data: {
-            //         code: res.code,
-            //         encryptedData: this.globalData.encryptedData,
-            //         iv: this.globalData.iv
-            //     },
-            //     header: {
-            //       'accept': 'application/json'
-            //     },
-            //   }).then(res => {
-            //     //输出access_token
-            //     let authorizationValue = res.data.access_token;
-            //     console.log(authorizationValue);
-            //     if (authorizationValue) {
-            //       wx.hideLoading();
-            //     }
-            //   })
-            // } else {
-            //   console.log("123");
-            // }
-          // })
-        // }
       })
+    },
+
+    getUserAuth: function(openId, latestUserInfo) {
+      //此处判断用户是否在数据库中，如果在的话，则直接读取，不在的话，则需要写入
+      var that = this;
+      util.getCurrentUserInfo({
+        openId: openId,
+        success: function(currentOpenId, remoteUserInfo) {
+          util.uploadUserInfoToDatabase({
+            openId: remoteUserInfo.data.length > 0 ?currentOpenId : '',
+            data: latestUserInfo,
+            success: function(userInfoDatabaseRes) {
+              //通过用户信息，刷新页面
+              //这里不再刷新子组件，而是交由page对页面进行刷新
+              that.triggerEvent('refreshPersonalPageEvent', {'openId': currentOpenId, 'userInfo': latestUserInfo});
+              //隐藏loadingView
+              wx.hideLoading();
+            },
+            fail: function(err) {
+              console.error(err)
+            }
+          });
+        }
+      });
+    },
+
+    writeLocalStorage: function(event) {
+      wx.cloud.callFunction({
+        // 要调用的云函数名称
+        name: "login",
+      }).then(loginRes =>{
+        //这里当前js持有一份
+        this.data.currentOpenId = loginRes['result']['openid'];
+        //写入到磁盘一份，方便下次启动时读取
+        wx.setStorage({
+          key:'openid',
+          data:loginRes['result']['openid'],          
+        })
+        event.success(this.data.currentOpenId);
+      });
     }
-  }
+  },
 })

@@ -1,16 +1,26 @@
 <!--miniprogram/pages/tabbar/personal/personal.wxml-->
-<view wx:if="{{userInfo.sdkUserInfo.avatarUrl}}">
-  <van-icon class="msgEntrance" name="envelop-o" size="20px" bindtap="onMsgClick"/>
-  <pm-personal-profile-cell 
+<view>
+  <van-icon 
+    wx:if='{{userInfo.sdkUserInfo.avatarUrl}}' 
+    class="msgEntrance" 
+    name="envelop-o" 
+    size="20px" 
+    bindtap="onMsgClick"/>
+
+  <pm-personal-profile-cell
+    bind:refreshPersonalPageEvent="refreshPersonalPage"
     avatarUrl="{{userInfo.sdkUserInfo.avatarUrl}}" 
     nickName="{{userInfo.sdkUserInfo.nickName}}" 
     userRanking="{{userInfo.customUserInfo.userRanking}}" 
     userPoints="{{userInfo.customUserInfo.userPoints}}">
   </pm-personal-profile-cell>
   <pm-space-line></pm-space-line>
-  
-  <pm-user-detail-task-list
-    taskList='{{taskList}}'>
-  </pm-user-detail-task-list>
+
+  <block wx:if='{{userInfo.sdkUserInfo.avatarUrl}}'>
+    <pm-user-detail-task-list
+      taskList='{{taskList}}'>
+    </pm-user-detail-task-list>
+  </block>
+
 </view>
 

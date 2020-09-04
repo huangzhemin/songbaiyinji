@@ -86,6 +86,31 @@ var getUploadMediaList = function(openId, taskId, taskMediaList) {
   }; 
 }
 
+//更新当前数据库中的用户数据，如果携带openId，则update，未携带add添加
+var uploadUserInfoToDatabase = function(event) {
+  if (event.openId) {
+    //如果数据库中已经有存储，则直接更新数据库
+    userInfo.where({
+      _openid: event.openId,
+    }).update({
+      data: event.data,
+    }).then(userInfoDatabaseRes => {
+      event.success(userInfoDatabaseRes);
+    }).catch(err => {
+      event.fail(err);
+    });
+  } else {
+    // 如果数据库没有数据，则添加数据
+    userInfo.add({
+      data: event.data,
+    }).then( userInfoDatabaseRes => {
+      event.success(userInfoDatabaseRes);
+    }).catch(err => {
+      event.fail(err);
+    })
+  }
+}
+
 var addTaskToDatabase = function(event) {
   // console.log(event);
   // taskInfo.add({
@@ -144,18 +169,34 @@ var getCurrentUserTaskList = function(event) {
 
 //返回用户的openId 及 当前用户的其他信息
 var getCurrentUserInfo = function(event) {
-  wx.getStorage({
-    key: 'openid',
-    success: (res => {
-      userInfo.where({
-        _openid: res.data // 填入当前用户 openid
-      }).get({
-        success: (userInfoRes => {
-          event.success(res.data, userInfoRes)
-        })
+  if (event.openId) {
+    userInfo.where({
+      _openid: event.openId
+    }).get({
+      success: (userInfoRes => {
+        event.success(event.openId, userInfoRes)
       })
-    })
-  });
+    });
+  } else {
+    wx.getStorage({
+      key: 'openid',
+      success: (res => {
+        userInfo.where({
+          _openid: res.data // 填入当前用户 openid
+        }).get({
+          success: (userInfoRes => {
+            event.success(res.data, userInfoRes)
+          }),
+          fail: (err => {
+            event.fail(err);
+          }),
+        })
+      }),
+      fail: (err => {
+        event.fail(err);
+      })
+    });
+  }
 }
 
 module.exports={
@@ -163,6 +204,7 @@ module.exports={
   convertDatabaseTaskToInnerTask: convertDatabaseTaskToInnerTask,
   batchConvertDatabaseTaskToInnerTask: batchConvertDatabaseTaskToInnerTask,
   getUploadMediaList: getUploadMediaList,
+  uploadUserInfoToDatabase: uploadUserInfoToDatabase,
   addTaskToDatabase: addTaskToDatabase,
   getAllTaskList: getAllTaskList,
   getCurrentUserOpenId: getCurrentUserOpenId,
