@@ -2,23 +2,67 @@
 <!-- 计划标题 -->
 <view wx:if="{{taskTitle}}">
   <van-row>
-    <van-col class='taskTitle' span="24" >{{taskTitle}}</van-col>
+    <van-col class='taskTitle' span="24" >
+      <!-- 如果是自己 而且 当前状态是进行中 则可修改 -->
+      <block wx:if='{{isSelf && status==0}}' >
+        <van-field
+          value="{{ taskTitle }}"
+          label="计划标题"
+          type="textarea"
+          placeholder="请输入计划标题"
+          autosize
+          border="{{ true }}"
+          id="taskTitle"
+          bind:input="onContentChange"
+        />
+      </block>
+      <!-- 否则不可修改 -->
+      <block wx:else>
+        <van-field
+          value="{{ taskTitle }}"
+          label="计划标题"
+          type="textarea"
+          placeholder="请输入计划标题"
+          autosize
+          readonly
+          border="{{ true }}"
+          id="taskTitle"
+          bind:input="onContentChange"
+        />
+      </block>
+    </van-col>
   </van-row>
 
   <!-- 计划资料描述部分 -->
   <!-- autosize 这里要研究研究  -->
   <van-row>
     <van-col class='taskPlanDesc' span="24">
-      <van-field
-        value="{{ taskPlan.taskDesc }}"
-        label="计划描述"
-        type="textarea"
-        placeholder="请输入计划描述"
-        autosize
-        border="{{ true }}"
-        id="taskPlanDesc"
-        bind:input="onContentChange"
-      />
+      <!-- 如果是自己 而且 当前状态是进行中 则可修改 -->
+      <block wx:if='{{isSelf && status==0}}' >
+        <van-field
+          value="{{ taskPlan.taskDesc }}"
+          label="计划描述"
+          type="textarea"
+          placeholder="请输入计划描述"
+          autosize
+          border="{{ true }}"
+          id="taskPlanDesc"
+          bind:input="onContentChange"
+        />
+      </block>
+      <block wx:else>
+        <van-field
+          value="{{ taskPlan.taskDesc }}"
+          label="计划描述"
+          type="textarea"
+          placeholder="请输入计划描述"
+          autosize
+          readonly
+          border="{{ true }}"
+          id="taskPlanDesc"
+          bind:input="onContentChange"
+        />
+      </block>
     </van-col>
   </van-row>
 
@@ -33,28 +77,47 @@
       <block wx:for="{{taskPlan.uploadMediaList}}" wx:for-index="idx" wx:key="idx">
         <van-image width="100" height="100" src="{{item}}" bindtap="previewImage"/>
       </block>
+    </van-col>
+    <!-- 如果是自己 而且 当前状态是进行中 则可添加照片 -->
+    <block wx:if='{{isSelf && status==0}}' >
       <view wx:if="{{ taskPlan.showUpload }}"
               class='uploadPartSquare'
               id='taskPlanUploadClick'
               bindtap="chooseImage">
         <van-icon name="photograph" />
       </view>
-    </van-col>
+    </block>
   </van-row>
 
   <!-- 完成资料描述部分 -->
   <van-row>
     <van-col class='taskCompleteDesc' span="24">
-      <van-field
-        value="{{ taskComplete.taskDesc }}"
-        label="计划完成描述"
-        type="textarea"
-        placeholder="请输入计划完成描述"
-        autosize
-        border="{{ true }}"
-        id="taskCompleteDesc"
-        bind:input="onContentChange"
-      />
+    <!-- 如果是自己 而且 当前状态是进行中 则可修改 -->
+      <block wx:if='{{isSelf && status==0}}' >
+        <van-field
+          value="{{ taskComplete.taskDesc }}"
+          label="计划完成描述"
+          type="textarea"
+          placeholder="请输入计划完成描述"
+          autosize
+          border="{{ true }}"
+          id="taskCompleteDesc"
+          bind:input="onContentChange"
+        />
+      </block>
+      <block wx:else>
+        <van-field
+          value="{{ taskComplete.taskDesc }}"
+          label="计划完成描述"
+          type="textarea"
+          placeholder="请输入计划完成描述"
+          autosize
+          readonly
+          border="{{ true }}"
+          id="taskCompleteDesc"
+          bind:input="onContentChange"
+        />
+      </block>
     </van-col>
   </van-row>
 
@@ -71,12 +134,15 @@
         <van-image width="100" height="100" src="{{item}}" bindtap="previewImage"/>
       </block>
     </van-col>
-    <view wx:if="{{ taskComplete.showUpload }}"
-              class='uploadPartSquare'
-              id='taskCompleteUploadClick'
-              bindtap="chooseImage">
-      <van-icon name="photograph" />
-    </view>
+    <!-- 如果是自己 而且 当前状态是进行中 则可添加照片 -->
+    <block wx:if='{{isSelf && status==0}}' >
+      <view wx:if="{{ taskComplete.showUpload }}"
+                class='uploadPartSquare'
+                id='taskCompleteUploadClick'
+                bindtap="chooseImage">
+        <van-icon name="photograph" />
+      </view>
+    </block>
   </van-row>
 
   <van-cell title="显示分享面板" bind:click="onShareBtnClick" />
@@ -89,13 +155,42 @@
     open-type="share"
   />
 
-  <!-- 修改放弃 -->
-  <van-row wx:if="{{status==0}}">
-    <van-col offset="3" span="8">
-      <van-button type="primary" plain size="large" bindtap="onSubmitClick">修改</van-button>
-    </van-col>
-    <van-col offset="2" span="8">
-      <van-button type="warning" plain size="large" bindtap="onCancelClick">放弃</van-button>
-    </van-col>
-  </van-row>
+  <!-- 修改放弃 当前用户自身 && 任务正在进行中-->
+  <block wx:if="{{isSelf && status==0}}">
+    <van-row>
+      <van-col offset="3" span="8">
+        <van-button type="primary" plain size="large" id='modify' bindtap="onSelfControlPannelClick">修改</van-button>
+      </van-col>
+      <van-col offset="2" span="8">
+        <van-button type="warning" plain size="large" id='giveup' bindtap="onSelfControlPannelClick">放弃</van-button>
+      </van-col>
+    </van-row>
+  </block>
+
+  <!-- 支持反对 不是当前用户自身 && 任务正在进行中-->
+  <block wx:if="{{!isSelf && status==0}}">
+    <van-row>
+      <van-col offset="3" span="8">
+        <van-button type="primary" plain size="large" id='support' bindtap="onGuessPannelClick">支持</van-button>
+      </van-col>
+      <van-col offset="2" span="8">
+        <van-button type="danger" plain size="large" id='oppose' bindtap="onGuessPannelClick">反对</van-button>
+      </van-col>
+    </van-row>
+    <pm-space-line></pm-space-line>
+  </block>
+
+  <!-- 完成失败 具备裁判能力 && 不是当前用户自身 && 任务正在进行中-->
+  <block wx:if="{{canJudge && !isSelf && status==0}}">
+    <van-row>
+      <van-col offset="3" span="8">
+        <van-button type="primary" plain size="large" id='complete' bindtap="onJudgePannelClick">完成</van-button>
+      </van-col>
+      <van-col offset="2" span="8">
+        <van-button type="warning" plain size="large" id='fail' bindtap="onJudgePannelClick">失败</van-button>
+      </van-col>
+    </van-row>
+  </block>
+
 </view>
+

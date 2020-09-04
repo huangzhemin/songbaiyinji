@@ -5,8 +5,6 @@
     "pages/tabbar/ranking/ranking",
     "pages/tabbar/personal/personal",
     "pages/taskDetail/taskDetail",
-    "pages/guessDetail/guessDetail",
-    "pages/voteDetail/voteDetail",
     "pages/userDetail/userDetail",
     "pages/createTask/createTask",
     "pages/tcbRouterTest/tcbRouterTest",

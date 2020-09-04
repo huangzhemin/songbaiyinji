@@ -98,29 +98,17 @@ Component({
       var that = this;
       util.getCurrentUserInfo({
         success: function(currentUserOpenId, userInfoRes) {
-          //此处判断需要跳转的链接
-          //warning 
-          if ('currentUserOpenId' == that.properties.taskUserOpenId) {
-            //自身：传入的openId与自身openId是同一个
-            url = '/pages/taskDetail/taskDetail';
-          } else {
-            //其他人：传入openId与自身openId不同
-            if (userInfoRes.data[0]['canVote']) {
-              //具有投票权限的用户
-              url = '/pages/voteDetail/voteDetail';
-            } else {
-              //普通用户
-              url = '/pages/guessDetail/guessDetail';
-            }
-          }
-          //跳转逻辑
+          //此处判断需要跳转的 任务详情页样式
           wx.navigateTo({
             url: url,
             success: function(res) {
               // 通过eventChannel向被打开页面传送数据
+              //warning 
               res.eventChannel.emit('acceptDataFromOpenerPage', { 
                 'openId': that.properties.taskUserOpenId,   //类似'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
                 'taskId': that.properties.taskId,           //类似'task0','task1'
+                'canJudge': userInfoRes.data[0]['canJudge'],  //判断是否可以裁定，志愿者可裁定、普通用户只支持投票
+                'isSelf': currentUserOpenId == that.properties.taskUserOpenId,  //自身：传入的openId与自身openId是同一个
                })
             }
           })

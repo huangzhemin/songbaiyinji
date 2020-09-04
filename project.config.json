@@ -33,6 +33,7 @@
 	"libVersion": "2.11.1",
 	"simulatorType": "wechat",
 	"simulatorPluginLibVersion": {},
+	"cloudfunctionTemplateRoot": "cloudfunctionTemplate",
 	"condition": {
 		"search": {
 			"current": -1,
@@ -71,20 +72,6 @@
 				},
 				{
 					"id": -1,
-					"name": "猜一猜详情页",
-					"pathName": "pages/guessDetail/guessDetail",
-					"query": "",
-					"scene": null
-				},
-				{
-					"id": 3,
-					"name": "投票页面",
-					"pathName": "pages/voteDetail/voteDetail",
-					"query": "",
-					"scene": null
-				},
-				{
-					"id": -1,
 					"name": "任务详情页",
 					"pathName": "pages/taskDetail/taskDetail",
 					"query": "",
@@ -101,13 +88,6 @@
 					"id": -1,
 					"name": "tcbRouterTest",
 					"pathName": "pages/tcbRouterTest/tcbRouterTest",
-					"query": "",
-					"scene": null
-				},
-				{
-					"id": -1,
-					"name": "test",
-					"pathName": "pages/test/test",
 					"query": "",
 					"scene": null
 				},

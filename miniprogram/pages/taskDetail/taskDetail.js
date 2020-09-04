@@ -24,9 +24,43 @@ Page({
       showUpload: true,
     },
     taskMediaList: [],
+    supportUserList: [],
+    opposeUserList: [],
 
     currentOpenId: '',
     currentTaskId: '',
+    canJudge: false,
+    isSelf: false,
+
+    showShare: false,
+    options: [
+      [{
+          name: '微信',
+          icon: 'wechat'
+        },
+        {
+          name: '微博',
+          icon: 'weibo'
+        },
+        {
+          name: 'QQ',
+          icon: 'qq'
+        },
+      ],
+      [{
+          name: '复制链接',
+          icon: 'link'
+        },
+        {
+          name: '分享海报',
+          icon: 'poster'
+        },
+        {
+          name: '二维码',
+          icon: 'qrcode'
+        },
+      ],
+    ],
   },
 
   /**
@@ -35,13 +69,15 @@ Page({
   onLoad: function (options) {
     //获取传入参数
     const eventChannel = this.getOpenerEventChannel()
-    this.data.currentOpenId = '';
-    this.data.currentTaskId = '';
     // 监听acceptDataFromOpenerPage事件，获取上一页面通过eventChannel传送到当前页面的数据
     var that = this;
-    eventChannel.on('acceptDataFromOpenerPage', function(data) {
+    eventChannel.on('acceptDataFromOpenerPage', function (data) {
       that.data.currentOpenId = data.openId;
       that.data.currentTaskId = data.taskId;
+      that.setData({
+        canJudge: data.canJudge,
+        isSelf: data.isSelf,
+      });
     })
 
     wx.showLoading({
@@ -53,9 +89,9 @@ Page({
       taskId: that.data.currentTaskId,
     }).get().then(res => {
       that.data.taskMediaList = res.data[0]['taskMediaList'];
-      let uploadMediaListDic = util.getUploadMediaList(that.data.currentOpenId, 
-                                                       that.data.currentTaskId, 
-                                                       that.data.taskMediaList);
+      let uploadMediaListDic = util.getUploadMediaList(that.data.currentOpenId,
+        that.data.currentTaskId,
+        that.data.taskMediaList);
       that.setData({
         taskTitle: res.data[0]['taskTitle'],
         status: res.data[0]['status'],
@@ -69,7 +105,7 @@ Page({
     });
   },
 
-  onContentChange: function(event) {
+  onContentChange: function (event) {
     let currentChangeFieldId = event.currentTarget['id'];
     switch (currentChangeFieldId) {
       case 'taskTitle':
@@ -82,55 +118,140 @@ Page({
         this.data.taskComplete.taskDesc = event.detail;
         break;
       default:
-        console.log(currentChangeFieldId+event.detail);
-      }
+        console.log(currentChangeFieldId + event.detail);
+    }
   },
 
-  onSubmitClick: function(event) {
+  ////////////////////////////////////
+  //用户行为操作
+  //当前用户调整
+  onSelfControlPannelClick: function (event) {
     //展示loadingview
     wx.showLoading({
       title: '上传中...',
       mask: true,
     });
-
-    var that = this;
+    let targetId = event.target['id'];
+    var status = 0;
+    if (targetId == 'modify') {
+      status = 0;
+    } else if (targetId == 'giveup') {
+      status = 4;
+    }
     this.updateTaskToDatabase({
-      success: function(res) {
+      status: status,
+      success: function (res) {
         wx.hideLoading();
         wx.navigateBack();
       }
     })
   },
 
-  onCancelClick: function(event) {
-    //展示loadingview
-    wx.showLoading({
-      title: '上传中...',
-      mask: true,
-    });
-    //退出当前页面，需要更新后退出
-    //根据当前的用户openId 和 taskId，来定位更新的列表
+  //非当前用户，猜一猜相关
+  onGuessPannelClick: function (event) {
+    let targetId = event.target['id'];
     var that = this;
-    this.updateTaskToDatabase({
-      status: 4,
-      success: function(res) {
-        wx.hideLoading();
-        wx.navigateBack();
-      }
-    })
+    var guessSuccess = false;
+    util.getCurrentUserOpenId({
+      success: function (openId) {
+        if (targetId == 'support') {
+          //如果支持的话，将当前用户的openId，加入到支持数据列表
+          if (that.data.supportUserList.indexOf(openId) == -1) {
+            that.data.supportUserList.push(openId);
+            guessSuccess = true;
+            wx.showLoading({
+              title: '支持成功...',
+            });
+          } else {
+            wx.showToast({
+              title: '您已支持过',
+            });
+          }
+        } else if (targetId == 'neutral') {
+          //中立不做任何操作，后续可以做一些通知操作
+          if (that.data.neutralUserList.indexOf(openId) == -1) {
+            that.data.neutralUserList.push(openId);
+            guessSuccess = true;
+            wx.showLoading({
+              title: '中立成功...',
+            });
+          } else {
+            wx.showToast({
+              title: '您已中立过',
+            });
+          }
+        } else if (target == 'oppose') {
+          //如果反对的话，将当前用户的openId，加入到反对数据列表
+          if (that.data.opposeUserList.indexOf(openId) == -1) {
+            that.data.opposeUserList.push(openId);
+            guessSuccess = true;
+            wx.showLoading({
+              title: '反对成功...',
+            });
+          } else {
+            wx.showToast({
+              title: '您已反对过',
+            });
+          }
+        }
+
+        if (guessSuccess) {
+          //如果猜一猜成功，则需要上传数据
+          that.updateTaskToDatabase({
+            success: function (res) {
+              wx.hideLoading();
+              wx.navigateBack();
+            }
+          })
+        } else {
+          //如果已经猜一猜，则直接退出
+          wx.navigateBack();
+        }
+      },
+    });
   },
 
-  updateTaskToDatabase: function(event) {
+  //裁判相关 judge
+  onJudgePannelClick: function (event) {
+    let targetId = event.target['id'];
+    var status = 0;
+    if (targetId == 'complete') {
+      //如果完成，则任务进入state=3，并更新
+      status = 3;
+    } else if (targetId == 'fail') {
+      //如果失败，则任务进入state=4，并更新
+      status = 4;
+    }
+    var that = this;
+    this.updateTaskToDatabase({
+      status: status,
+      success: function (res) {
+        that.calculatePoints();
+        wx.hideLoading();
+        wx.navigateBack();
+        // //此处成功的话，调用云函数，任务数据进行积分分配
+        // wx.cloud.callFunction({
+        //   // 要调用的云函数名称
+        //   name: "calculatePoints",
+        // }).then(res => {
+        //   console.log(res);
+        // });;
+      }
+    });
+  },
+  ////////////////////////////////////
+
+  updateTaskToDatabase: function (event) {
     var that = this;
     //此处赋值任务状态，是继续进行，还是放弃
     that.data.status = event.status;
     //先清理历史的taskMediaList，保证从当前的图片列表中，二次
     this.getTaskInfo({
-      success:function(res) {
+      success: function (res) {
         that.uploadMedias({
           openId: that.data.currentOpenId,
           taskId: that.data.currentTaskId,
-          success: function(res) {
+          success: function (res) {
             for (const key in res) {
               if (res.hasOwnProperty(key)) {
                 const element = res[key];
@@ -150,10 +271,29 @@ Page({
               event.success(res1);
             });
           },
-          fail: function(err) {
+          fail: function (err) {
             console.error(err);
           }
         });
+      }
+    });
+  },
+
+  //包含 taskId, avatar，nickName，pubTime
+  getTaskInfo: function (event) {
+    var that = this;
+    util.getCurrentUserTaskList({
+      success: function (taskInfoRes) {
+        that.data.taskId = that.data.currentTaskId;
+        util.getCurrentUserInfo({
+          success: function (openId, userInfoRes) {
+            that.data.openId = openId;
+            that.data.avatar = userInfoRes.data[0].avatarUrl;
+            that.data.nickName = userInfoRes.data[0].nickName;
+            that.data.pubTime = (new Date()).toLocaleTimeString();
+            event.success();
+          },
+        })
       }
     });
   },
@@ -164,15 +304,15 @@ Page({
     this.uploadBatchMedia({
       openId: event.openId,
       taskId: event.taskId,
-      uploadMediaList:this.data.taskPlan.uploadMediaList, 
-      type:'plan',
+      uploadMediaList: this.data.taskPlan.uploadMediaList,
+      type: 'plan',
     })
 
     this.uploadBatchMedia({
       openId: event.openId,
       taskId: event.taskId,
-      uploadMediaList:this.data.taskComplete.uploadMediaList, 
-      type:'complete',
+      uploadMediaList: this.data.taskComplete.uploadMediaList,
+      type: 'complete',
     })
 
     Promise.all(this.data.promiseArr).then((result) => {
@@ -181,11 +321,11 @@ Page({
     });
   },
 
-  uploadBatchMedia: function(event) {
+  uploadBatchMedia: function (event) {
     let type = event['type'];
     let uploadMediaList = event['uploadMediaList'];
-    
-    for (var i = 0; i < uploadMediaList.length; i ++) {
+
+    for (var i = 0; i < uploadMediaList.length; i++) {
       //此处需要判断当前的filePath的前缀是否符合预期
       let filePath = uploadMediaList[i];
       if (filePath.match('cloud://')) {
@@ -212,54 +352,6 @@ Page({
     }
   },
 
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function (res) {
-    console.log(res)
-    if (res.from === 'sharePannel') {
-      // 来自页面内转发按钮
-      console.log(res.target)
-    }
-    return {
-      title: this.data.taskTitle,
-      path: '/page/taskDetail/taskDetail'
-    }
-  },
-
-  onShareBtnClick: function(event) {
-    this.setData({ showShare: true });
-  },
-
-  onSharePannelClose: function(event) {
-    this.setData({ showShare: false });
-  },
-
-  onSharePannelSelect: function(event) {
-    let res = {from: "sharePannel", target:event.detail["icon"]};
-    this.onShareAppMessage(res);
-    this.onSharePannelClose();
-  },
-
-  //包含 taskId, avatar，nickName，pubTime
-  getTaskInfo: function(event) {
-    var that = this;
-    util.getCurrentUserTaskList({
-      success: function(taskInfoRes) {
-        that.data.taskId = that.data.currentTaskId;
-        util.getCurrentUserInfo({
-          success: function(openId, userInfoRes) {
-            that.data.openId = openId;
-            that.data.avatar = userInfoRes.data[0].avatarUrl;
-            that.data.nickName = userInfoRes.data[0].nickName;
-            that.data.pubTime = (new Date()).toLocaleTimeString();
-            event.success();
-          },
-        })
-      }
-    });
-  },
-
   chooseImage: function (event) {
     let chooseTaskUploadBtnId = event.currentTarget["id"];
     let currentTaskUpload = this.data.taskPlan;
@@ -272,7 +364,7 @@ Page({
       count: 9 - currentTaskUpload.uploadMediaList.length,
       sizeType: ['original', 'compressed'],
       sourceType: ['album', 'camera'],
-    }).then (res => {
+    }).then(res => {
       // tempFilePath可以作为img标签的src属性显示图片
       if (chooseTaskUploadBtnId == 'taskPlanUploadClick') {
         this.setData({
@@ -295,5 +387,48 @@ Page({
       // current: '', // 当前显示图片的http链接
       urls: this.data.taskMediaList // 需要预览的图片http链接列表
     })
-  }
+  },
+  ////////////////////////////////////
+
+  calculatePoints: function (event) {
+    console.log(this.data);
+  },
+
+  ///////////////分享相关///////////////
+  /**
+   * 用户点击右上角分享
+   */
+  onShareAppMessage: function (res) {
+    console.log(res)
+    if (res.from === 'sharePannel') {
+      // 来自页面内转发按钮
+      console.log(res.target)
+    }
+    return {
+      title: this.data.taskTitle,
+      path: '/page/taskDetail/taskDetail'
+    }
+  },
+
+  onShareBtnClick: function (event) {
+    this.setData({
+      showShare: true
+    });
+  },
+
+  onSharePannelClose: function (event) {
+    this.setData({
+      showShare: false
+    });
+  },
+
+  onSharePannelSelect: function (event) {
+    let res = {
+      from: "sharePannel",
+      target: event.detail["icon"]
+    };
+    this.onShareAppMessage(res);
+    this.onSharePannelClose();
+  },
+  ////////////////////////
 })
