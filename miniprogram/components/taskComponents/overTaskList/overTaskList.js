@@ -1,5 +1,6 @@
 // components/overTaskList/overTaskList.js
 const util = require("../../../util");
+const taskHandler = require("../../../taskHandler");
 
 Component({
   /**
@@ -32,6 +33,9 @@ Component({
    */
   methods: {
     refreshCompleteTaskList: function(event) {
+      wx.showLoading({
+        title: '刷新中...',
+      })
       var that = this;
       var taskList = [];
       util.getCurrentUserTaskList({
@@ -39,9 +43,8 @@ Component({
           for (const key in taskInfoRes.data) {
             if (taskInfoRes.data.hasOwnProperty(key)) {
               const element = taskInfoRes.data[key];
-              if (element.status == 3 || element.status == 4) {
+              if (taskHandler.isTaskCompleteState(element)) {
                 taskList.push(util.convertDatabaseTaskToInnerTask(element));
-                wx.hideLoading();
               }
             }
           }
@@ -49,6 +52,7 @@ Component({
           that.setData({
             taskList: taskList,
           });
+          wx.hideLoading();
         },
       });
     }

@@ -370,9 +370,23 @@ Page({
   },
 
   previewImage: function (event) {
+    let dataset = event.target.dataset;
+    var type = dataset['type'];
+    var index = dataset['index'];
+    var currentMediaList = [];
+    for (const key in this.data.taskMediaList) {
+      if (this.data.taskMediaList.hasOwnProperty(key)) {
+        const element = this.data.taskMediaList[key];
+        if (type == 'plan' && element.match('_plan_')) {
+          currentMediaList.push(element);
+        } else if (type == 'complete' && element.match('_complete_')) {
+          currentMediaList.push(element);
+        }
+      }
+    }
     wx.previewImage({
-      // current: '', // 当前显示图片的http链接
-      urls: this.data.taskMediaList // 需要预览的图片http链接列表
+      current: currentMediaList[index], // 当前显示图片的http链接
+      urls: currentMediaList // 需要预览的图片http链接列表
     })
   },
   ////////////////////////////////////

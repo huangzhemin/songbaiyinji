@@ -75,7 +75,13 @@
     />
     <van-col class='taskPlanUpload' offset="2" span="20">
       <block wx:for="{{taskPlan.uploadMediaList}}" wx:for-index="idx" wx:key="idx">
-        <van-image width="100" height="100" src="{{item}}" bindtap="previewImage"/>
+        <van-image 
+          width="100" 
+          height="100" 
+          src="{{item}}" 
+          data-index="{{idx}}" 
+          data-type="plan" 
+          bindtap="previewImage"/>
       </block>
     </van-col>
     <!-- 如果是自己 而且 当前状态是进行中 则可添加照片 -->
@@ -131,7 +137,13 @@
     />
     <van-col class='taskCompleteUpload' offset="2" span="20">
       <block wx:for="{{taskComplete.uploadMediaList}}" wx:for-index="idx" wx:key="idx">
-        <van-image width="100" height="100" src="{{item}}" bindtap="previewImage"/>
+        <van-image 
+          width="100" 
+          height="100" 
+          src="{{item}}" 
+          data-index="{{idx}}" 
+          data-type="complete" 
+          bindtap="previewImage"/>
       </block>
     </van-col>
     <!-- 如果是自己 而且 当前状态是进行中 则可添加照片 -->

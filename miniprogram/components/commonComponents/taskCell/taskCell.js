@@ -103,7 +103,6 @@ Component({
             url: url,
             success: function(res) {
               // 通过eventChannel向被打开页面传送数据
-              //warning 
               res.eventChannel.emit('acceptDataFromOpenerPage', { 
                 'openId': that.properties.taskUserOpenId,   //类似'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
                 'taskId': that.properties.taskId,           //类似'task0','task1'

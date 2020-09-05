@@ -112,6 +112,7 @@ Page({
     var that = this;
     util.getCurrentUserTaskList({
       success: function(taskInfoRes) {
+        console.log('createTask currentTaskInfoLength:'+taskInfoRes.data.length);
         that.data.taskId = 'task'+taskInfoRes.data.length;
         util.getCurrentUserInfo({
           success: function(openId, userInfoRes) {
@@ -220,9 +221,18 @@ Page({
   },
 
   previewImage: function (event) {
+    let dataset = event.target.dataset;
+    var type = dataset['type'];
+    var index = dataset['index'];
+    var currentMediaList = [];
+    if (type == 'plan') {
+      currentMediaList = this.data.taskPlan.uploadMediaList;
+    } else if (type == 'complete') {
+      currentMediaList = this.data.taskComplete.uploadMediaList;
+    }
     wx.previewImage({
-      // current: '', // 当前显示图片的http链接
-      urls: this.data.taskMediaList // 需要预览的图片http链接列表
+      current: currentMediaList[index], // 当前显示图片的http链接
+      urls: currentMediaList // 需要预览的图片http链接列表
     })
-  }
+  },
 })
