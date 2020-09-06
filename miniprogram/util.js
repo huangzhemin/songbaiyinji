@@ -2,47 +2,56 @@ const db = wx.cloud.database()
 const taskInfo = db.collection('taskInfo')
 const userInfo = db.collection('userInfo')
 
+var debugLog = function(logContent) {
+  let debugSwitch = true;
+  if (debugSwitch) {
+    console.log(logContent);
+  }
+}
+
 var convertInnerTaskToDatabaseTask = function(innerTaskData) {
-  // console.log(innerTaskData);
+  // console.log('convertInnerTaskToDatabaseTask start', innerTaskData);
   let databaseTaskData = {
     'taskId': innerTaskData['taskId'],
+    'openId': innerTaskData['openId'],
     'status': innerTaskData['status'],
     'taskTitle': innerTaskData['taskTitle'],
     'taskPlanDesc': innerTaskData['taskPlan']['taskDesc'],
     'taskCompleteDesc': innerTaskData['taskComplete']['taskDesc'],
     'taskMediaList': innerTaskData['taskMediaList'],
     'thumbImg': innerTaskData['thumbImg'],
-    'openId': innerTaskData['openId'],
     'avatar': innerTaskData['avatar'],
     'nickName': innerTaskData['nickName'],
     'pubTime': innerTaskData['pubTime'],
     'supportUserList': innerTaskData['supportUserList'],
     'opposeUserList': innerTaskData['opposeUserList'],
+    'canJudge': innerTaskData['canJudge'],
   };
-  // console.log(databaseTaskData);
+  // console.log('convertInnerTaskToDatabaseTask end', databaseTaskData);
   return databaseTaskData;
 }
 
 var convertDatabaseTaskToInnerTask = function(databaseTaskData) {
   // console.log(databaseTaskData);
   let innerTaskData = {
-    'taskId': databaseTaskData['taskId'],
-    'status': databaseTaskData['status'],
-    'taskTitle': databaseTaskData['taskTitle'],
+    'taskId': (databaseTaskData['taskId'] ? databaseTaskData['taskId'] : ""),
+    'openId': (databaseTaskData['openId'] ? databaseTaskData['openId'] : ""),
+    'status': (databaseTaskData['status'] ? databaseTaskData['status'] : 0),
+    'taskTitle': (databaseTaskData['taskTitle'] ? databaseTaskData['taskTitle'] : ""),
     'taskPlan': {
-      'taskDesc': databaseTaskData['taskPlanDesc'],
+      'taskDesc': (databaseTaskData['taskPlanDesc'] ? databaseTaskData['taskPlanDesc'] : ""),
     },
     'taskComplete': {
-      'taskDesc': databaseTaskData['taskCompleteDesc'],
+      'taskDesc': (databaseTaskData['taskCompleteDesc'] ? databaseTaskData['taskCompleteDesc'] : ""),
     },
-    'taskMediaList': databaseTaskData['taskMediaList'],
-    'thumbImg': databaseTaskData['thumbImg'],
-    'openId': databaseTaskData['openId'],
-    'avatar': databaseTaskData['avatar'],
-    'nickName': databaseTaskData['nickName'],
-    'pubTime': databaseTaskData['pubTime'],
-    'supportUserList': databaseTaskData['supportUserList'],
-    'opposeUserList': databaseTaskData['opposeUserList'],
+    'taskMediaList': (databaseTaskData['taskMediaList'] ? databaseTaskData['taskMediaList'] : []),
+    'thumbImg': (databaseTaskData['thumbImg'] ? databaseTaskData['thumbImg'] : ""),
+    'avatar': (databaseTaskData['avatar'] ? databaseTaskData['avatar'] : ""),
+    'nickName': (databaseTaskData['nickName'] ? databaseTaskData['nickName'] : ""),
+    'pubTime': (databaseTaskData['pubTime'] ? databaseTaskData['pubTime'] : 0),
+    'supportUserList': (databaseTaskData['supportUserList'] ? databaseTaskData['supportUserList'] : []),
+    'opposeUserList': (databaseTaskData['opposeUserList'] ? databaseTaskData['opposeUserList'] : []),
+    'canJudge': databaseTaskData['canJudge'],
   };
   // console.log(innerTaskData);
   return innerTaskData;
@@ -200,6 +209,7 @@ var getCurrentUserInfo = function(event) {
 }
 
 module.exports={
+  debugLog: debugLog,
   convertInnerTaskToDatabaseTask: convertInnerTaskToDatabaseTask,
   convertDatabaseTaskToInnerTask: convertDatabaseTaskToInnerTask,
   batchConvertDatabaseTaskToInnerTask: batchConvertDatabaseTaskToInnerTask,

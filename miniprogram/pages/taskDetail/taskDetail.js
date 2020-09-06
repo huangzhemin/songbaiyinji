@@ -1,8 +1,7 @@
 // miniprogram/pages/taskDetail/taskDetail.js
 const db = wx.cloud.database()
 const taskInfo = db.collection('taskInfo')
-var util = require('../../util.js')
-
+const util = require('../../util.js')
 Page({
 
   /**
@@ -10,6 +9,7 @@ Page({
    */
   data: {
     taskId: "",
+    openId: "",
     status: 0,
 
     taskTitle: "",
@@ -27,8 +27,6 @@ Page({
     supportUserList: [],
     opposeUserList: [],
 
-    currentOpenId: '',
-    currentTaskId: '',
     canJudge: false,
     isSelf: false,
 
@@ -72,8 +70,8 @@ Page({
     // 监听acceptDataFromOpenerPage事件，获取上一页面通过eventChannel传送到当前页面的数据
     var that = this;
     eventChannel.on('acceptDataFromOpenerPage', function (data) {
-      that.data.currentOpenId = data.openId;
-      that.data.currentTaskId = data.taskId;
+      that.data.openId = data.openId;
+      that.data.taskId = data.taskId;
       that.setData({
         canJudge: data.canJudge,
         isSelf: data.isSelf,
@@ -85,19 +83,22 @@ Page({
     })
     //通过传入的openId和taskId，拉取用户数据
     taskInfo.where({
-      openId: that.data.currentOpenId,
-      taskId: that.data.currentTaskId,
+      openId: that.data.openId,
+      taskId: that.data.taskId,
     }).get().then(res => {
-      that.data.taskMediaList = res.data[0]['taskMediaList'];
-      let uploadMediaListDic = util.getUploadMediaList(that.data.currentOpenId,
-        that.data.currentTaskId,
-        that.data.taskMediaList);
+      //将当前的任务数据，赋值到本地
+      that.data = util.convertDatabaseTaskToInnerTask(res.data[0]);
+      //上传媒体单独处理
+      let uploadMediaListDic = util.getUploadMediaList(that.data.openId,
+                                                       that.data.taskId,
+                                                       that.data.taskMediaList);
+      //刷新页面                                                        
       that.setData({
-        taskTitle: res.data[0]['taskTitle'],
-        status: res.data[0]['status'],
-        ['taskPlan.taskDesc']: res.data[0]['taskPlanDesc'],
+        taskTitle: that.data.taskTitle,
+        status: that.data.status,
+        ['taskPlan.taskDesc']: that.data.taskPlan.taskDesc,
         ['taskPlan.uploadMediaList']: uploadMediaListDic['taskPlan'],
-        ['taskComplete.taskDesc']: res.data[0]['taskCompleteDesc'],
+        ['taskComplete.taskDesc']: that.data.taskComplete.taskDesc,
         ['taskComplete.uploadMediaList']: uploadMediaListDic['taskComplete'],
       });
     }).then(res1 => {
@@ -140,7 +141,7 @@ Page({
     }
     this.updateTaskToDatabase({
       status: status,
-      success: function (res) {
+      success: function (openId, taskId) {
         wx.hideLoading();
         wx.navigateBack();
       }
@@ -182,10 +183,11 @@ Page({
           }
         }
 
+        console.log('guessSuccess:', guessSuccess);
         if (guessSuccess) {
           //如果猜一猜成功，则需要上传数据
           that.updateTaskToDatabase({
-            success: function (res) {
+            success: function (openId, taskId) {
               wx.hideLoading();
               wx.navigateBack();
             }
@@ -212,17 +214,10 @@ Page({
     var that = this;
     this.updateTaskToDatabase({
       status: status,
-      success: function (res) {
-        that.calculatePoints();
+      success: function (openId, taskId) {
+        that.calculatePoints(openId, taskId);
         wx.hideLoading();
         wx.navigateBack();
-        // //此处成功的话，调用云函数，任务数据进行积分分配
-        // wx.cloud.callFunction({
-        //   // 要调用的云函数名称
-        //   name: "calculatePoints",
-        // }).then(res => {
-        //   console.log(res);
-        // });;
       }
     });
   },
@@ -236,26 +231,28 @@ Page({
     this.getTaskInfo({
       success: function (res) {
         that.uploadMedias({
-          openId: that.data.currentOpenId,
-          taskId: that.data.currentTaskId,
+          openId: that.data.openId,
+          taskId: that.data.taskId,
           success: function (res) {
-            for (const key in res) {
-              if (res.hasOwnProperty(key)) {
-                const element = res[key];
-                if (element['fileID'].match('plan_0')) {
-                  that.data.thumbImg = element['fileID'];
+            if (res && res.length > 0) {
+              for (const key in res) {
+                if (res.hasOwnProperty(key)) {
+                  const element = res[key];
+                  if (element['fileID'].match('plan_0')) {
+                    that.data.thumbImg = element['fileID'];
+                  }
+                  that.data.taskMediaList.push(element['fileID']);
                 }
-                that.data.taskMediaList.push(element['fileID']);
               }
             }
 
             taskInfo.where({
-              openId: that.data.currentOpenId,
-              taskId: that.data.currentTaskId,
+              openId: that.data.openId,
+              taskId: that.data.taskId,
             }).update({
               data: util.convertInnerTaskToDatabaseTask(that.data),
             }).then(res1 => {
-              event.success(res1);
+              event.success(that.data.openId, that.data.taskId);
             });
           },
           fail: function (err) {
@@ -269,25 +266,26 @@ Page({
   //包含 taskId, avatar，nickName，pubTime
   getTaskInfo: function (event) {
     var that = this;
-    util.getCurrentUserTaskList({
-      success: function (taskInfoRes) {
-        that.data.taskId = that.data.currentTaskId;
-        util.getCurrentUserInfo({
-          success: function (openId, userInfoRes) {
-            that.data.openId = openId;
-            that.data.avatar = userInfoRes.data[0].avatarUrl;
-            that.data.nickName = userInfoRes.data[0].nickName;
-            that.data.pubTime = (new Date()).toLocaleTimeString();
-            event.success();
-          },
-        })
-      }
-    });
+    util.getCurrentUserInfo({
+      success: function (openId, userInfoRes) {
+        that.data.openId = openId;
+        that.data.avatar = userInfoRes.data[0].avatarUrl;
+        that.data.nickName = userInfoRes.data[0].nickName;
+        that.data.pubTime = (new Date()).toLocaleTimeString();
+        event.success();
+      },
+    })
   },
 
   uploadMedias: function (event) {
-    this.data.promiseArr = [];
+    //上传媒体信息的时候，如果此次没有对列表进行调整的话，这里无需再次上传
+    if (!this.data.taskPlan.uploadMediaList 
+        && !this.data.taskComplete.uploadMediaList) {
+      event.success();
+    }
 
+    //此次操作 对媒体信息有调整
+    this.data.promiseArr = [];
     this.uploadBatchMedia({
       openId: event.openId,
       taskId: event.taskId,
@@ -391,8 +389,83 @@ Page({
   },
   ////////////////////////////////////
 
-  calculatePoints: function (event) {
-    console.log(this.data);
+  calculatePoints: function (openId, taskId) {
+    //此处成功的话，调用云函数，任务数据进行积分分配
+    wx.cloud.callFunction({
+      // 要调用的云函数名称
+      name: "calculatePoints",
+      data: {
+        openId: openId,
+        taskId: taskId,
+      }
+    }).then(res => {
+      util.debugLog('calculatePoints:', res);
+    });
+
+    // 拉取任务信息 test
+    // wx.cloud.callFunction({
+    //   // 要调用的云函数名称
+    //   name: 'tcbDatabase',
+    //   // 传递给云函数的参数
+    //   data: {
+    //     $url: "taskInfoWithOpenIdAndTaskId",
+    //     openId: openId,
+    //     taskId: taskId,
+    //   }
+    // }).then(res => {
+    //   console.log('taskInfoDic after:', res.result.data.data[0]);
+    //   // taskInfoDic = res;
+    //   // console.log('taskInfoDic after:', taskInfoDic);
+    // }).catch(err => {
+    //   console.error(err);
+    // });
+
+    //拉取用户积分 test
+    // let userOpenIdList = [
+    // 'oBG1A5f75CT8Bj1gAG4OMkXgDyXM', 
+    // 'oBG1A5f75CT8Bj1gAG4OMkXgDyX1',
+    // 'oBG1A5f75CT8Bj1gAG4OMkXgDyX2',
+    // 'oBG1A5f75CT8Bj1gAG4OMkXgDyX3',
+    // 'oBG1A5f75CT8Bj1gAG4OMkXgDyY1',
+    // ];
+
+    // //此处创建空字典
+    // var userPointsDic = {};
+
+    // //数据库积分拉取
+    // wx.cloud.callFunction({
+    //   name: 'tcbDatabase',
+    //   data: {
+    //     $url: "batchGetUserPoints",
+    //     userOpenIdList: userOpenIdList,
+    //   },
+    // }).then(res => {
+    //   //此处res返回的是用户OpenId与Points构成的字典
+    //   console.log('userInfoList', res.result.data.data);
+    //   userPointsDic = this.convertDatabaseUserInfoListToUserPointsDic(res.result.data.data);
+    //   console.log('userPointsDic', userPointsDic);
+    // }).catch(err => {
+    //   console.error(err);
+    // });
+
+    // 此处模拟写入假数据
+    // let userPointsDic = {
+    // 'oBG1A5f75CT8Bj1gAG4OMkXgDyXM': 2, 
+    // 'oBG1A5f75CT8Bj1gAG4OMkXgDyX1': 1,
+    // 'oBG1A5f75CT8Bj1gAG4OMkXgDyX2': 1,
+    // 'oBG1A5f75CT8Bj1gAG4OMkXgDyX3': 1,
+    // 'oBG1A5f75CT8Bj1gAG4OMkXgDyY1': -1,
+    // };
+    //积分上传，写数据库
+    // wx.cloud.callFunction({
+    //   name: 'tcbDatabase',
+    //   data: {
+    //     $url: "batchUpdateUserPoints",
+    //     userPointsDic: userPointsDic,
+    //   },
+    // }).then(res => {
+    //   console.log('result', res);
+    // });
   },
 
   ///////////////分享相关///////////////
