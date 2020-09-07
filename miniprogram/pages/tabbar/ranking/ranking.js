@@ -1,64 +1,27 @@
 // miniprogram/pages/tabbar/ranking/ranking.js
+const util = require('../../../util.js')
 Page({
 
   /**
    * 页面的初始数据
    */
   data: {
+    userRankingList: [],
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-
+    //进入页面，这里无需登录，直接拉取先在排行榜前100用户信息，并展示
+    wx.cloud.callFunction({
+      // 要调用的云函数名称
+      name: "rankingUserPoints",
+    }).then(res => {
+      util.debugLog('rankingUserPoints:', res.result.result.data.list);
+      this.setData({
+        userRankingList: res.result.result.data.list,
+      });
+    });
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-  },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
-  },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
-  }
 })

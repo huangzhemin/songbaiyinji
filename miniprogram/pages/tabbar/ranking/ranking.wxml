@@ -1,2 +1,2 @@
 <!--miniprogram/pages/tabbar/ranking/ranking.wxml-->
-<pm-ranking-list></pm-ranking-list>
+<pm-ranking-list userRankingList='{{userRankingList}}'></pm-ranking-list>

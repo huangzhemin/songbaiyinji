@@ -21,11 +21,20 @@ exports.main = async (event, context) => {
     ctx.data.taskId = event.taskId;
     ctx.data.userOpenIdList = event.userOpenIdList;
     ctx.data.userPointsDic = event.userPointsDic;
+    ctx.data.userPointsRankingList = event.userPointsRankingList;
     await next(); // 执行下一中间件
   });
 
   // 路由为数组表示，该中间件适用于 任务信息获取
-  app.router(['taskInfoWithOpenIdAndTaskId', 'batchGetUserPoints', 'batchUpdateUserPoints'], async (ctx, next) => {
+  let routerList = [
+    'taskInfoWithOpenIdAndTaskId', 
+    'batchGetUserPoints', 
+    'batchUpdateUserPoints',
+    'batchGetUserInfo',
+    'batchGetUserPointsRankingList',
+    'batchWriteUserPointRankingList',
+  ];
+  app.router(routerList, async (ctx, next) => {
     await next();
   });
 
@@ -87,6 +96,64 @@ exports.main = async (event, context) => {
       code: 0,
       data: ctx.data.res
     };
+  });
+
+  app.router('batchGetUserInfo', async (ctx, next) => {
+    console.log('batchGetUserInfo invoke');
+    const db = cloud.database();
+    ctx.data.res = await db.collection('userInfo').get();
+    console.log('res', ctx.data.res);
+    await next();
+  }, async (ctx) => {
+    console.log('ctx.data:', ctx.data);
+    ctx.body = {
+      code: 0,
+      data: ctx.data.res
+    }
+  });
+
+  app.router('batchGetUserPointsRankingList', async (ctx, next) => {
+    console.log('batchGetUserPointsRankingList invoke');
+    const db = cloud.database();
+    ctx.data.res = await db.collection('userInfo').aggregate()
+    .sort(
+      {
+        points: -1,
+      }
+    ).limit(100).end();
+    await next();
+  }, async (ctx) => {
+    console.log('ctx.data:', ctx.data);
+    ctx.body = {
+      code: 0,
+      data: ctx.data.res
+    }
+  });
+  
+  app.router('batchWriteUserPointRankingList', async (ctx, next) => {
+    console.log('batchWriteUserPointRankingList invoke');
+    const db = cloud.database();
+    const _ = db.command;
+
+    console.log('userPointsRankingList', ctx.data.userPointsRankingList);
+
+    // 根据userPointsRankingList，生成删除数组
+    var userPointsRankingOpenIdList = [];
+    ctx.data.userPointsRankingList.forEach(userInfo => {
+      userPointsRankingOpenIdList.push(userInfo['openId']);
+    });
+    console.log('userPointsRankingOpenIdList', userPointsRankingOpenIdList);
+    // 删除rankingUserInfo现有的数据
+    await db.collection('rankingUserInfo').where({
+      openId: _.in(userPointsRankingOpenIdList)
+    }).remove().then(res => {
+      // 将新生成的userPointsRankingList更新到数据列表中
+      for (const index in userPointsRankingOpenIdList) {
+        db.collection('rankingUserInfo').add({
+          data: ctx.data.userPointsRankingList[index],
+        });
+      }
+    });
   });
 
   return app.serve();
