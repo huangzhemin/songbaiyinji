@@ -1,30 +1,29 @@
 <!--miniprogram/pages/tabbar/task/task.wxml-->
 <view>
-  <van-tabs active="{{ swiper.active }}" bind:change="clickChange" swipeable sticky>
+  <van-tabs active="{{ swiper.active }}" 
+            bind:change="clickChange" 
+            id="start-doing-task-list" 
+            class='edge-view' swipeable sticky>
     <van-tab title="进行中" name="doing"></van-tab>
     <van-tab title="已结束" name="over"></van-tab>
-  </van-tabs>
+  </van-tabs> 
+
   <swiper indicator-dots="{{swiper.indicatorDots}}"
               autoplay="{{swiper.autoplay}}" 
               interval="{{swiper.interval}}" 
               duration="{{swiper.duration}}"
               current="{{swiper.active}}"
-              style="height:110000rpx"
+              style="height:{{swiper.swiperHeight+'px'}}"
               bind:change="swipeChange">
       <swiper-item>
-        <!-- <view id="start-doing-task-list" class='edge-view'/> -->
-        <view class="swiper-item-doing-task-list">
-          <pm-doing-task-list>
-          </pm-doing-task-list>
-        </view>
-        <!-- <view id="end-doing-task-list" class='edge-view'/> -->
+          <view class="swiper-item-doing-task-list">
+            <pm-doing-task-list swiperHeight='{{swiper.swiperHeight}}'></pm-doing-task-list>
+          </view>
       </swiper-item>
       <swiper-item>
-        <!-- <view id="start-over-task-list" class='edge-view'/> -->
         <view class="swiper-item-over-task-list">
-          <pm-over-task-list></pm-over-task-list>
+          <pm-over-task-list swiperHeight='{{swiper.swiperHeight}}'></pm-over-task-list>
         </view>
-        <!-- <view id="end-over-task-list" class='edge-view'/> -->
       </swiper-item>
   </swiper>
 </view>

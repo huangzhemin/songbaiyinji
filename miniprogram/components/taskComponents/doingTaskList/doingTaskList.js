@@ -7,7 +7,10 @@ Component({
    * 组件的属性列表
    */
   properties: {
-
+    swiperHeight: {
+      type:Number,
+      value: 0,
+    }
   },
 
   /**

@@ -118,6 +118,13 @@
 					"pathName": "pages/test/test",
 					"query": "",
 					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "任务页",
+					"pathName": "pages/tabbar/task/task",
+					"query": "",
+					"scene": null
 				}
 			]
 		}

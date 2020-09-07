@@ -18,6 +18,10 @@ Page({
     }
   },
 
+  onLoad: function(event) {
+    this.updateDoingTaskPageHeight();
+  },
+
   clickChange(event) {
     // console.log(event);
     // console.log(this.data.active)
@@ -34,15 +38,16 @@ Page({
 
   updateDoingTaskPageHeight: function(event) {
     console.log(event);
-  //   wx.createSelectorQuery()
-  //     .select('#end-doing-task-list').boundingClientRect()
-  //     .select('#start-doing-task-list').boundingClientRect().exec(rect => {
-  //     console.log('test end rect top:'+rect[0].top);
-  //     console.log('test start rect top:'+rect[1].top);
-  //     let _space = (rect[0].top - rect[1].top).toString + 'px';
-  //     this.setData({
-  //       ['swiper.swiperHeight']: _space,
-  //     });
-  //   })
+    let that = this;
+    wx.getSystemInfo({
+      success (res) {
+        wx.createSelectorQuery()
+          .select('#start-doing-task-list').boundingClientRect().exec(rect => {
+          that.setData({
+            ['swiper.swiperHeight']: res.windowHeight - rect[0].bottom,
+          });
+        })
+      }
+    });
   }
 })

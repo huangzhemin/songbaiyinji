@@ -1,16 +1,18 @@
 <!--components/overTaskList/overTaskList.wxml-->
-<block wx:for='{{taskList}}' wx:for-index="idx" wx:key="idx">
-  <pm-task-cell 
-    title='{{item.taskTitle}}'
-    desc='{{item.taskDesc}}'
-    status='{{item.status}}'
-    thumbImg='{{item.thumbImg}}'
-    avatar='{{item.avatar}}'
-    nickName='{{item.nickName}}'
-    pubTime='{{item.pubTime}}'
-    taskUserOpenId='{{item.openId}}'
-    taskId='{{item.taskId}}'>
-  </pm-task-cell>
-  <van-divider></van-divider>
-  <!-- <pm-splite-line wx:if="{{index < taskList.length - 1}}"></pm-splite-line> -->
-</block>
+<scroll-view scroll-y="true" style="height: {{swiperHeight+'px'}}">
+  <block wx:for='{{taskList}}' wx:for-index="idx" wx:key="idx">
+    <pm-task-cell 
+      title='{{item.taskTitle}}'
+      desc='{{item.taskDesc}}'
+      status='{{item.status}}'
+      thumbImg='{{item.thumbImg}}'
+      avatar='{{item.avatar}}'
+      nickName='{{item.nickName}}'
+      pubTime='{{item.pubTime}}'
+      taskUserOpenId='{{item.openId}}'
+      taskId='{{item.taskId}}'>
+    </pm-task-cell>
+    <van-divider></van-divider>
+    <!-- <pm-splite-line wx:if="{{index < taskList.length - 1}}"></pm-splite-line> -->
+  </block>
+</scroll-view>
