@@ -15,3 +15,8 @@
   font-size: 24px;
   margin: 0 8px 8px 0;
 }
+
+.share-sheet {
+  position: absolute;
+  z-index: 100;
+}
