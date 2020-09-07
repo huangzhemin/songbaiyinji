@@ -3,5 +3,4 @@
           icon='{{avatar}}'
           title='{{nickName}}'
           value='{{points}}'
-          link-type="navigateTo"
-          url="{{jumpUrl}}"/>
+          bind:click='navigateTo'/>

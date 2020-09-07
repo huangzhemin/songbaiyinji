@@ -2,10 +2,11 @@
 <block wx:for='{{userRankingList}}'  wx:for-index="idx" wx:key="idx">
   <pm-ranking-cell
     ranking='{{idx + 1}}'
+    openId='{{item.openId}}'
     avatar='{{item.avatarUrl}}'
     nickName='{{item.nickName}}'
     points='{{item.points}}'
-    jumpUrl='{{item.jumpUrl}}'>
+    jumpUrl='{{jumpUrl}}'>
   </pm-ranking-cell>
 </block>
 

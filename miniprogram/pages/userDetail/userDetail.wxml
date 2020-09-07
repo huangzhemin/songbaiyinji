@@ -1,12 +1,14 @@
 <!--miniprogram/pages/userDetail/userDetail.wxml-->
-<pm-personal-profile-cell 
-  avatarUrl="{{userInfo.sdkUserInfo.avatarUrl}}" 
-  nickName="{{userInfo.sdkUserInfo.nickName}}" 
-  userRanking="{{userInfo.customUserInfo.userRanking}}" 
-  userPoints="{{userInfo.customUserInfo.userPoints}}">
-</pm-personal-profile-cell>
-<pm-space-line></pm-space-line>
+<view wx:if='{{userInfo.sdkUserInfo.avatarUrl}}'>
+  <pm-personal-profile-cell 
+    avatarUrl="{{userInfo.sdkUserInfo.avatarUrl}}" 
+    nickName="{{userInfo.sdkUserInfo.nickName}}" 
+    userRanking="{{userInfo.customUserInfo.userRanking}}" 
+    userPoints="{{userInfo.customUserInfo.userPoints}}">
+  </pm-personal-profile-cell>
+  <pm-space-line></pm-space-line>
 
-<pm-user-detail-task-list
-  taskList='{{taskList}}'>
-</pm-user-detail-task-list>
+  <pm-user-detail-task-list
+    taskList='{{taskList}}'>
+  </pm-user-detail-task-list>
+</view>
