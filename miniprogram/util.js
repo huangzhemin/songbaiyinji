@@ -1,6 +1,7 @@
 const db = wx.cloud.database()
 const taskInfo = db.collection('taskInfo')
 const userInfo = db.collection('userInfo')
+const _ = db.command
 
 var debugLog = function(logContent) {
   let debugSwitch = true;
@@ -149,6 +150,35 @@ var getCurrentUserOpenId = function(event) {
   });
 }
 
+var getCurrentUserTaskListWithStatusType = function(event) {
+  if (event.openId) {
+    taskInfo.where({
+      openId: event.openId,  //当前用户 openId
+      status: (event.type == 'doing' ? _.or(0, 1, 2) : _.or(3, 4))
+    }).skip(event.page * 20).orderBy('pubTime', 'desc').get({
+      success: (taskInfoRes => {
+        console.log('getCurrentUserDoingTaskList with openId:', taskInfoRes);
+        event.success(taskInfoRes)
+      })
+    })
+  } else {
+    wx.getStorage({
+      key: 'openid',
+      success: (res => {
+        taskInfo.where({
+          openId: res.data, // 填入当前用户 openid
+          status: (event.type == 'doing' ? _.or(0, 1, 2) : _.or(3, 4))
+        }).skip(event.page * 20).orderBy('pubTime', 'desc').get({
+          success: (taskInfoRes => {
+            console.log('getCurrentUserDoingTaskList without openId:', taskInfoRes);
+            event.success(taskInfoRes)
+          })
+        })
+      })
+    });
+  }
+}
+
 var getCurrentUserTaskList = function(event) {
   if (event.openId) {
     taskInfo.where({
@@ -218,6 +248,7 @@ module.exports={
   addTaskToDatabase: addTaskToDatabase,
   getAllTaskList: getAllTaskList,
   getCurrentUserOpenId: getCurrentUserOpenId,
+  getCurrentUserTaskListWithStatusType: getCurrentUserTaskListWithStatusType,
   getCurrentUserTaskList: getCurrentUserTaskList,
   getCurrentUserInfo: getCurrentUserInfo,
 }

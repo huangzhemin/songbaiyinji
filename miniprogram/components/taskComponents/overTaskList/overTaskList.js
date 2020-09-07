@@ -37,23 +37,15 @@ Component({
         title: '刷新中...',
       })
       var that = this;
-      var taskList = [];
-      util.getCurrentUserTaskList({
+      //只筛选完成的样式
+      util.getCurrentUserTaskListWithStatusType({
+        type: 'complete',
         success: function(taskInfoRes) {
-          for (const key in taskInfoRes.data) {
-            if (taskInfoRes.data.hasOwnProperty(key)) {
-              const element = taskInfoRes.data[key];
-              if (taskHandler.isTaskCompleteState(element)) {
-                taskList.push(util.convertDatabaseTaskToInnerTask(element));
-              }
-            }
-          }
-
           that.setData({
-            taskList: taskList,
+            taskList: taskInfoRes.data,
           });
           wx.hideLoading();
-        },
+        }
       });
     }
   }
