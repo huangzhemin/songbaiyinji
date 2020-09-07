@@ -271,7 +271,7 @@ Page({
         that.data.openId = openId;
         that.data.avatar = userInfoRes.data[0].avatarUrl;
         that.data.nickName = userInfoRes.data[0].nickName;
-        that.data.pubTime = (new Date()).toLocaleTimeString();
+        // that.data.pubTime = Date.parse(new Date()) / 1000; warning 现阶段先不调整创建时间，后续添加调整时间列表，记录修改历史记录
         event.success();
       },
     })

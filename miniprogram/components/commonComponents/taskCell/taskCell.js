@@ -49,6 +49,7 @@ Component({
    */
   data: {
     tag: '',
+    pubTimeStr: '',
   },
   
   observers: {
@@ -56,6 +57,11 @@ Component({
       // 当property statusc传入的状态改变的时候，tag需要做相应的调整
       this.setData({
         tag: this.getTagNameWithStatus(this.properties.status),
+      });
+    },
+    'pubTime': function(pubTime) {
+      this.setData({
+        pubTimeStr: new Date(this.properties.pubTime * 1000).toLocaleString(),
       });
     }
   },

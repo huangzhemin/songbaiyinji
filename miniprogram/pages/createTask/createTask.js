@@ -119,7 +119,7 @@ Page({
             that.data.openId = openId;
             that.data.avatar = userInfoRes.data[0].avatarUrl;
             that.data.nickName = userInfoRes.data[0].nickName;
-            that.data.pubTime = (new Date()).toLocaleTimeString();
+            that.data.pubTime = Date.parse(new Date()) / 1000;
             event.success();
           },
         })

@@ -133,7 +133,7 @@ var updateTaskToDatabase = function() {
 }
 
 var getAllTaskList = function(event) {
-  taskInfo.get({
+  taskInfo.orderBy('pubTime', 'desc').get({
     success:(taskInfoRes => {
       event.success(taskInfoRes);
     })
@@ -153,7 +153,7 @@ var getCurrentUserTaskList = function(event) {
   if (event.openId) {
     taskInfo.where({
       openId: event.openId // 填入当前用户 openid
-    }).skip(event.page * 20).get({
+    }).skip(event.page * 20).orderBy('pubTime', 'desc').get({
       success: (taskInfoRes => {
         console.log('getCurrentUserTaskList with openId:', taskInfoRes);
         event.success(taskInfoRes)
@@ -165,7 +165,7 @@ var getCurrentUserTaskList = function(event) {
       success: (res => {
         taskInfo.where({
           openId: res.data // 填入当前用户 openid
-        }).skip(event.page * 20).get({
+        }).skip(event.page * 20).orderBy('pubTime', 'desc').get({
           success: (taskInfoRes => {
             console.log('getCurrentUserTaskList without openId:', taskInfoRes);
             event.success(taskInfoRes)
