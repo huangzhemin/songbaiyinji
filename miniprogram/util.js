@@ -4,14 +4,14 @@ const userInfo = db.collection('userInfo')
 const taskOperateMsgInfo = db.collection('taskOperateMsgInfo')
 const _ = db.command
 
-var debugLog = function(logContent) {
+var debugLog = function (logContent) {
   let debugSwitch = true;
   if (debugSwitch) {
     console.log(logContent);
   }
 }
 
-var convertInnerTaskToDatabaseTask = function(innerTaskData) {
+var convertInnerTaskToDatabaseTask = function (innerTaskData) {
   // console.log('convertInnerTaskToDatabaseTask start', innerTaskData);
   let databaseTaskData = {
     'taskId': innerTaskData['taskId'],
@@ -33,7 +33,7 @@ var convertInnerTaskToDatabaseTask = function(innerTaskData) {
   return databaseTaskData;
 }
 
-var convertDatabaseTaskToInnerTask = function(databaseTaskData) {
+var convertDatabaseTaskToInnerTask = function (databaseTaskData) {
   // console.log(databaseTaskData);
   let innerTaskData = {
     'taskId': (databaseTaskData['taskId'] ? databaseTaskData['taskId'] : ""),
@@ -59,7 +59,7 @@ var convertDatabaseTaskToInnerTask = function(databaseTaskData) {
   return innerTaskData;
 }
 
-var batchConvertDatabaseTaskToInnerTask = function(databaseTaskDataList) {
+var batchConvertDatabaseTaskToInnerTask = function (databaseTaskDataList) {
   var innerTaskList = [];
   for (const key in databaseTaskDataList) {
     if (databaseTaskDataList.hasOwnProperty(key)) {
@@ -72,18 +72,18 @@ var batchConvertDatabaseTaskToInnerTask = function(databaseTaskDataList) {
 
 //该方法，传入taskMediaList，标识数据库媒体列表
 //将处理并且排序后的 plan和complete两个list打包返回
-var getUploadMediaList = function(openId, taskId, taskMediaList) {
+var getUploadMediaList = function (openId, taskId, taskMediaList) {
   let taskPlanUploadMediaList = [];
   let taskCompleteUploadMediaList = [];
   for (let index = 0; index < taskMediaList.length; index++) {
     const element = taskMediaList[index];
     //匹配字符串，定位
-    if (element.match(openId+'_'+taskId+'_plan')) {
-      let i = element.charAt(element.search('plan_')+5);
+    if (element.match(openId + '_' + taskId + '_plan')) {
+      let i = element.charAt(element.search('plan_') + 5);
       //因为只有9张，所以可以采用这种tricky方法
       taskPlanUploadMediaList[i] = element;
-    } else if (element.match(openId+'_'+taskId+'_complete')) {
-      let i = element.charAt(element.search('complete_')+9);
+    } else if (element.match(openId + '_' + taskId + '_complete')) {
+      let i = element.charAt(element.search('complete_') + 9);
       //因为只有9张，所以可以采用这种tricky方法
       taskCompleteUploadMediaList[i] = element;
     }
@@ -92,11 +92,11 @@ var getUploadMediaList = function(openId, taskId, taskMediaList) {
   return {
     'taskPlan': taskPlanUploadMediaList,
     'taskComplete': taskCompleteUploadMediaList,
-  }; 
+  };
 }
 
 //更新当前数据库中的用户数据，如果携带openId，则update，未携带add添加
-var uploadUserInfoToDatabase = function(event) {
+var uploadUserInfoToDatabase = function (event) {
   if (event.openId) {
     //如果数据库中已经有存储，则直接更新数据库
     userInfo.where({
@@ -112,7 +112,7 @@ var uploadUserInfoToDatabase = function(event) {
     // 如果数据库没有数据，则添加数据
     userInfo.add({
       data: event.data,
-    }).then( userInfoDatabaseRes => {
+    }).then(userInfoDatabaseRes => {
       event.success(userInfoDatabaseRes);
     }).catch(err => {
       event.fail(err);
@@ -120,7 +120,7 @@ var uploadUserInfoToDatabase = function(event) {
   }
 }
 
-var addTaskToDatabase = function(event) {
+var addTaskToDatabase = function (event) {
   // console.log(event);
   // taskInfo.add({
   //   data: this.convertInnerTaskToDatabaseTask(that.data),
@@ -130,19 +130,19 @@ var addTaskToDatabase = function(event) {
   // });
 }
 
-var updateTaskToDatabase = function() {
-  
+var updateTaskToDatabase = function () {
+
 }
 
-var getAllTaskList = function(event) {
+var getAllTaskList = function (event) {
   taskInfo.orderBy('pubTime', 'desc').get({
-    success:(taskInfoRes => {
+    success: (taskInfoRes => {
       event.success(taskInfoRes);
     })
   })
 }
 
-var getCurrentUserOpenId = function(event) {
+var getCurrentUserOpenId = function (event) {
   wx.getStorage({
     key: 'openid',
     success: (res => {
@@ -151,10 +151,10 @@ var getCurrentUserOpenId = function(event) {
   });
 }
 
-var getCurrentUserTaskListWithStatusType = function(event) {
+var getCurrentUserTaskListWithStatusType = function (event) {
   if (event.openId) {
     taskInfo.where({
-      openId: event.openId,  //当前用户 openId
+      openId: event.openId, //当前用户 openId
       status: (event.type == 'doing' ? _.or(0, 1, 2) : _.or(3, 4))
     }).skip(event.page * 20).orderBy('pubTime', 'desc').get({
       success: (taskInfoRes => {
@@ -180,7 +180,7 @@ var getCurrentUserTaskListWithStatusType = function(event) {
   }
 }
 
-var getCurrentUserTaskList = function(event) {
+var getCurrentUserTaskList = function (event) {
   if (event.openId) {
     taskInfo.where({
       openId: event.openId // 填入当前用户 openid
@@ -208,7 +208,7 @@ var getCurrentUserTaskList = function(event) {
 }
 
 //返回用户的openId 及 当前用户的其他信息
-var getCurrentUserInfo = function(event) {
+var getCurrentUserInfo = function (event) {
   if (event.openId) {
     userInfo.where({
       _openid: event.openId
@@ -248,8 +248,9 @@ var getCurrentUserInfo = function(event) {
 // 传入数据
 // 1.具体操作行为 operate (String)
 // 方法内部自动获取当前任务信息、操作者的信息，当前操作时间，进行数据拼装
-var addUserOperationMsgWithOperateAndCurrentTaskInfo = function(userOperationMsg) {
+var addUserOperationMsgWithOperateAndCurrentTaskInfo = function (userOperationMsg) {
   let taskId = userOperationMsg.taskInfo.taskId;
+  let taskTitle = userOperationMsg.taskInfo.taskTitle;
   let taskUserOpenId = userOperationMsg.taskInfo.openId;
   let taskUserNickName = userOperationMsg.taskInfo.nickName;
   let operationType = userOperationMsg.operationType;
@@ -257,12 +258,45 @@ var addUserOperationMsgWithOperateAndCurrentTaskInfo = function(userOperationMsg
   //获取当前用户信息
   var that = this;
   getCurrentUserInfo({
-    success: function(currentUserOpenId, userInfoRes) {
+    success: function (currentUserOpenId, userInfoRes) {
       let operateUserOpenId = currentUserOpenId;
       let operateUserNickName = userInfoRes.data[0].nickName;
       let operateUserAvatarUrl = userInfoRes.data[0].avatarUrl;
+
+      //根据operate 和 taskId taskName生成描述
+      var operateDesc = '';
+      switch (operationType) {
+        case 'create':
+          operateDesc = '创建了任务'+'「'+taskTitle+'」';
+          break;
+        case 'cancel':
+          operateDesc = '取消了任务'+'「'+taskTitle+'」';
+          break;
+        case 'modify':
+          operateDesc = '修改了任务'+'「'+taskTitle+'」';
+          break;
+        case 'giveup':
+          operateDesc = '放弃了任务'+'「'+taskTitle+'」';
+          break;
+        case 'support':
+          operateDesc = '支持了任务'+'「'+taskTitle+'」';
+          break;
+        case 'oppose':
+          operateDesc = '反对了任务'+'「'+taskTitle+'」';
+          break;
+        case 'complete':
+          operateDesc = '修改任务'+'「'+taskTitle+'」状态成功';
+          break;
+        case 'complete':
+          operateDesc = '修改任务'+'「'+taskTitle+'」状态失败';;
+          break;  
+        default:
+          break;
+      }
+    
       addUserOperationMsgToDatabase({
         taskId: taskId,
+        taskTitle: taskTitle,
         taskUserInfo: {
           openId: taskUserOpenId,
           nickName: taskUserNickName,
@@ -275,11 +309,13 @@ var addUserOperationMsgWithOperateAndCurrentTaskInfo = function(userOperationMsg
         operateInfo: {
           operationType: operationType,
           operateTime: operateTime,
+          operateDesc: operateDesc,
         },
       });
     },
   })
 }
+
 
 // taskOperateMsgInfo
 // 将任务操作信息更新至数据库
@@ -299,14 +335,50 @@ var addUserOperationMsgWithOperateAndCurrentTaskInfo = function(userOperationMsg
 // 4.行为数据 operateInfo
 //     4.1 具体行为 operate (String)
 //     4.2 行为发起时间 operateTime (timestamp)
-var addUserOperationMsgToDatabase = function(userOperationMsg) {
+var addUserOperationMsgToDatabase = function (userOperationMsg) {
   console.log('userOperationMsg', userOperationMsg)
   taskOperateMsgInfo.add({
     data: userOperationMsg,
   });
 }
 
-module.exports={
+//返回当前用户的消息记录
+var getCurrentUserMsgList = function (event) {
+  if (event.openId) {
+    taskOperateMsgInfo.where({
+      taskUserInfo: {
+        openId: event.openId, // 填入当前用户 openid
+      }
+    }).orderBy('operateInfo.operateTime', 'desc').get({
+      success: (msgListRes => {
+        event.success(msgListRes.data)
+      })
+    });
+  } else {
+    wx.getStorage({
+      key: 'openid',
+      success: (res => {
+        userInfo.where({
+          _openid: res.data, // 填入当前用户 openid
+        }).get({
+          success: (userInfoRes => {
+            taskOperateMsgInfo.where({
+              taskUserInfo: {
+                openId: res.data, // 填入当前用户 openid
+              }
+            }).orderBy('operateInfo.operateTime', 'desc').get({
+              success: (msgListRes => {
+                event.success(msgListRes.data)
+              })
+            });
+          })
+        })
+      })
+    });
+  }
+}
+
+module.exports = {
   debugLog: debugLog,
   convertInnerTaskToDatabaseTask: convertInnerTaskToDatabaseTask,
   convertDatabaseTaskToInnerTask: convertDatabaseTaskToInnerTask,
@@ -321,4 +393,5 @@ module.exports={
   getCurrentUserInfo: getCurrentUserInfo,
   addUserOperationMsgWithOperateAndCurrentTaskInfo: addUserOperationMsgWithOperateAndCurrentTaskInfo,
   addUserOperationMsgToDatabase: addUserOperationMsgToDatabase,
+  getCurrentUserMsgList: getCurrentUserMsgList,
 }

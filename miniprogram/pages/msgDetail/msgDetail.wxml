@@ -1,2 +1,2 @@
 <!--miniprogram/pages/msgDetail/msgDetail.wxml-->
-<pm-announcement-list></pm-announcement-list>
+<pm-announcement-list userMsgList='{{userMsgList}}'></pm-announcement-list>

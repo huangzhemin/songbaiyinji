@@ -73,8 +73,15 @@ Page({
 
   // 跳转至消息页
   onMsgClick: function(event) {
+    let that = this;
     wx.navigateTo({
       url: '/pages/msgDetail/msgDetail',
-    })
+      success: function(res) {
+        // 通过eventChannel向被打开页面传送数据
+        res.eventChannel.emit('acceptDataFromOpenerPage', { 
+          'openId': that.data.openId,   //类似'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
+        })
+      }
+    });
   }
 })

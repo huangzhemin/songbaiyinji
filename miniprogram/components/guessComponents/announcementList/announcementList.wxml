@@ -1,9 +1,9 @@
 <!--components/announcementList/announcementList.wxml-->
-<block wx:for='{{announcementList}}' wx:for-index="idx" wx:key="idx">
+<block wx:for='{{userMsgList}}' wx:for-index="idx" wx:key="idx">
   <pm-announcement-cell 
-    avatar="{{item.avatar}}"
-    nickName="{{item.nickName}}" 
-    desc="{{item.desc}}"
-    msgTime="{{item.msgTime}}" >
+    avatar="{{item.operateUserInfo.avatarUrl}}"
+    nickName="{{item.operateUserInfo.nickName}}"
+    desc="{{item.operateInfo.operateDesc}}"
+    msgTime="{{item.operateInfo.operateTime}}" >
   </pm-announcement-cell>
 </block>
