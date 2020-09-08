@@ -2,7 +2,6 @@
 const db = wx.cloud.database()
 const taskInfo = db.collection('taskInfo')
 var util = require('../../util.js')
-
 Page({
 
   /**
@@ -10,6 +9,7 @@ Page({
    */
   data: {
     taskId: "",
+    openId: '',
     status: 0,  //进行中
 
     taskTitle: "",
@@ -26,7 +26,6 @@ Page({
     thumbImg: "",
     taskMediaList: [],
 
-    openId: '',
     avatar: '',
     nickName: '',
     pubTime: '',

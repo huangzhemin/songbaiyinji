@@ -40,6 +40,7 @@
     "pm-find-task-list": "components/taskComponents/findTaskList/findTaskList",
     "pm-doing-task-list": "components/taskComponents/doingTaskList/doingTaskList",
     "pm-over-task-list": "components/taskComponents/overTaskList/overTaskList",
+    "pm-task-detail": "components/taskComponents/taskDetailComponents/taskDetailComponents",
     "pm-announcement-cell": "components/guessComponents/announcementCell/announcementCell",
     "pm-announcement-list": "components/guessComponents/announcementList/announcementList",
     "pm-ranking-list": "components/rankingComponents/userRankingList/userRankingList",

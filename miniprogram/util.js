@@ -137,6 +137,7 @@ var updateTaskToDatabase = function () {
 var getAllTaskList = function (event) {
   taskInfo.orderBy('pubTime', 'desc').get({
     success: (taskInfoRes => {
+      console.log(taskInfoRes);
       event.success(taskInfoRes);
     })
   })
@@ -294,7 +295,7 @@ var addUserOperationMsgWithOperateAndCurrentTaskInfo = function (userOperationMs
           break;
       }
     
-      addUserOperationMsgToDatabase({
+      p_addUserOperationMsgToDatabase({
         taskId: taskId,
         taskTitle: taskTitle,
         taskUserInfo: {
@@ -335,7 +336,7 @@ var addUserOperationMsgWithOperateAndCurrentTaskInfo = function (userOperationMs
 // 4.行为数据 operateInfo
 //     4.1 具体行为 operate (String)
 //     4.2 行为发起时间 operateTime (timestamp)
-var addUserOperationMsgToDatabase = function (userOperationMsg) {
+var p_addUserOperationMsgToDatabase = function (userOperationMsg) {
   console.log('userOperationMsg', userOperationMsg)
   taskOperateMsgInfo.add({
     data: userOperationMsg,
@@ -392,6 +393,5 @@ module.exports = {
   getCurrentUserTaskList: getCurrentUserTaskList,
   getCurrentUserInfo: getCurrentUserInfo,
   addUserOperationMsgWithOperateAndCurrentTaskInfo: addUserOperationMsgWithOperateAndCurrentTaskInfo,
-  addUserOperationMsgToDatabase: addUserOperationMsgToDatabase,
   getCurrentUserMsgList: getCurrentUserMsgList,
 }

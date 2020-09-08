@@ -1,4 +1,8 @@
 <!--miniprogram/pages/createTask/createTask.wxml-->
+
+<!-- <pm-task-detail>
+</pm-task-detail> -->
+
 <view>
   <van-row>
     <van-col class='taskTitle' span="24" >
