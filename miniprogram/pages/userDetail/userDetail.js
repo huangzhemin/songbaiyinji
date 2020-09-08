@@ -29,8 +29,12 @@ Page({
     eventChannel.on('acceptDataFromOpenerPage', function (data) {
       that.data.openId = data.openId;
       that.data.userInfo.customUserInfo.userRanking = data.userRanking;
-    });
 
+      that.loadUserDetailInfo();
+    });
+  },
+
+  loadUserDetailInfo: function() {
     wx.showLoading({
       title: '加载中..',
     })
@@ -39,6 +43,7 @@ Page({
     var promiseArr = [];
     var userInfo = {};
     var taskInfo = {};
+    var that = this;
 
     let promiseUserInfo = new Promise((resolve, reject) => {
       util.getCurrentUserInfo({

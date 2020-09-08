@@ -33,26 +33,34 @@ var convertInnerTaskToDatabaseTask = function (innerTaskData) {
   return databaseTaskData;
 }
 
+var p_validStr = function(inputStr) {
+  return !(typeof(inputStr) == '' || typeof(inputStr) == 'undefined' || inputStr == undefined || inputStr.length == 0);
+}
+
+var p_validList = function(inputList) {
+  return !(typeof(inputList) == [] || inputList == undefined || inputList.length == 0);
+}
+
 var convertDatabaseTaskToInnerTask = function (databaseTaskData) {
   // console.log(databaseTaskData);
   let innerTaskData = {
-    'taskId': (databaseTaskData['taskId'] ? databaseTaskData['taskId'] : ""),
-    'openId': (databaseTaskData['openId'] ? databaseTaskData['openId'] : ""),
-    'status': (databaseTaskData['status'] ? databaseTaskData['status'] : 0),
-    'taskTitle': (databaseTaskData['taskTitle'] ? databaseTaskData['taskTitle'] : ""),
+    'taskId': p_validStr(databaseTaskData['taskId']) ? databaseTaskData['taskId'] : '',
+    'openId': p_validStr(databaseTaskData['openId']) ? databaseTaskData['openId'] : '',
+    'status': databaseTaskData['status'],
+    'taskTitle': p_validStr(databaseTaskData['taskTitle']) ? databaseTaskData['taskTitle'] : '',
     'taskPlan': {
-      'taskDesc': (databaseTaskData['taskPlanDesc'] ? databaseTaskData['taskPlanDesc'] : ""),
+      'taskDesc': p_validStr(databaseTaskData['taskPlanDesc']) ? databaseTaskData['taskPlanDesc'] : '',
     },
     'taskComplete': {
-      'taskDesc': (databaseTaskData['taskCompleteDesc'] ? databaseTaskData['taskCompleteDesc'] : ""),
+      'taskDesc': p_validStr(databaseTaskData['taskCompleteDesc']) ? databaseTaskData['taskCompleteDesc'] : '',
     },
-    'taskMediaList': (databaseTaskData['taskMediaList'] ? databaseTaskData['taskMediaList'] : []),
-    'thumbImg': (databaseTaskData['thumbImg'] ? databaseTaskData['thumbImg'] : ""),
-    'avatar': (databaseTaskData['avatar'] ? databaseTaskData['avatar'] : ""),
-    'nickName': (databaseTaskData['nickName'] ? databaseTaskData['nickName'] : ""),
-    'pubTime': (databaseTaskData['pubTime'] ? databaseTaskData['pubTime'] : 0),
-    'supportUserList': (databaseTaskData['supportUserList'] ? databaseTaskData['supportUserList'] : []),
-    'opposeUserList': (databaseTaskData['opposeUserList'] ? databaseTaskData['opposeUserList'] : []),
+    'taskMediaList': p_validList(databaseTaskData['taskMediaList']) ? databaseTaskData['taskMediaList'] : [],
+    'thumbImg': p_validStr(databaseTaskData['thumbImg']) ? databaseTaskData['thumbImg'] : '',
+    'avatar': p_validStr(databaseTaskData['avatar']) ? databaseTaskData['avatar'] : '',
+    'nickName': p_validStr(databaseTaskData['nickName']) ? databaseTaskData['nickName'] : '',
+    'pubTime': databaseTaskData['pubTime'],
+    'supportUserList': p_validList(databaseTaskData['supportUserList']) ? databaseTaskData['supportUserList'] : [],
+    'opposeUserList': p_validList(databaseTaskData['opposeUserList']) ? databaseTaskData['opposeUserList'] : [],
     'canJudge': databaseTaskData['canJudge'],
   };
   // console.log(innerTaskData);

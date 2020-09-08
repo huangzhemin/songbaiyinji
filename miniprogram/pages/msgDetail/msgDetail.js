@@ -28,18 +28,18 @@ Page({
     var that = this;
     eventChannel.on('acceptDataFromOpenerPage', function (data) {
       that.data.openId = data.openId;
-    });
 
-    //2.数据库查询，根据当前用户 openId，倒排查询
-    util.getCurrentUserMsgList({
-      openId: that.data.openId,
-      success: function(userMsgList) {
-        //完成具体的展示逻辑
-        console.log(userMsgList);
-        that.setData({
-          userMsgList: userMsgList,
-        });
-      }
+      //2.数据库查询，根据当前用户 openId，倒排查询
+      util.getCurrentUserMsgList({
+        openId: that.data.openId,
+        success: function(userMsgList) {
+          //完成具体的展示逻辑
+          console.log(userMsgList);
+          that.setData({
+            userMsgList: userMsgList,
+          });
+        }
+      });
     });
   },
 })

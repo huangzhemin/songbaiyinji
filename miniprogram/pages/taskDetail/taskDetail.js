@@ -61,10 +61,7 @@ Page({
     ],
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
-  onLoad: function (options) {
+  onLoad: function(options) {
     //获取传入参数
     const eventChannel = this.getOpenerEventChannel()
     // 监听acceptDataFromOpenerPage事件，获取上一页面通过eventChannel传送到当前页面的数据
@@ -72,12 +69,22 @@ Page({
     eventChannel.on('acceptDataFromOpenerPage', function (data) {
       that.data.openId = data.openId;
       that.data.taskId = data.taskId;
+      that.data.canJudge = data.canJudge,
+      that.data.isSelf = data.isSelf,
       that.setData({
         canJudge: data.canJudge,
         isSelf: data.isSelf,
       });
+      that.loadDetailTaskData();
     })
+  },
 
+  /**
+   * 生命周期函数--监听页面加载
+   */
+  loadDetailTaskData: function () {
+    var that = this;
+    console.log('00000000000000', that.data);
     wx.showLoading({
       title: 'loading...',
     })
@@ -87,6 +94,7 @@ Page({
       taskId: that.data.taskId,
     }).get().then(res => {
       //将当前的任务数据，赋值到本地
+      console.log('111111111', res.data[0]);
       that.data = util.convertDatabaseTaskToInnerTask(res.data[0]);
       //上传媒体单独处理
       let uploadMediaListDic = util.getUploadMediaList(that.data.openId,
