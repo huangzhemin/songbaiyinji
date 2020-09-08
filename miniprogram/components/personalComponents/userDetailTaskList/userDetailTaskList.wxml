@@ -8,6 +8,8 @@
     thumbImg='{{item.thumbImg}}'
     avatar='{{item.avatar}}'
     nickName='{{item.nickName}}'
-    pubTime='{{item.pubTime}}'>
+    pubTime='{{item.pubTime}}'
+    taskUserOpenId='{{item.openId}}'
+    taskId='{{item.taskId}}'>
   </pm-task-cell>
 </block>

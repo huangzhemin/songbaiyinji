@@ -92,6 +92,7 @@ Page({
       let uploadMediaListDic = util.getUploadMediaList(that.data.openId,
                                                        that.data.taskId,
                                                        that.data.taskMediaList);
+      console.log('a0000000', that.data);
       //刷新页面                                                        
       that.setData({
         taskTitle: that.data.taskTitle,
@@ -101,6 +102,7 @@ Page({
         ['taskComplete.taskDesc']: that.data.taskComplete.taskDesc,
         ['taskComplete.uploadMediaList']: uploadMediaListDic['taskComplete'],
       });
+      console.log('b0000000', that.data);
     }).then(res1 => {
       wx.hideLoading();
     });
@@ -154,10 +156,12 @@ Page({
 
   //非当前用户，猜一猜相关
   onGuessPannelClick: function (event) {
+    console.log('00000000', this.data);
     let targetId = event.target['id'];
     var that = this;
     var guessSuccess = false;
     var operationType = '';
+    console.log('10000000', that.data);
     util.getCurrentUserOpenId({
       success: function (openId) {
         if (targetId == 'support') {
@@ -236,72 +240,64 @@ Page({
   ////////////////////////////////////
 
   updateTaskToDatabase: function (event) {
+    console.log('11111111111', this.data);
     var that = this;
     //此处赋值任务状态，是继续进行，还是放弃
     that.data.status = event.status;
-    //先拉取任务信息
-    this.getTaskInfo({
-      success: function (res) {
-        //更新资源信息
-        that.uploadMedias({
+    console.log('1222222', this.data);
+    //更新资源信息
+    console.log('222222222', that.data);
+    that.uploadMedias({
+      openId: that.data.openId,
+      taskId: that.data.taskId,
+      success: function (mediasRes) {
+        //将上传资源生成的fileID，进行管理
+        if (mediasRes && mediasRes.length > 0) {
+          for (const key in mediasRes) {
+            const element = mediasRes[key];
+            //将任务计划的第一张图片，作为缩略图
+            if (element['fileID'].match('plan_0')) {
+              that.data.thumbImg = element['fileID'];
+            }
+            that.data.taskMediaList.push(element['fileID']);
+          }
+        }
+        console.log('33333333', that.data);
+        console.log('33333333', util.convertInnerTaskToDatabaseTask(that.data));
+
+        //制定当前用户、当前任务，进行任务内容的更新
+        taskInfo.where({
           openId: that.data.openId,
           taskId: that.data.taskId,
-          success: function (mediasRes) {
-            //将上传资源生成的fileID，进行管理
-            if (mediasRes && mediasRes.length > 0) {
-              for (const key in mediasRes) {
-                const element = mediasRes[key];
-                //将任务计划的第一张图片，作为缩略图
-                if (element['fileID'].match('plan_0')) {
-                  that.data.thumbImg = element['fileID'];
-                }
-                that.data.taskMediaList.push(element['fileID']);
-              }
-            }
-
-            //制定当前用户、当前任务，进行任务内容的更新
-            taskInfo.where({
-              openId: that.data.openId,
-              taskId: that.data.taskId,
-            }).update({
-              data: util.convertInnerTaskToDatabaseTask(that.data),
-            }).then(taskInfoUpdateRes => {
-              //在任务状态更新完成的时候，需要将当前任务、以及当前任务的操作行为添加到消息数据库，目前先和积分分开处理，后续搬迁到云函数执行
-              util.addUserOperationMsgWithOperateAndCurrentTaskInfo({
-                operationType: event.operationType,
-                taskInfo: that.data
-              });
-              //当前任务完成后的回调，具体执行积分计算 和 页面UI收尾工作
-              event.success(that.data.openId, that.data.taskId);
-            });
-          },
-          fail: function (err) {
-            console.error(err);
-          }
+        }).update({
+          data: util.convertInnerTaskToDatabaseTask(that.data),
+        }).then(taskInfoUpdateRes => {
+          console.log('taskInfoUpdateRes', taskInfoUpdateRes);
+          //在任务状态更新完成的时候，需要将当前任务、以及当前任务的操作行为添加到消息数据库，目前先和积分分开处理，后续搬迁到云函数执行
+          util.addUserOperationMsgWithOperateAndCurrentTaskInfo({
+            operationType: event.operationType,
+            taskInfo: that.data
+          });
+          //当前任务完成后的回调，具体执行积分计算 和 页面UI收尾工作
+          event.success(that.data.openId, that.data.taskId);
         });
+      },
+      fail: function (err) {
+        console.error(err);
       }
     });
   },
 
-  //包含 taskId, avatar，nickName，pubTime
-  getTaskInfo: function (event) {
-    var that = this;
-    util.getCurrentUserInfo({
-      success: function (openId, userInfoRes) {
-        that.data.openId = openId;
-        that.data.avatar = userInfoRes.data[0].avatarUrl;
-        that.data.nickName = userInfoRes.data[0].nickName;
-        // that.data.pubTime = Date.parse(new Date()) / 1000; warning 现阶段先不调整创建时间，后续添加调整时间列表，记录修改历史记录
-        event.success();
-      },
-    })
-  },
-
   uploadMedias: function (event) {
     //上传媒体信息的时候，如果此次没有对列表进行调整的话，这里无需再次上传
+    console.log('teeeeeeeeeeeeeest', this.data);
+    console.log('this.data.taskPlan.uploadMediaList && this.data.taskComplete.uploadMediaList', this.data.taskPlan.uploadMediaList);
+    console.log('this.data.taskPlan.uploadMediaList && this.data.taskComplete.uploadMediaList', this.data.taskComplete.uploadMediaList);
     if (!this.data.taskPlan.uploadMediaList 
         && !this.data.taskComplete.uploadMediaList) {
+      console.log('aaaaaaaaaaaaaaa')
       event.success();
+      return;
     }
 
     //此次操作 对媒体信息有调整
@@ -505,6 +501,7 @@ Page({
   },
 
   onShareBtnClick: function (event) {
+    console.log('x0000000', this.data);
     this.setData({
       showShare: true
     });
