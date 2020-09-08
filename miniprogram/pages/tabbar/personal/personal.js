@@ -21,7 +21,7 @@ Page({
     },
   },
 
-  onLoad: function(options) {
+  onShow: function() {
     // // Do some initialize when page load.
     wx.showLoading({
       title: '加载中...',
