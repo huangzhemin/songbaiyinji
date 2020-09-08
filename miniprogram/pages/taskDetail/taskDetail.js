@@ -134,13 +134,17 @@ Page({
     });
     let targetId = event.target['id'];
     var status = 0;
+    var operationType = '';
     if (targetId == 'modify') {
       status = 0;
+      operationType = 'modify';
     } else if (targetId == 'giveup') {
       status = 4;
+      operationType = 'giveup';
     }
     this.updateTaskToDatabase({
       status: status,
+      operationType: operationType,
       success: function (openId, taskId) {
         wx.hideLoading();
         wx.navigateBack();
@@ -153,6 +157,7 @@ Page({
     let targetId = event.target['id'];
     var that = this;
     var guessSuccess = false;
+    var operationType = '';
     util.getCurrentUserOpenId({
       success: function (openId) {
         if (targetId == 'support') {
@@ -160,6 +165,7 @@ Page({
           if (that.data.supportUserList.indexOf(openId) == -1) {
             that.data.supportUserList.push(openId);
             guessSuccess = true;
+            operationType = 'support';
             wx.showLoading({
               title: '支持成功...',
             });
@@ -173,6 +179,7 @@ Page({
           if (that.data.opposeUserList.indexOf(openId) == -1) {
             that.data.opposeUserList.push(openId);
             guessSuccess = true;
+            operationType = 'oppose';
             wx.showLoading({
               title: '反对成功...',
             });
@@ -187,6 +194,7 @@ Page({
         if (guessSuccess) {
           //如果猜一猜成功，则需要上传数据
           that.updateTaskToDatabase({
+            operationType: operationType,
             success: function (openId, taskId) {
               wx.hideLoading();
               wx.navigateBack();
@@ -204,15 +212,19 @@ Page({
   onJudgePannelClick: function (event) {
     let targetId = event.target['id'];
     var status = 0;
+    var operationType = '';
     if (targetId == 'complete') {
       //如果完成，则任务进入state=3，并更新
       status = 3;
+      operationType = 'complete';
     } else if (targetId == 'fail') {
       //如果失败，则任务进入state=4，并更新
       status = 4;
+      operationType = 'fail';
     }
     var that = this;
     this.updateTaskToDatabase({
+      operationType: operationType,
       status: status,
       success: function (openId, taskId) {
         that.calculatePoints(openId, taskId);
@@ -227,31 +239,39 @@ Page({
     var that = this;
     //此处赋值任务状态，是继续进行，还是放弃
     that.data.status = event.status;
-    //先清理历史的taskMediaList，保证从当前的图片列表中，二次
+    //先拉取任务信息
     this.getTaskInfo({
       success: function (res) {
+        //更新资源信息
         that.uploadMedias({
           openId: that.data.openId,
           taskId: that.data.taskId,
-          success: function (res) {
-            if (res && res.length > 0) {
-              for (const key in res) {
-                if (res.hasOwnProperty(key)) {
-                  const element = res[key];
-                  if (element['fileID'].match('plan_0')) {
-                    that.data.thumbImg = element['fileID'];
-                  }
-                  that.data.taskMediaList.push(element['fileID']);
+          success: function (mediasRes) {
+            //将上传资源生成的fileID，进行管理
+            if (mediasRes && mediasRes.length > 0) {
+              for (const key in mediasRes) {
+                const element = mediasRes[key];
+                //将任务计划的第一张图片，作为缩略图
+                if (element['fileID'].match('plan_0')) {
+                  that.data.thumbImg = element['fileID'];
                 }
+                that.data.taskMediaList.push(element['fileID']);
               }
             }
 
+            //制定当前用户、当前任务，进行任务内容的更新
             taskInfo.where({
               openId: that.data.openId,
               taskId: that.data.taskId,
             }).update({
               data: util.convertInnerTaskToDatabaseTask(that.data),
-            }).then(res1 => {
+            }).then(taskInfoUpdateRes => {
+              //在任务状态更新完成的时候，需要将当前任务、以及当前任务的操作行为添加到消息数据库，目前先和积分分开处理，后续搬迁到云函数执行
+              util.addUserOperationMsgWithOperateAndCurrentTaskInfo({
+                operationType: event.operationType,
+                taskInfo: that.data
+              });
+              //当前任务完成后的回调，具体执行积分计算 和 页面UI收尾工作
               event.success(that.data.openId, that.data.taskId);
             });
           },

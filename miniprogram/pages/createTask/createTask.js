@@ -51,27 +51,41 @@ Page({
       }
   },
 
-  onSubmitClick: function(event) {
+  //用户行为操作
+  //当前用户调整
+  onSelfControlPannelClick: function (event) {
     //展示loadingview
     wx.showLoading({
       title: '上传中...',
       mask: true,
     });
+    let targetId = event.target['id'];
+    var status = 0;
+    var operationType = '';
+    if (targetId == 'create') {
+      status = 0,
+      operationType = 'create';
+    } else if (targetId == 'cancel') {
+      operationType = 'cancel';
+      this.clearTaskContent();
+      wx.hideLoading();
+    }
 
-    var that = this;
-    this.addTaskToDatabase({
-      success: function(res1) {
-        that.clearTaskContent();
-        wx.hideLoading();
-        wx.switchTab({
-          url: '/pages/tabbar/task/task',
-        })
-      }
-    })
-  },
-
-  onCancelClick: function(event) {
-    this.clearTaskContent();
+    //先这样，下午合并的时候，和updateTask一起处理
+    if (targetId == 'create') {
+      var that = this;
+      this.addTaskToDatabase({
+        status: status,
+        operationType: operationType,
+        success: function(res1) {
+          that.clearTaskContent();
+          wx.hideLoading();
+          wx.switchTab({
+            url: '/pages/tabbar/task/task',
+          })
+        }
+      })  
+    }
   },
 
   addTaskToDatabase: function(event) {
@@ -96,6 +110,11 @@ Page({
             taskInfo.add({
               data: util.convertInnerTaskToDatabaseTask(that.data),
             }).then(res2 => {
+              //在任务状态更新完成的时候，需要将当前任务、以及当前任务的操作行为添加到消息数据库，目前先和积分分开处理，后续搬迁到云函数执行
+              util.addUserOperationMsgWithOperateAndCurrentTaskInfo({
+                operationType: event.operationType,
+                taskInfo: that.data
+              });
               event.success(res2);
             });
           },

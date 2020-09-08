@@ -106,10 +106,10 @@
   <!-- 提交取消 -->
   <van-row>
     <van-col offset="3" span="8">
-      <van-button type="primary" plain size="large" bindtap="onSubmitClick">提交</van-button>
+      <van-button type="primary" plain size="large" id='create' bindtap="onSelfControlPannelClick">提交</van-button>
     </van-col>
     <van-col offset="2" span="8">
-      <van-button type="warning" plain size="large" bindtap="onCancelClick">取消</van-button>
+      <van-button type="warning" plain size="large" id='cancel' bindtap="onSelfControlPannelClick">取消</van-button>
     </van-col>
   </van-row>
 </view>

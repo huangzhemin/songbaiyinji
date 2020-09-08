@@ -1,6 +1,7 @@
 const db = wx.cloud.database()
 const taskInfo = db.collection('taskInfo')
 const userInfo = db.collection('userInfo')
+const taskOperateMsgInfo = db.collection('taskOperateMsgInfo')
 const _ = db.command
 
 var debugLog = function(logContent) {
@@ -238,6 +239,73 @@ var getCurrentUserInfo = function(event) {
   }
 }
 
+//将任务信息处理信息更新至消息数据库
+// 二次抽离
+// 其他用户 点击投票（支持、反对）时，在任务数据 更新 任务数据库的同时，触发消息信息生成，并写入消息数据库
+// 志愿决策 点击决策（完成、失败）时，在任务数据 更新 任务数据库的同时，触发消息信息生成，并写入消息数据
+// 当前用户 点击行为（创建、修改、放弃）时，在任务数据 创建 更新 任务数据库的同时，触发消息信息生成，并写入消息数据库
+
+// 传入数据
+// 1.具体操作行为 operate (String)
+// 方法内部自动获取当前任务信息、操作者的信息，当前操作时间，进行数据拼装
+var addUserOperationMsgWithOperateAndCurrentTaskInfo = function(userOperationMsg) {
+  let taskId = userOperationMsg.taskInfo.taskId;
+  let taskUserOpenId = userOperationMsg.taskInfo.openId;
+  let taskUserNickName = userOperationMsg.taskInfo.nickName;
+  let operationType = userOperationMsg.operationType;
+  let operateTime = Date.parse(new Date()) / 1000;
+  //获取当前用户信息
+  var that = this;
+  getCurrentUserInfo({
+    success: function(currentUserOpenId, userInfoRes) {
+      let operateUserOpenId = currentUserOpenId;
+      let operateUserNickName = userInfoRes.data[0].nickName;
+      let operateUserAvatarUrl = userInfoRes.data[0].avatarUrl;
+      addUserOperationMsgToDatabase({
+        taskId: taskId,
+        taskUserInfo: {
+          openId: taskUserOpenId,
+          nickName: taskUserNickName,
+        },
+        operateUserInfo: {
+          openId: operateUserOpenId,
+          nickName: operateUserNickName,
+          avatarUrl: operateUserAvatarUrl,
+        },
+        operateInfo: {
+          operationType: operationType,
+          operateTime: operateTime,
+        },
+      });
+    },
+  })
+}
+
+// taskOperateMsgInfo
+// 将任务操作信息更新至数据库
+// 其他用户 点击投票（支持、反对）时，在任务数据 更新 任务数据库的同时，触发消息信息生成，并写入消息数据库
+// 志愿决策 点击决策（完成、失败）时，在任务数据 更新 任务数据库的同时，触发消息信息生成，并写入消息数据
+// 当前用户 点击行为（创建、修改、放弃）时，在任务数据 创建 更新 任务数据库的同时，触发消息信息生成，并写入消息数据库
+
+// 行为类似，抽离为公共方法，传入参数：
+// 1.当前任务id taskId
+// 2.任务计划者 taskUserInfo
+//     2.1 id openId
+//     2.2 昵称 nickName   
+// 3.当前行为发起者 operateUserInfo
+//     3.1 id openId
+//     3.2 昵称 nickName
+//     3.3 头像 avatarUrl
+// 4.行为数据 operateInfo
+//     4.1 具体行为 operate (String)
+//     4.2 行为发起时间 operateTime (timestamp)
+var addUserOperationMsgToDatabase = function(userOperationMsg) {
+  console.log('userOperationMsg', userOperationMsg)
+  taskOperateMsgInfo.add({
+    data: userOperationMsg,
+  });
+}
+
 module.exports={
   debugLog: debugLog,
   convertInnerTaskToDatabaseTask: convertInnerTaskToDatabaseTask,
@@ -251,4 +319,6 @@ module.exports={
   getCurrentUserTaskListWithStatusType: getCurrentUserTaskListWithStatusType,
   getCurrentUserTaskList: getCurrentUserTaskList,
   getCurrentUserInfo: getCurrentUserInfo,
+  addUserOperationMsgWithOperateAndCurrentTaskInfo: addUserOperationMsgWithOperateAndCurrentTaskInfo,
+  addUserOperationMsgToDatabase: addUserOperationMsgToDatabase,
 }
