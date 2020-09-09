@@ -415,7 +415,7 @@ Component({
           })
         } else if (chooseTaskUploadBtnId == 'taskCompleteUploadClick') {
           this.data.taskCompleteUploadMediaList = currentTaskUploadMediaList;
-          this.data.taskPlanShowUpload = taskShowUpload;
+          this.data.taskCompleteShowUpload = taskShowUpload;
           this.setData({
             taskCompleteUploadMediaList: this.data.taskCompleteUploadMediaList,
             taskCompleteShowUpload: this.data.taskCompleteShowUpload,
@@ -526,27 +526,43 @@ Component({
       //   console.log('result', res);
       // });
     },
-  },
 
-  ///////////////分享相关///////////////
-  onShareBtnClick: function (event) {
-    this.setData({
-      showShare: true
-    });
-  },
+    ///////////////分享相关///////////////
+  /**
+   * 用户点击右上角分享
+   */
+    onShareAppMessage: function (res) {
+      console.log(res)
+      if (res.from === 'sharePannel') {
+        // 来自页面内转发按钮
+        console.log(res.target)
+      }
+      return {
+        title: this.data.taskTitle,
+        path: '/page/taskDetail/taskDetail'
+      }
+    },
 
-  onSharePannelClose: function (event) {
-    this.setData({
-      showShare: false
-    });
-  },
+    onShareBtnClick: function (event) {
+      console.log('onShareBtnClick', event);
+      this.setData({
+        showShare: true
+      });
+    },
 
-  onSharePannelSelect: function (event) {
-    let res = {
-      from: "sharePannel",
-      target: event.detail["icon"]
-    };
-    this.onShareAppMessage(res);
-    this.onSharePannelClose();
+    onSharePannelClose: function (event) {
+      this.setData({
+        showShare: false
+      });
+    },
+
+    onSharePannelSelect: function (event) {
+      let res = {
+        from: "sharePannel",
+        target: event.detail["icon"]
+      };
+      this.onShareAppMessage(res);
+      this.onSharePannelClose();
+    },
   },
 })
