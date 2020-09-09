@@ -245,6 +245,64 @@ Component({
       });
     },
 
+    addTaskToDatabase: function(event) {
+      //在添加之前，需要使用当前用户已经创建的task数量，计算出当前的taskid
+      let that = this;
+      this.getTaskInfo({
+        success:function(res) {
+          that.uploadMedias({
+            openId: that.data.openId,
+            taskId: that.data.taskId,
+            success: function(res1) {
+              for (const key in res1) {
+                if (res1.hasOwnProperty(key)) {
+                  const element = res1[key];
+                  if (element['fileID'].match('plan_0')) {
+                    that.data.thumbImg = element['fileID'];
+                  }
+                  that.data.taskMediaList.push(element['fileID']);
+                }
+              }
+  
+              taskInfo.add({
+                data: util.convertInnerTaskToDatabaseTask(that.data),
+              }).then(res2 => {
+                //在任务状态更新完成的时候，需要将当前任务、以及当前任务的操作行为添加到消息数据库，目前先和积分分开处理，后续搬迁到云函数执行
+                util.addUserOperationMsgWithOperateAndCurrentTaskInfo({
+                  operationType: event.operationType,
+                  taskInfo: that.data
+                });
+                event.success(res2);
+              });
+            },
+            fail: function(err) {
+              console.error(err);
+            }
+          });
+        }
+      });
+    },
+  
+    //包含 taskId, avatar，nickName，pubTime
+    getTaskInfo: function(event) {
+      var that = this;
+      util.getCurrentUserTaskList({
+        success: function(taskInfoRes) {
+          console.log('createTask currentTaskInfoLength:'+taskInfoRes.data.length);
+          that.data.taskId = 'task'+taskInfoRes.data.length;
+          util.getCurrentUserInfo({
+            success: function(openId, userInfoRes) {
+              that.data.openId = openId;
+              that.data.avatar = userInfoRes.data[0].avatarUrl;
+              that.data.nickName = userInfoRes.data[0].nickName;
+              that.data.pubTime = Date.parse(new Date()) / 1000;
+              event.success();
+            },
+          })
+        }
+      });
+    },
+
     //非当前用户，猜一猜相关
     onGuessPannelClick: function (event) {
       let targetId = event.target['id'];
@@ -422,7 +480,7 @@ Component({
           continue;
         }
         let promise = new Promise((resolve, reject) => {
-          //此处后续需要优化为 openid + taskid + plan/complete + index
+          //此处path拼接规则 openid + taskid + plan/complete + index
           let userMediaCloudPath = event.openId + '_' + event.taskId + '_' + type + '_' + i.toString() + '.png'; //此处需要结合用户登录态的openid，随机函数也需要优化
           wx.cloud.uploadFile({
             cloudPath: userMediaCloudPath,

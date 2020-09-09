@@ -1,9 +1,5 @@
 // miniprogram/pages/taskDetail/taskDetail.js
-const db = wx.cloud.database()
-const taskInfo = db.collection('taskInfo')
-const util = require('../../util.js')
 Page({
-
   /**
    * 页面的初始数据
    */
