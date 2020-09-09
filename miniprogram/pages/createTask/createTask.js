@@ -11,6 +11,8 @@ Page({
     taskId: "",
     openId: '',
     status: 0,  //进行中
+    canJudge: false,
+    isSelf: false,
 
     taskTitle: "",
     taskPlanDesc: "",
@@ -31,6 +33,22 @@ Page({
     promiseArr: [],
   },
 
+  onTabItemTap: function(item) {
+    let that = this;
+    util.getCurrentUserInfo({
+      success: function(currentUserOpenId, userInfoRes) {
+        console.log('currentUserOpenId', currentUserOpenId),
+        console.log('userInfoRes', userInfoRes),
+        that.setData({
+          openId: currentUserOpenId,
+          taskId: '',
+          canJudge: userInfoRes.data[0].canJudge,
+          isSelf: true,
+        });
+      }
+    });
+  },
+
   onContentChange: function(event) {
     let currentChangeFieldId = event.currentTarget['id'];
     switch (currentChangeFieldId) {
@@ -46,43 +64,6 @@ Page({
       default:
         console.log(currentChangeFieldId+event.detail);
       }
-  },
-
-  //用户行为操作
-  //当前用户调整
-  onSelfControlPannelClick: function (event) {
-    //展示loadingview
-    wx.showLoading({
-      title: '上传中...',
-      mask: true,
-    });
-    let targetId = event.target['id'];
-    var status = 0;
-    var operationType = '';
-    if (targetId == 'create') {
-      status = 0,
-      operationType = 'create';
-    } else if (targetId == 'cancel') {
-      operationType = 'cancel';
-      this.clearTaskContent();
-      wx.hideLoading();
-    }
-
-    //先这样，下午合并的时候，和updateTask一起处理
-    if (targetId == 'create') {
-      var that = this;
-      this.addTaskToDatabase({
-        status: status,
-        operationType: operationType,
-        success: function(res1) {
-          that.clearTaskContent();
-          wx.hideLoading();
-          wx.switchTab({
-            url: '/pages/tabbar/task/task',
-          })
-        }
-      })  
-    }
   },
 
   addTaskToDatabase: function(event) {

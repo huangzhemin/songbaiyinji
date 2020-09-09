@@ -32,32 +32,32 @@ var convertInnerTaskToDatabaseTask = function (innerTaskData) {
   return databaseTaskData;
 }
 
-var p_validStr = function(inputStr) {
+var validStr = function(inputStr) {
   return !(typeof(inputStr) == '' || typeof(inputStr) == 'undefined' || inputStr == undefined || inputStr.length == 0);
 }
 
-var p_validList = function(inputList) {
+var validList = function(inputList) {
   return !(typeof(inputList) == [] || inputList == undefined || inputList.length == 0);
 }
 
 var convertDatabaseTaskToInnerTask = function (databaseTaskData) {
   // console.log(databaseTaskData);
   let innerTaskData = {
-    'taskId': p_validStr(databaseTaskData['taskId']) ? databaseTaskData['taskId'] : '',
-    'openId': p_validStr(databaseTaskData['openId']) ? databaseTaskData['openId'] : '',
+    'taskId': validStr(databaseTaskData['taskId']) ? databaseTaskData['taskId'] : '',
+    'openId': validStr(databaseTaskData['openId']) ? databaseTaskData['openId'] : '',
     'status': databaseTaskData['status'] != undefined ? databaseTaskData['status'] : 0,
-    'taskTitle': p_validStr(databaseTaskData['taskTitle']) ? databaseTaskData['taskTitle'] : '',
-    'taskPlanDesc': p_validStr(databaseTaskData['taskPlanDesc']) ? databaseTaskData['taskPlanDesc'] : '',
+    'taskTitle': validStr(databaseTaskData['taskTitle']) ? databaseTaskData['taskTitle'] : '',
+    'taskPlanDesc': validStr(databaseTaskData['taskPlanDesc']) ? databaseTaskData['taskPlanDesc'] : '',
     'taskPlanUploadMediaList': [],  //这里需要在每次读取的时候，设置初始值，防止undefined影响数组逻辑
-    'taskCompleteDesc': p_validStr(databaseTaskData['taskCompleteDesc']) ? databaseTaskData['taskCompleteDesc'] : '',
+    'taskCompleteDesc': validStr(databaseTaskData['taskCompleteDesc']) ? databaseTaskData['taskCompleteDesc'] : '',
     'taskCompleteUploadMediaList': [], //这里需要在每次读取的时候，设置初始值，防止undefined影响数组逻辑
-    'taskMediaList': p_validList(databaseTaskData['taskMediaList']) ? databaseTaskData['taskMediaList'] : [],
-    'thumbImg': p_validStr(databaseTaskData['thumbImg']) ? databaseTaskData['thumbImg'] : '',
-    'avatar': p_validStr(databaseTaskData['avatar']) ? databaseTaskData['avatar'] : '',
-    'nickName': p_validStr(databaseTaskData['nickName']) ? databaseTaskData['nickName'] : '',
+    'taskMediaList': validList(databaseTaskData['taskMediaList']) ? databaseTaskData['taskMediaList'] : [],
+    'thumbImg': validStr(databaseTaskData['thumbImg']) ? databaseTaskData['thumbImg'] : '',
+    'avatar': validStr(databaseTaskData['avatar']) ? databaseTaskData['avatar'] : '',
+    'nickName': validStr(databaseTaskData['nickName']) ? databaseTaskData['nickName'] : '',
     'pubTime': databaseTaskData['pubTime'] != undefined ? databaseTaskData['pubTime'] : 0,
-    'supportUserList': p_validList(databaseTaskData['supportUserList']) ? databaseTaskData['supportUserList'] : [],
-    'opposeUserList': p_validList(databaseTaskData['opposeUserList']) ? databaseTaskData['opposeUserList'] : [],
+    'supportUserList': validList(databaseTaskData['supportUserList']) ? databaseTaskData['supportUserList'] : [],
+    'opposeUserList': validList(databaseTaskData['opposeUserList']) ? databaseTaskData['opposeUserList'] : [],
   };
   // console.log(innerTaskData);
   return innerTaskData;
@@ -398,4 +398,6 @@ module.exports = {
   getCurrentUserInfo: getCurrentUserInfo,
   addUserOperationMsgWithOperateAndCurrentTaskInfo: addUserOperationMsgWithOperateAndCurrentTaskInfo,
   getCurrentUserMsgList: getCurrentUserMsgList,
+  validStr: validStr,
+  validList: validList,
 }

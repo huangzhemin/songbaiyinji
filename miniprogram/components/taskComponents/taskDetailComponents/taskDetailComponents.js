@@ -85,12 +85,18 @@ Component({
 
   observers: {
     'propertyTaskId, propertyOpenId': function (propertyTaskId, propertyOpenId) {
-      //底层页 变量不会随时变换，这里改变必然伴随外部page传值                                             
+      //底层页 变量不会随时变换，这里改变必然伴随外部page传值               
+      console.log('propertyTaskId', propertyTaskId);
+      console.log('propertyOpenId', propertyOpenId);
       this.data.taskId = propertyTaskId;
       this.data.openId = propertyOpenId;
       if (propertyTaskId && propertyOpenId) {         
         //只有在父组件数据准备好，刷新完成后，根据字段变化情况，监听有值时，触发组件读取
-        this.componentLoadPage();  
+        console.log('componentLoadPage');
+        this.componentLoadPage();
+      } else if (propertyOpenId && !util.validStr(propertyTaskId)) {
+        console.log('createTaskPage');
+        this.createTaskPage();
       }
     },
   },
@@ -99,6 +105,13 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    createTaskPage: function(event) {
+      this.setData({
+        canJudge: this.properties.propertyCanJudge,
+        isSelf: this.properties.propertyIsSelf,
+      });
+    },
+
     componentLoadPage: function (event) {
       var that = this;
       console.log('00000000000000', that.data);
@@ -175,21 +188,58 @@ Component({
       let targetId = event.target['id'];
       var status = 0;
       var operationType = '';
-      if (targetId == 'modify') {
+      if (targetId == 'create') {
+        status = 0,
+        operationType = 'create';
+      } else if (targetId == 'modify') {
         status = 0;
         operationType = 'modify';
       } else if (targetId == 'giveup') {
         status = 4;
         operationType = 'giveup';
+      } else if (targetId == 'cancel') {
+        operationType = 'cancel';
+        this.clearTaskContent();
+        wx.hideLoading();
+        return;
       }
-      this.updateTaskToDatabase({
-        status: status,
-        operationType: operationType,
-        success: function (openId, taskId) {
-          wx.hideLoading();
-          wx.navigateBack();
-        }
-      })
+
+      if (targetId == 'create') {
+        var that = this;
+        this.addTaskToDatabase({
+          status: status,
+          operationType: operationType,
+          success: function(res1) {
+            that.clearTaskContent();
+            wx.hideLoading();
+            wx.switchTab({
+              url: '/pages/tabbar/task/task',
+            })
+          }
+        })
+      } else {
+        this.updateTaskToDatabase({
+          status: status,
+          operationType: operationType,
+          success: function (openId, taskId) {
+            wx.hideLoading();
+            wx.navigateBack();
+          }
+        })
+      }
+    },
+
+    clearTaskContent: function(event) {
+      this.setData({
+        taskTitle: '',
+        taskPlanDesc: "",
+        taskPlanUploadMediaList: [],
+        taskPlanShowUpload: true,
+        taskCompleteDesc: "",
+        taskCompleteUploadMediaList: [],
+        taskCompleteShowUpload: true,
+        taskMediaList: [],
+      });
     },
 
     //非当前用户，猜一猜相关

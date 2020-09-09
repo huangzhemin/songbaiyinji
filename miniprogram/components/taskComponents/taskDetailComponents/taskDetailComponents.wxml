@@ -1,6 +1,8 @@
 <!--components/taskComponents/taskDetailComponents/taskDetailComponents.wxml-->
 <!-- 计划标题 -->
-<view wx:if="{{taskTitle}}">
+<!-- warning 这里展示条件 -->
+<!-- <view wx:if="{{openId}}"> -->
+<view>
   <van-row>
     <van-col class='taskTitle' span="24" >
       <!-- 如果是自己 而且 当前状态是进行中 则可修改 -->
@@ -168,8 +170,20 @@
     open-type="share"
   />
 
+  <!-- 提交取消 -->
+  <block wx:if="{{isSelf && status==0 && taskId==''}}">
+    <van-row>
+      <van-col offset="3" span="8">
+        <van-button type="primary" plain size="large" id='create' bindtap="onSelfControlPannelClick">提交</van-button>
+      </van-col>
+      <van-col offset="2" span="8">
+        <van-button type="warning" plain size="large" id='cancel' bindtap="onSelfControlPannelClick">取消</van-button>
+      </van-col>
+    </van-row>
+  </block>
+
   <!-- 修改放弃 当前用户自身 && 任务正在进行中-->
-  <block wx:if="{{isSelf && status==0}}">
+  <block wx:if="{{isSelf && status==0 && taskId!=''}}">
     <van-row>
       <van-col offset="3" span="8">
         <van-button type="primary" plain size="large" id='modify' bindtap="onSelfControlPannelClick">修改</van-button>
