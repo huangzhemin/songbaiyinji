@@ -21,8 +21,8 @@ Component({
       value: '昵称'
     },
     points: {
-      type: String,
-      value: '0',
+      type: Number,
+      value: 0,
     },
     jumpUrl: {
       type: String,
