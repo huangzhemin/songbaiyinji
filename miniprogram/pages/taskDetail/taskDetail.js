@@ -8,26 +8,6 @@ Page({
    * 页面的初始数据
    */
   data: {
-    taskId: "",
-    openId: "",
-    status: 0,
-
-    taskTitle: "",
-    taskPlanDesc: "",
-    taskPlanUploadMediaList: [],
-    taskPlanShowUpload: true,
-
-    taskCompleteDesc: "",
-    taskCompleteUploadMediaList: [],
-    taskCompleteShowUpload: true,
-
-    taskMediaList: [],
-    supportUserList: [],
-    opposeUserList: [],
-
-    canJudge: false,
-    isSelf: false,
-
     showShare: false,
     options: 
     [
@@ -67,11 +47,6 @@ Page({
     var that = this;
     eventChannel.on('acceptDataFromOpenerPage', function (prePageData) {
       console.log('prePageData', prePageData);
-      console.log('that.data1', that.data);
-      that.data.openId = prePageData.openId;
-      that.data.taskId = prePageData.taskId;
-      console.log('that.data2', that.data);
-      // that.loadDetailTaskData(prePageData);
       that.setData({
         openId: prePageData.openId,
         taskId: prePageData.taskId,
