@@ -33,24 +33,54 @@ Component({
   data: {
     taskId: "",
     openId: "",
-    canJudge: false,
-    isSelf: false,
     status: 0,
 
     taskTitle: "",
-    taskPlan: {
-      taskDesc: "",
-      uploadMediaList: [],
-      showUpload: true,
-    },
-    taskComplete: {
-      taskDesc: "",
-      uploadMediaList: [],
-      showUpload: true,
-    },
+    taskPlanDesc: "",
+    taskPlanUploadMediaList: [],
+    taskPlanShowUpload: true,
+
+    taskCompleteDesc: "",
+    taskCompleteUploadMediaList: [],
+    taskCompleteShowUpload: true,
+
     taskMediaList: [],
     supportUserList: [],
     opposeUserList: [],
+
+    canJudge: false,
+    isSelf: false,
+
+    showShare: false,
+    options: 
+    [
+      [{
+          name: '微信',
+          icon: 'wechat'
+        },
+        {
+          name: '微博',
+          icon: 'weibo'
+        },
+        {
+          name: 'QQ',
+          icon: 'qq'
+        },
+      ],
+      [{
+          name: '复制链接',
+          icon: 'link'
+        },
+        {
+          name: '分享海报',
+          icon: 'poster'
+        },
+        {
+          name: '二维码',
+          icon: 'qrcode'
+        },
+      ],
+    ],
   },
 
   observers: {
@@ -70,42 +100,48 @@ Component({
    */
   methods: {
     componentLoadPage: function (event) {
+      var that = this;
+      console.log('00000000000000', that.data);
       wx.showLoading({
         title: 'loading...',
       })
       //通过传入的openId和taskId，拉取用户数据
       taskInfo.where({
-        openId: this.data.openId,
-        taskId: this.data.taskId,
+        openId: that.data.openId,
+        taskId: that.data.taskId,
       }).get().then(res => {
         //将当前的任务数据，赋值到本地
-        this.data = util.convertDatabaseTaskToInnerTask(res.data[0]);
-        console.log('componentLoadPage data', this.data);
+        console.log('111111111', res.data[0]);
+        console.log('222222222', util.convertDatabaseTaskToInnerTask(res.data[0]));
+        that.data = util.convertDatabaseTaskToInnerTask(res.data[0]);
+
         //上传媒体单独处理
-        let uploadMediaListDic = util.getUploadMediaList(this.data.openId,
-                                                         this.data.taskId,
-                                                         this.data.taskMediaList);
-        
+        let uploadMediaListDic = util.getUploadMediaList(that.data.openId,
+                                                        that.data.taskId,
+                                                        that.data.taskMediaList);
+        console.log('a0000000', that.data);
+        console.log('canJudge', that.properties.propertyCanJudge);
+        console.log('isSelf', that.data.isSelf);
         console.log('uploadMediaListDic', uploadMediaListDic);
-        console.log('that.properties1', this.properties);
-        console.log('that.data1', this.data);
-        //刷新页面                                    
-        var that = this;                    
-        this.setData({
+        console.log('uploadMediaListDic taskPlan', uploadMediaListDic['taskPlan']);
+        console.log('uploadMediaListDic taskComplete', uploadMediaListDic['taskComplete']);
+
+        that.data.taskPlanUploadMediaList =  uploadMediaListDic['taskPlan'];
+        that.data.taskCompleteUploadMediaList = uploadMediaListDic['taskComplete'];
+        //刷新页面                                                        
+        that.setData({
           taskTitle: that.data.taskTitle,
           status: that.data.status,
-          canJudge: that.properties.propertyCanJudge,
-          isSelf: that.properties.propertyIsSelf,
-          ['taskPlan.taskDesc']: that.data.taskPlan.taskDesc,
-          ['taskPlan.uploadMediaList']: uploadMediaListDic['taskPlan'],
-          ['taskComplete.taskDesc']: that.data.taskComplete.taskDesc,
-          ['taskComplete.uploadMediaList']: uploadMediaListDic['taskComplete'],
+          canJudge: that.properties.propertyCanJudge,   //是否可以裁判，是结合当前使用用户，外部传入属性，不受数据库数据影响
+          isSelf: that.properties.propertyIsSelf,       //是否是用户自身，是结合当前使用用户，外部传入属性，不受数据库数据影响
+          taskPlanDesc: that.data.taskPlanDesc,
+          taskPlanUploadMediaList: that.data.taskPlanUploadMediaList,
+          taskCompleteDesc: that.data.taskCompleteDesc,
+          taskCompleteUploadMediaList: that.data.taskCompleteUploadMediaList,
         });
-        console.log('that.data2', that.data);
-        console.log('that.properties2', that.properties);
+        console.log('b0000000', that.data);
       }).then(res1 => {
         wx.hideLoading();
-        console.log('that.data3', this.data);
       });
     },
 
@@ -117,10 +153,10 @@ Component({
           this.data.taskTitle = event.detail;
           break;
         case 'taskPlanDesc':
-          this.data.taskPlan.taskDesc = event.detail;
+          this.data.taskPlanDesc = event.detail;
           break;
         case 'taskCompleteDesc':
-          this.data.taskComplete.taskDesc = event.detail;
+          this.data.taskCompleteDesc = event.detail;
           break;
         default:
           console.log(currentChangeFieldId + event.detail);
@@ -240,90 +276,80 @@ Component({
     ////////////////////////////////////
 
     updateTaskToDatabase: function (event) {
+      console.log('11111111111', this.data);
       var that = this;
       //此处赋值任务状态，是继续进行，还是放弃
       that.data.status = event.status;
-      //先拉取任务信息
-      this.getTaskInfo({
-        success: function (res) {
-          //更新资源信息
-          that.uploadMedias({
+      console.log('1222222', this.data);
+      //更新资源信息
+      console.log('222222222', that.data);
+      that.uploadMedias({
+        openId: that.data.openId,
+        taskId: that.data.taskId,
+        success: function (mediasRes) {
+          //将上传资源生成的fileID，进行管理
+          if (mediasRes && mediasRes.length > 0) {
+            for (const key in mediasRes) {
+              const element = mediasRes[key];
+              //将任务计划的第一张图片，作为缩略图
+              if (element['fileID'].match('plan_0')) {
+                that.data.thumbImg = element['fileID'];
+              }
+              that.data.taskMediaList.push(element['fileID']);
+            }
+          }
+          console.log('33333333', that.data);
+          console.log('33333333', util.convertInnerTaskToDatabaseTask(that.data));
+  
+          //制定当前用户、当前任务，进行任务内容的更新
+          taskInfo.where({
             openId: that.data.openId,
             taskId: that.data.taskId,
-            success: function (mediasRes) {
-              //将上传资源生成的fileID，进行管理
-              if (mediasRes && mediasRes.length > 0) {
-                for (const key in mediasRes) {
-                  const element = mediasRes[key];
-                  //将任务计划的第一张图片，作为缩略图
-                  if (element['fileID'].match('plan_0')) {
-                    that.data.thumbImg = element['fileID'];
-                  }
-                  that.data.taskMediaList.push(element['fileID']);
-                }
-              }
-
-              //制定当前用户、当前任务，进行任务内容的更新
-              taskInfo.where({
-                openId: that.data.openId,
-                taskId: that.data.taskId,
-              }).update({
-                data: util.convertInnerTaskToDatabaseTask(that.data),
-              }).then(taskInfoUpdateRes => {
-                //在任务状态更新完成的时候，需要将当前任务、以及当前任务的操作行为添加到消息数据库，目前先和积分分开处理，后续搬迁到云函数执行
-                util.addUserOperationMsgWithOperateAndCurrentTaskInfo({
-                  operationType: event.operationType,
-                  taskInfo: that.data
-                });
-                //当前任务完成后的回调，具体执行积分计算 和 页面UI收尾工作
-                event.success(that.data.openId, that.data.taskId);
-              });
-            },
-            fail: function (err) {
-              console.error(err);
-            }
+          }).update({
+            data: util.convertInnerTaskToDatabaseTask(that.data),
+          }).then(taskInfoUpdateRes => {
+            console.log('taskInfoUpdateRes', taskInfoUpdateRes);
+            //在任务状态更新完成的时候，需要将当前任务、以及当前任务的操作行为添加到消息数据库，目前先和积分分开处理，后续搬迁到云函数执行
+            util.addUserOperationMsgWithOperateAndCurrentTaskInfo({
+              operationType: event.operationType,
+              taskInfo: that.data
+            });
+            //当前任务完成后的回调，具体执行积分计算 和 页面UI收尾工作
+            event.success(that.data.openId, that.data.taskId);
           });
+        },
+        fail: function (err) {
+          console.error(err);
         }
       });
     },
 
-    //包含 taskId, avatar，nickName，pubTime
-    getTaskInfo: function (event) {
-      var that = this;
-      util.getCurrentUserInfo({
-        success: function (openId, userInfoRes) {
-          that.data.openId = openId;
-          that.data.avatar = userInfoRes.data[0].avatarUrl;
-          that.data.nickName = userInfoRes.data[0].nickName;
-          // that.data.pubTime = Date.parse(new Date()) / 1000; warning 现阶段先不调整创建时间，后续添加调整时间列表，记录修改历史记录
-          event.success();
-        },
-      })
-    },
-
     uploadMedias: function (event) {
       //上传媒体信息的时候，如果此次没有对列表进行调整的话，这里无需再次上传
-      if (!this.data.taskPlan.uploadMediaList &&
-        !this.data.taskComplete.uploadMediaList) {
+      console.log('teeeeeeeeeeeeeest', this.data);
+      if (!this.data.taskPlanUploadMediaList 
+          && !this.data.taskCompleteUploadMediaList) {
+        console.log('aaaaaaaaaaaaaaa')
         event.success();
+        return;
       }
-
+  
       //此次操作 对媒体信息有调整
       this.data.promiseArr = [];
       this.uploadBatchMedia({
         openId: event.openId,
         taskId: event.taskId,
-        uploadMediaList: this.data.taskPlan.uploadMediaList,
+        uploadMediaList: this.data.taskPlanUploadMediaList,
         type: 'plan',
       })
-
+  
       this.uploadBatchMedia({
         openId: event.openId,
         taskId: event.taskId,
-        uploadMediaList: this.data.taskComplete.uploadMediaList,
+        uploadMediaList: this.data.taskCompleteUploadMediaList,
         type: 'complete',
       })
-
+  
       Promise.all(this.data.promiseArr).then((result) => {
         this.data.promiseArr = [];
         event.success(result);
@@ -333,7 +359,7 @@ Component({
     uploadBatchMedia: function (event) {
       let type = event['type'];
       let uploadMediaList = event['uploadMediaList'];
-
+  
       for (var i = 0; i < uploadMediaList.length; i++) {
         //此处需要判断当前的filePath的前缀是否符合预期
         let filePath = uploadMediaList[i];
@@ -362,32 +388,37 @@ Component({
     },
 
     chooseImage: function (event) {
-      console.log('chooseImage data', this.data);
       let chooseTaskUploadBtnId = event.currentTarget["id"];
-      let currentTaskUpload = this.data.taskPlan;
+      var currentTaskUploadMediaList = this.data.taskPlanUploadMediaList;
       if (chooseTaskUploadBtnId == 'taskPlanUploadClick') {
-        console.log('taskPlanUploadClick');
-        currentTaskUpload = this.data.taskPlan;
+        currentTaskUploadMediaList = this.data.taskPlanUploadMediaList;
       } else if (chooseTaskUploadBtnId == 'taskCompleteUploadClick') {
-        console.log('taskCompleteUploadClick');
-        currentTaskUpload = this.data.taskComplete;
+        currentTaskUploadMediaList = this.data.taskCompleteUploadMediaList;
       }
-      console.log('currentTaskUpload.uploadMediaList1', currentTaskUpload.uploadMediaList);
+      console.log('this is a ', this.data);
+      console.log('this is b ', currentTaskUploadMediaList);
+  
       wx.chooseImage({
-        count: 9 - currentTaskUpload.uploadMediaList.length,
+        count: 9 - currentTaskUploadMediaList.length,
         sizeType: ['original', 'compressed'],
         sourceType: ['album', 'camera'],
       }).then(res => {
+        currentTaskUploadMediaList = currentTaskUploadMediaList.concat(res.tempFilePaths);
+        let taskShowUpload = (currentTaskUploadMediaList.length < 9) ? true : false;
         // tempFilePath可以作为img标签的src属性显示图片
         if (chooseTaskUploadBtnId == 'taskPlanUploadClick') {
+          this.data.taskPlanUploadMediaList = currentTaskUploadMediaList;
+          this.data.taskPlanShowUpload = taskShowUpload;
           this.setData({
-            ['taskPlan.uploadMediaList']: currentTaskUpload.uploadMediaList.concat(res.tempFilePaths),
-            ['taskPlan.showUpload']: (currentTaskUpload.uploadMediaList.length + res.tempFilePaths.length < 9) ? true : false,
+            taskPlanUploadMediaList: this.data.taskPlanUploadMediaList,
+            taskPlanShowUpload: this.data.taskPlanShowUpload,
           })
         } else if (chooseTaskUploadBtnId == 'taskCompleteUploadClick') {
+          this.data.taskCompleteUploadMediaList = currentTaskUploadMediaList;
+          this.data.taskPlanShowUpload = taskShowUpload;
           this.setData({
-            ['taskComplete.uploadMediaList']: currentTaskUpload.uploadMediaList.concat(res.tempFilePaths),
-            ['taskComplete.showUpload']: (currentTaskUpload.uploadMediaList.length + res.tempFilePaths.length < 9) ? true : false,
+            taskCompleteUploadMediaList: this.data.taskCompleteUploadMediaList,
+            taskCompleteShowUpload: this.data.taskCompleteShowUpload,
           });
         }
       }).catch(err => {
