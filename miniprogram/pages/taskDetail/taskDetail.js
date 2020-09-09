@@ -93,6 +93,7 @@ Page({
       console.log('111111111', res.data[0]);
       console.log('222222222', util.convertDatabaseTaskToInnerTask(res.data[0]));
       that.data = util.convertDatabaseTaskToInnerTask(res.data[0]);
+
       //上传媒体单独处理
       let uploadMediaListDic = util.getUploadMediaList(that.data.openId,
                                                        that.data.taskId,
@@ -100,16 +101,22 @@ Page({
       console.log('a0000000', that.data);
       console.log('canJudge', that.data.canJudge);
       console.log('isSelf', that.data.isSelf);
+      console.log('uploadMediaListDic', uploadMediaListDic);
+      console.log('uploadMediaListDic taskPlan', uploadMediaListDic['taskPlan']);
+      console.log('uploadMediaListDic taskComplete', uploadMediaListDic['taskComplete']);
+
+      that.data.taskPlanUploadMediaList =  uploadMediaListDic['taskPlan'];
+      that.data.taskCompleteUploadMediaList = uploadMediaListDic['taskComplete'];
       //刷新页面                                                        
       that.setData({
         taskTitle: that.data.taskTitle,
         status: that.data.status,
         canJudge: canJudge,   //是否可以裁判，是结合当前使用用户，外部传入属性，不受数据库数据影响
         isSelf: isSelf,       //是否是用户自身，是结合当前使用用户，外部传入属性，不受数据库数据影响
-        ['taskPlanDesc']: that.data.taskPlanDesc,
-        ['taskPlanUploadMediaList']: uploadMediaListDic['taskPlan'],
-        ['taskCompleteDesc']: that.data.taskCompleteDesc,
-        ['taskCompleteUploadMediaList']: uploadMediaListDic['taskComplete'],
+        taskPlanDesc: that.data.taskPlanDesc,
+        taskPlanUploadMediaList: that.data.taskPlanUploadMediaList,
+        taskCompleteDesc: that.data.taskCompleteDesc,
+        taskCompleteUploadMediaList: that.data.taskCompleteUploadMediaList,
       });
       console.log('b0000000', that.data);
     }).then(res1 => {
@@ -118,6 +125,7 @@ Page({
   },
 
   onContentChange: function (event) {
+    console.log('onContentChange', this.data);
     let currentChangeFieldId = event.currentTarget['id'];
     switch (currentChangeFieldId) {
       case 'taskTitle':
@@ -362,30 +370,36 @@ Page({
 
   chooseImage: function (event) {
     let chooseTaskUploadBtnId = event.currentTarget["id"];
-    let currentTaskUploadMediaList = this.data.taskPlanUploadMediaList;
+    var currentTaskUploadMediaList = this.data.taskPlanUploadMediaList;
     if (chooseTaskUploadBtnId == 'taskPlanUploadClick') {
       currentTaskUploadMediaList = this.data.taskPlanUploadMediaList;
     } else if (chooseTaskUploadBtnId == 'taskCompleteUploadClick') {
       currentTaskUploadMediaList = this.data.taskCompleteUploadMediaList;
     }
     console.log('this is a ', this.data);
-    console.log('this is b ', currentTaskUpload);
+    console.log('this is b ', currentTaskUploadMediaList);
 
     wx.chooseImage({
       count: 9 - currentTaskUploadMediaList.length,
       sizeType: ['original', 'compressed'],
       sourceType: ['album', 'camera'],
     }).then(res => {
+      currentTaskUploadMediaList = currentTaskUploadMediaList.concat(res.tempFilePaths);
+      let taskShowUpload = (currentTaskUploadMediaList.length < 9) ? true : false;
       // tempFilePath可以作为img标签的src属性显示图片
       if (chooseTaskUploadBtnId == 'taskPlanUploadClick') {
+        this.data.taskPlanUploadMediaList = currentTaskUploadMediaList;
+        this.data.taskPlanShowUpload = taskShowUpload;
         this.setData({
-          ['taskPlanUploadMediaList']: currentTaskUpload.uploadMediaList.concat(res.tempFilePaths),
-          ['taskPlanShowUpload']: (currentTaskUpload.uploadMediaList.length + res.tempFilePaths.length < 9) ? true : false,
+          taskPlanUploadMediaList: this.data.taskPlanUploadMediaList,
+          taskPlanShowUpload: this.data.taskPlanShowUpload,
         })
       } else if (chooseTaskUploadBtnId == 'taskCompleteUploadClick') {
+        this.data.taskCompleteUploadMediaList = currentTaskUploadMediaList;
+        this.data.taskCompleteShowUpload = taskShowUpload;
         this.setData({
-          ['taskCompleteUploadMediaList']: currentTaskUploadMediaList.concat(res.tempFilePaths),
-          ['taskCompleteShowUpload']: (currentTaskUploadMediaList.length + res.tempFilePaths.length < 9) ? true : false,
+          taskCompleteUploadMediaList: this.data.taskCompleteUploadMediaList,
+          taskCompleteShowUpload: this.data.taskCompleteShowUpload,
         });
       }
     }).catch(err => {

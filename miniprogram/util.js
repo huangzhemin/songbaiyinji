@@ -48,7 +48,9 @@ var convertDatabaseTaskToInnerTask = function (databaseTaskData) {
     'status': databaseTaskData['status'] != undefined ? databaseTaskData['status'] : 0,
     'taskTitle': p_validStr(databaseTaskData['taskTitle']) ? databaseTaskData['taskTitle'] : '',
     'taskPlanDesc': p_validStr(databaseTaskData['taskPlanDesc']) ? databaseTaskData['taskPlanDesc'] : '',
+    'taskPlanUploadMediaList': [],  //这里需要在每次
     'taskCompleteDesc': p_validStr(databaseTaskData['taskCompleteDesc']) ? databaseTaskData['taskCompleteDesc'] : '',
+    'taskCompleteUploadMediaList': [],
     'taskMediaList': p_validList(databaseTaskData['taskMediaList']) ? databaseTaskData['taskMediaList'] : [],
     'thumbImg': p_validStr(databaseTaskData['thumbImg']) ? databaseTaskData['thumbImg'] : '',
     'avatar': p_validStr(databaseTaskData['avatar']) ? databaseTaskData['avatar'] : '',
