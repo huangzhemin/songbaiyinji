@@ -13,16 +13,14 @@ Page({
     status: 0,
 
     taskTitle: "",
-    taskPlan: {
-      taskDesc: "",
-      uploadMediaList: [],
-      showUpload: true,
-    },
-    taskComplete: {
-      taskDesc: "",
-      uploadMediaList: [],
-      showUpload: true,
-    },
+    taskPlanDesc: "",
+    taskPlanUploadMediaList: [],
+    taskPlanShowUpload: true,
+
+    taskCompleteDesc: "",
+    taskCompleteUploadMediaList: [],
+    taskCompleteShowUpload: true,
+
     taskMediaList: [],
     supportUserList: [],
     opposeUserList: [],
@@ -31,7 +29,8 @@ Page({
     isSelf: false,
 
     showShare: false,
-    options: [
+    options: 
+    [
       [{
           name: '微信',
           icon: 'wechat'
@@ -62,27 +61,24 @@ Page({
   },
 
   onLoad: function(options) {
-    //获取传入参数
+    // 获取传入参数
     const eventChannel = this.getOpenerEventChannel()
     // 监听acceptDataFromOpenerPage事件，获取上一页面通过eventChannel传送到当前页面的数据
     var that = this;
-    eventChannel.on('acceptDataFromOpenerPage', function (data) {
-      that.data.openId = data.openId;
-      that.data.taskId = data.taskId;
-      that.data.canJudge = data.canJudge,
-      that.data.isSelf = data.isSelf,
-      that.setData({
-        canJudge: data.canJudge,
-        isSelf: data.isSelf,
-      });
-      that.loadDetailTaskData();
+    eventChannel.on('acceptDataFromOpenerPage', function (prePageData) {
+      console.log('prePageData', prePageData);
+      console.log('that.data1', that.data);
+      that.data.openId = prePageData.openId;
+      that.data.taskId = prePageData.taskId;
+      console.log('that.data2', that.data);
+      that.loadDetailTaskData(prePageData.canJudge, prePageData.isSelf);
     })
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
-  loadDetailTaskData: function () {
+  loadDetailTaskData: function (canJudge, isSelf) {
     var that = this;
     console.log('00000000000000', that.data);
     wx.showLoading({
@@ -95,20 +91,25 @@ Page({
     }).get().then(res => {
       //将当前的任务数据，赋值到本地
       console.log('111111111', res.data[0]);
+      console.log('222222222', util.convertDatabaseTaskToInnerTask(res.data[0]));
       that.data = util.convertDatabaseTaskToInnerTask(res.data[0]);
       //上传媒体单独处理
       let uploadMediaListDic = util.getUploadMediaList(that.data.openId,
                                                        that.data.taskId,
                                                        that.data.taskMediaList);
       console.log('a0000000', that.data);
+      console.log('canJudge', that.data.canJudge);
+      console.log('isSelf', that.data.isSelf);
       //刷新页面                                                        
       that.setData({
         taskTitle: that.data.taskTitle,
         status: that.data.status,
-        ['taskPlan.taskDesc']: that.data.taskPlan.taskDesc,
-        ['taskPlan.uploadMediaList']: uploadMediaListDic['taskPlan'],
-        ['taskComplete.taskDesc']: that.data.taskComplete.taskDesc,
-        ['taskComplete.uploadMediaList']: uploadMediaListDic['taskComplete'],
+        canJudge: canJudge,   //是否可以裁判，是结合当前使用用户，外部传入属性，不受数据库数据影响
+        isSelf: isSelf,       //是否是用户自身，是结合当前使用用户，外部传入属性，不受数据库数据影响
+        ['taskPlanDesc']: that.data.taskPlanDesc,
+        ['taskPlanUploadMediaList']: uploadMediaListDic['taskPlan'],
+        ['taskCompleteDesc']: that.data.taskCompleteDesc,
+        ['taskCompleteUploadMediaList']: uploadMediaListDic['taskComplete'],
       });
       console.log('b0000000', that.data);
     }).then(res1 => {
@@ -123,10 +124,10 @@ Page({
         this.data.taskTitle = event.detail;
         break;
       case 'taskPlanDesc':
-        this.data.taskPlan.taskDesc = event.detail;
+        this.data.taskPlanDesc = event.detail;
         break;
       case 'taskCompleteDesc':
-        this.data.taskComplete.taskDesc = event.detail;
+        this.data.taskCompleteDesc = event.detail;
         break;
       default:
         console.log(currentChangeFieldId + event.detail);
@@ -299,10 +300,8 @@ Page({
   uploadMedias: function (event) {
     //上传媒体信息的时候，如果此次没有对列表进行调整的话，这里无需再次上传
     console.log('teeeeeeeeeeeeeest', this.data);
-    console.log('this.data.taskPlan.uploadMediaList && this.data.taskComplete.uploadMediaList', this.data.taskPlan.uploadMediaList);
-    console.log('this.data.taskPlan.uploadMediaList && this.data.taskComplete.uploadMediaList', this.data.taskComplete.uploadMediaList);
-    if (!this.data.taskPlan.uploadMediaList 
-        && !this.data.taskComplete.uploadMediaList) {
+    if (!this.data.taskPlanUploadMediaList 
+        && !this.data.taskCompleteUploadMediaList) {
       console.log('aaaaaaaaaaaaaaa')
       event.success();
       return;
@@ -313,14 +312,14 @@ Page({
     this.uploadBatchMedia({
       openId: event.openId,
       taskId: event.taskId,
-      uploadMediaList: this.data.taskPlan.uploadMediaList,
+      uploadMediaList: this.data.taskPlanUploadMediaList,
       type: 'plan',
     })
 
     this.uploadBatchMedia({
       openId: event.openId,
       taskId: event.taskId,
-      uploadMediaList: this.data.taskComplete.uploadMediaList,
+      uploadMediaList: this.data.taskCompleteUploadMediaList,
       type: 'complete',
     })
 
@@ -363,27 +362,30 @@ Page({
 
   chooseImage: function (event) {
     let chooseTaskUploadBtnId = event.currentTarget["id"];
-    let currentTaskUpload = this.data.taskPlan;
+    let currentTaskUploadMediaList = this.data.taskPlanUploadMediaList;
     if (chooseTaskUploadBtnId == 'taskPlanUploadClick') {
-      currentTaskUpload = this.data.taskPlan;
+      currentTaskUploadMediaList = this.data.taskPlanUploadMediaList;
     } else if (chooseTaskUploadBtnId == 'taskCompleteUploadClick') {
-      currentTaskUpload = this.data.taskComplete;
+      currentTaskUploadMediaList = this.data.taskCompleteUploadMediaList;
     }
+    console.log('this is a ', this.data);
+    console.log('this is b ', currentTaskUpload);
+
     wx.chooseImage({
-      count: 9 - currentTaskUpload.uploadMediaList.length,
+      count: 9 - currentTaskUploadMediaList.length,
       sizeType: ['original', 'compressed'],
       sourceType: ['album', 'camera'],
     }).then(res => {
       // tempFilePath可以作为img标签的src属性显示图片
       if (chooseTaskUploadBtnId == 'taskPlanUploadClick') {
         this.setData({
-          ['taskPlan.uploadMediaList']: currentTaskUpload.uploadMediaList.concat(res.tempFilePaths),
-          ['taskPlan.showUpload']: (currentTaskUpload.uploadMediaList.length + res.tempFilePaths.length < 9) ? true : false,
+          ['taskPlanUploadMediaList']: currentTaskUpload.uploadMediaList.concat(res.tempFilePaths),
+          ['taskPlanShowUpload']: (currentTaskUpload.uploadMediaList.length + res.tempFilePaths.length < 9) ? true : false,
         })
       } else if (chooseTaskUploadBtnId == 'taskCompleteUploadClick') {
         this.setData({
-          ['taskComplete.uploadMediaList']: currentTaskUpload.uploadMediaList.concat(res.tempFilePaths),
-          ['taskComplete.showUpload']: (currentTaskUpload.uploadMediaList.length + res.tempFilePaths.length < 9) ? true : false,
+          ['taskCompleteUploadMediaList']: currentTaskUploadMediaList.concat(res.tempFilePaths),
+          ['taskCompleteShowUpload']: (currentTaskUploadMediaList.length + res.tempFilePaths.length < 9) ? true : false,
         });
       }
     }).catch(err => {

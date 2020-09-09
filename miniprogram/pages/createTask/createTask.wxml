@@ -24,7 +24,7 @@
   <van-row>
     <van-col class='taskPlanDesc' span="24">
       <van-field
-        value="{{ taskPlan.taskDesc }}"
+        value="{{ taskPlanDesc }}"
         label="计划描述"
         type="textarea"
         placeholder="请输入计划描述"
@@ -44,7 +44,7 @@
       readonly
     />
     <van-col class='taskPlanUpload' offset="2" span="20">
-      <block wx:for="{{taskPlan.uploadMediaList}}" wx:for-index="idx" wx:key="idx">
+      <block wx:for="{{taskPlanUploadMediaList}}" wx:for-index="idx" wx:key="idx">
         <van-image 
           width="100" 
           height="100" 
@@ -53,7 +53,7 @@
           data-type="plan" 
           bindtap="previewImage"/>
       </block>
-      <view wx:if="{{ taskPlan.showUpload }}"
+      <view wx:if="{{ taskPlanShowUpload }}"
               class='uploadPartSquare'
               id='taskPlanUploadClick'
               bindtap="chooseImage">
@@ -68,7 +68,7 @@
   <van-row>
     <van-col class='taskCompleteDesc' span="24">
       <van-field
-        value="{{ taskComplete.taskDesc }}"
+        value="{{ taskCompleteDesc }}"
         label="计划完成描述"
         type="textarea"
         placeholder="请输入计划完成描述"
@@ -89,7 +89,7 @@
       readonly
     />
     <van-col class='taskCompleteUpload' offset="2" span="20">
-      <block wx:for="{{taskComplete.uploadMediaList}}" wx:for-index="idx" wx:key="idx">
+      <block wx:for="{{taskCompleteUploadMediaList}}" wx:for-index="idx" wx:key="idx">
         <van-image 
           width="100" 
           height="100" 
@@ -98,7 +98,7 @@
           data-type="complete" 
           bindtap="previewImage"/>
       </block>
-      <view wx:if="{{ taskComplete.showUpload }}"
+      <view wx:if="{{ taskCompleteShowUpload }}"
               class='uploadPartSquare'
               id='taskCompleteUploadClick'
               bindtap="chooseImage">

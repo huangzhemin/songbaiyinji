@@ -13,16 +13,14 @@ Page({
     status: 0,  //进行中
 
     taskTitle: "",
-    taskPlan: {
-      taskDesc: "",
-      uploadMediaList: [],
-      showUpload: true,
-    },
-    taskComplete: {
-      taskDesc: "",
-      uploadMediaList: [],
-      showUpload: true,
-    },
+    taskPlanDesc: "",
+    taskPlanUploadMediaList: [],
+    taskPlanShowUpload: true,
+
+    taskCompleteDesc: "",
+    taskCompleteUploadMediaList: [],
+    taskCompleteShowUpload: true,
+
     thumbImg: "",
     taskMediaList: [],
 
@@ -40,10 +38,10 @@ Page({
         this.data.taskTitle = event.detail;
         break;
       case 'taskPlanDesc':
-        this.data.taskPlan.taskDesc = event.detail;
+        this.data.taskPlanDesc = event.detail;
         break;
       case 'taskCompleteDesc':
-        this.data.taskComplete.taskDesc = event.detail;
+        this.data.taskCompleteDesc = event.detail;
         break;
       default:
         console.log(currentChangeFieldId+event.detail);
@@ -147,27 +145,27 @@ Page({
   
   chooseImage: function (event) {
     let chooseTaskUploadBtnId = event.currentTarget["id"];
-    let currentTaskUpload = this.data.taskPlan;
+    let currentTaskUploadMediaList = this.data.taskPlanUploadMediaList;
     if (chooseTaskUploadBtnId == 'taskPlanUploadClick') {
-      currentTaskUpload = this.data.taskPlan;
+      currentTaskUploadMediaList = this.data.taskPlanUploadMediaList;
     } else if (chooseTaskUploadBtnId == 'taskCompleteUploadClick') {
-      currentTaskUpload = this.data.taskComplete;
+      currentTaskUploadMediaList = this.data.taskCompleteUploadMediaList;
     }
     wx.chooseImage({
-      count: 9 - currentTaskUpload.uploadMediaList.length,
+      count: 9 - currentTaskUploadMediaList.length,
       sizeType: ['original', 'compressed'],
       sourceType: ['album', 'camera'],
     }).then (res => {
       // tempFilePath可以作为img标签的src属性显示图片
       if (chooseTaskUploadBtnId == 'taskPlanUploadClick') {
         this.setData({
-          ['taskPlan.uploadMediaList']: currentTaskUpload.uploadMediaList.concat(res.tempFilePaths),
-          ['taskPlan.showUpload']: (currentTaskUpload.uploadMediaList.length + res.tempFilePaths.length < 9) ? true : false,
+          ['taskPlanUploadMediaList']: currentTaskUploadMediaList.concat(res.tempFilePaths),
+          ['taskPlanShowUpload']: (currentTaskUploadMediaList.length + res.tempFilePaths.length < 9) ? true : false,
         })
       } else if (chooseTaskUploadBtnId == 'taskCompleteUploadClick') {
         this.setData({
-          ['taskComplete.uploadMediaList']: currentTaskUpload.uploadMediaList.concat(res.tempFilePaths),
-          ['taskComplete.showUpload']: (currentTaskUpload.uploadMediaList.length + res.tempFilePaths.length < 9) ? true : false,
+          ['taskCompleteUploadMediaList']: currentTaskUploadMediaList.concat(res.tempFilePaths),
+          ['taskCompleteShowUpload']: (currentTaskUploadMediaList.length + res.tempFilePaths.length < 9) ? true : false,
         });
       }
     }).catch(err => {
@@ -181,14 +179,14 @@ Page({
     this.uploadBatchMedia({
       openId: event.openId,
       taskId: event.taskId,
-      uploadMediaList:this.data.taskPlan.uploadMediaList, 
+      uploadMediaList:this.data.taskPlanUploadMediaList, 
       type:'plan',
     })
 
     this.uploadBatchMedia({
       openId: event.openId,
       taskId: event.taskId,
-      uploadMediaList:this.data.taskComplete.uploadMediaList, 
+      uploadMediaList:this.data.taskCompleteUploadMediaList, 
       type:'complete',
     })
 
@@ -224,16 +222,12 @@ Page({
   clearTaskContent: function(event) {
     this.setData({
       taskTitle: '',
-      taskPlan: {
-        taskDesc: '',
-        uploadMediaList: '',
-        showUpload: true,
-      },
-      taskComplete: {
-        taskDesc: '',
-        uploadMediaList: '',
-        showUpload: true,
-      },
+      taskPlanDesc: "",
+      taskPlanUploadMediaList: [],
+      taskPlanShowUpload: true,
+      taskCompleteDesc: "",
+      taskCompleteUploadMediaList: [],
+      taskCompleteShowUpload: true,
       taskMediaList: [],
     });
   },
@@ -244,9 +238,9 @@ Page({
     var index = dataset['index'];
     var currentMediaList = [];
     if (type == 'plan') {
-      currentMediaList = this.data.taskPlan.uploadMediaList;
+      currentMediaList = this.data.taskPlanUploadMediaList;
     } else if (type == 'complete') {
-      currentMediaList = this.data.taskComplete.uploadMediaList;
+      currentMediaList = this.data.taskCompleteUploadMediaList;
     }
     wx.previewImage({
       current: currentMediaList[index], // 当前显示图片的http链接

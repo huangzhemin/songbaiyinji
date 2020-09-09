@@ -109,6 +109,8 @@ Component({
             url: url,
             success: function(res) {
               // 通过eventChannel向被打开页面传送数据
+              console.log('currentUserOpenId', currentUserOpenId);
+              console.log('canJudge', userInfoRes.data[0]['canJudge']);
               console.log('that.properties', that.properties);
               res.eventChannel.emit('acceptDataFromOpenerPage', { 
                 'openId': that.properties.taskUserOpenId,   //类似'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
