@@ -200,19 +200,6 @@ Page({
     }
   },
 
-  clearTaskContent: function(event) {
-    this.setData({
-      taskTitle: '',
-      taskPlanDesc: "",
-      taskPlanUploadMediaList: [],
-      taskPlanShowUpload: true,
-      taskCompleteDesc: "",
-      taskCompleteUploadMediaList: [],
-      taskCompleteShowUpload: true,
-      taskMediaList: [],
-    });
-  },
-
   previewImage: function (event) {
     let dataset = event.target.dataset;
     var type = dataset['type'];

@@ -484,16 +484,28 @@ Component({
       var type = dataset['type'];
       var index = dataset['index'];
       var currentMediaList = [];
-      for (const key in this.data.taskMediaList) {
-        if (this.data.taskMediaList.hasOwnProperty(key)) {
-          const element = this.data.taskMediaList[key];
-          if (type == 'plan' && element.match('_plan_')) {
-            currentMediaList.push(element);
-          } else if (type == 'complete' && element.match('_complete_')) {
-            currentMediaList.push(element);
+      //此处需要根据当前的页面情况来判断
+      if (util.validList(this.data.taskMediaList)) {
+        //如果当前taskMediaList中有值，说明是已经创建的页面
+        for (const key in this.data.taskMediaList) {
+          if (this.data.taskMediaList.hasOwnProperty(key)) {
+            const element = this.data.taskMediaList[key];
+            if (type == 'plan' && element.match('_plan_')) {
+              currentMediaList.push(element);
+            } else if (type == 'complete' && element.match('_complete_')) {
+              currentMediaList.push(element);
+            }
           }
+        }  
+      } else {
+        //如果当前taskMediaList中无值，说明是正在创建任务，此时图片的fileID还未生成，需要从当前的'plan''complete'图片数组中取图片http
+        if (type == 'plan') {
+          currentMediaList = this.data.taskPlanUploadMediaList;
+        } else if (type == 'complete') {
+          currentMediaList = this.data.taskCompleteUploadMediaList;
         }
       }
+      
       wx.previewImage({
         current: currentMediaList[index], // 当前显示图片的http链接
         urls: currentMediaList // 需要预览的图片http链接列表
