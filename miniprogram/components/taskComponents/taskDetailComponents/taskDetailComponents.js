@@ -107,6 +107,7 @@ Component({
   methods: {
     createTaskPage: function(event) {
       this.setData({
+        openId: this.data.openId,
         canJudge: this.properties.propertyCanJudge,
         isSelf: this.properties.propertyIsSelf,
       });
@@ -143,6 +144,8 @@ Component({
         that.data.taskCompleteUploadMediaList = uploadMediaListDic['taskComplete'];
         //刷新页面                                                        
         that.setData({
+          openId: that.data.openId,
+          taskId: that.data.taskId,
           taskTitle: that.data.taskTitle,
           status: that.data.status,
           canJudge: that.properties.propertyCanJudge,   //是否可以裁判，是结合当前使用用户，外部传入属性，不受数据库数据影响

@@ -1,8 +1,6 @@
 <!--components/taskComponents/taskDetailComponents/taskDetailComponents.wxml-->
 <!-- 计划标题 -->
-<!-- warning 这里展示条件 -->
-<!-- <view wx:if="{{openId}}"> -->
-<view>
+<view wx:if="{{openId}}">
   <van-row>
     <van-col class='taskTitle' span="24" >
       <!-- 如果是自己 而且 当前状态是进行中 则可修改 -->
