@@ -4,7 +4,7 @@
     wx:if='{{userInfo.sdkUserInfo.avatarUrl}}' 
     class="msgEntrance" 
     name="envelop-o" 
-    size="20px" 
+    size="25px" 
     bindtap="onMsgClick"/>
 
   <pm-personal-profile-cell

@@ -2,7 +2,7 @@
 <block wx:for='{{taskList}}' wx:for-index="idx" wx:key="idx">
   <pm-task-cell 
     title='{{item.taskTitle}}'
-    desc='{{item.taskPlan.taskDesc}}'
+    desc='{{item.taskPlanDesc}}'
     status='{{item.status}}'
     thumbImg='{{item.thumbImg}}'
     avatar='{{item.avatar}}'
