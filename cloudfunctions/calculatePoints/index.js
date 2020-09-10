@@ -135,13 +135,8 @@ function convertDatabaseUserInfoListToUserPointsDic(userInfoList) {
 function calculatePoints(taskDic, userPointsDic) {
   //获取支持者数组
   let supportUserList = taskDic['supportUserList'];
-  //获取支持者的数量
-  let supportUserCount = supportUserList.length;
-
   //获取反对者数组
   let opposeUserList = taskDic['opposeUserList'];
-  //获取反对者的数量
-  let opposeUserCount = opposeUserList.length; 
   //获取当前任务的结束状态，
   //成功: status = 3
   //失败: status = 4
@@ -160,7 +155,7 @@ function calculatePoints(taskDic, userPointsDic) {
   //之前任务创建者的积分
   let taskPlannerPoints = userPointsDic[taskDic['openId']];
   //任务创建者获得的积分
-  let taskPlannerGainPoints = ((supportUserCount - opposeUserCount) * multiRatio);
+  let taskPlannerGainPoints = multiRatio;
   //更新任务创建者积分
   userPointsDic[taskDic['openId']] = taskPlannerPoints + taskPlannerGainPoints;
 
