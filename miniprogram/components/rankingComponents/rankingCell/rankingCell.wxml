@@ -3,4 +3,5 @@
           icon='{{avatar}}'
           title='{{nickName}}'
           value='{{points}}'
+          size="pmLarge"
           bind:click='navigateTo'/>
