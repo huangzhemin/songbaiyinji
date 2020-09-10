@@ -659,7 +659,7 @@ Component({
       }
       return {
         title: this.data.taskTitle,
-        path: '/page/taskDetail/taskDetail'
+        path: '/pages/taskDetail/taskDetail?share=true&openId='+this.data.openId+'&taskId='+this.data.taskId+'&canJudge='+this.data.canJudge+'&isSelf='+this.data.isSelf,
       }
     },
 
@@ -671,12 +671,14 @@ Component({
     },
 
     onSharePannelClose: function (event) {
+      console.log('onSharePannelClose', event);
       this.setData({
         showShare: false
       });
     },
 
     onSharePannelSelect: function (event) {
+      console.log('onSharePannelSelect', event);
       let res = {
         from: "sharePannel",
         target: event.detail["icon"]
