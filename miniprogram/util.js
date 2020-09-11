@@ -155,7 +155,12 @@ var getCurrentUserOpenId = function (event) {
   wx.getStorage({
     key: 'openid',
     success: (res => {
+      console.log('getCurrentUserOpenId openId', res.data);
       event.success(res.data);
+    }),
+    fail: (err => {
+      console.log('getCurrentUserOpenId openId failed', err);
+      event.fail('');
     })
   });
 }
@@ -216,36 +221,71 @@ var getCurrentUserTaskList = function (event) {
   }
 }
 
-//返回用户的openId 及 当前用户的其他信息
-var getCurrentUserInfo = function (event) {
+//判断用户是否登录
+var isLogin = function(event) {
+  getCurrentUserOpenId({
+    success: function(openId) {
+      event.success(true);
+    },
+    fail: function(openId) {
+      console.log('isLogout', openId)
+      if (!validStr(openId)) {
+        event.success(false);
+      }
+    }
+  });
+}
+
+var p_getCurrentUserInfoWithOpenId = function(event) {
+  userInfo.where({
+    _openid: event.openId
+  }).get({
+    success: (userInfoRes => {
+      event.success(event.openId, userInfoRes)
+    }),
+    fail: (err => {
+      event.fail(err);
+    })
+  });
+}
+
+var p_getCurrentUserInfoLogined = function (event) {
   if (event.openId) {
-    userInfo.where({
-      _openid: event.openId
-    }).get({
-      success: (userInfoRes => {
-        event.success(event.openId, userInfoRes)
-      })
-    });
+    p_getCurrentUserInfoWithOpenId(event);
   } else {
     wx.getStorage({
       key: 'openid',
       success: (res => {
-        userInfo.where({
-          _openid: res.data // 填入当前用户 openid
-        }).get({
-          success: (userInfoRes => {
-            event.success(res.data, userInfoRes)
-          }),
-          fail: (err => {
-            event.fail(err);
-          }),
-        })
+        p_getCurrentUserInfoWithOpenId({
+          openId: res.data, // 填入当前用户 openid
+          success: event.success,
+          fail: event.fail,
+        });
       }),
       fail: (err => {
         event.fail(err);
       })
     });
   }
+}
+
+//返回用户的openId 及 当前用户的其他信息
+//如果用户登录正常返回
+//如果用户没有登录，直接返回空
+//在调用getCurrentUserInfo的地方，通过判断返回结果，来调整
+var getCurrentUserInfo = function (event) {
+  isLogin({
+    success: function(logined) {
+      if (logined) {
+        console.log('getCurrentUserInfo logined');
+        p_getCurrentUserInfoLogined(event)
+      } else {
+        console.log('getCurrentUserInfo logout');
+        event.fail('user logout');
+      }
+    },
+  })
+  
 }
 
 //将任务信息处理信息更新至消息数据库

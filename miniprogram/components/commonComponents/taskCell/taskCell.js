@@ -99,28 +99,37 @@ Component({
       return tag;
     },
 
-    onClick(event) {
+    jumpTaskDetailWithCanJudgeAndIsSelf(canJudge, isSelf) {
       var url = '/pages/taskDetail/taskDetail';
+      var that = this;
+      wx.navigateTo({
+        url: url,
+        success: function(res) {
+          // 通过eventChannel向被打开页面传送数据
+          console.log('that.properties', that.properties);
+          res.eventChannel.emit('acceptDataFromOpenerPage', { 
+            'openId': that.properties.taskUserOpenId,   //类似'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
+            'taskId': that.properties.taskId,           //类似'task0','task1'
+            'canJudge': canJudge,  //判断是否可以裁定，志愿者可裁定、普通用户只支持投票
+            'isSelf': isSelf,  //自身：传入的openId与自身openId是同一个
+           })
+        }
+      })
+    },
+
+    onClick(event) {
       var that = this;
       util.getCurrentUserInfo({
         success: function(currentUserOpenId, userInfoRes) {
           //此处判断需要跳转的 任务详情页样式
-          wx.navigateTo({
-            url: url,
-            success: function(res) {
-              // 通过eventChannel向被打开页面传送数据
-              console.log('currentUserOpenId', currentUserOpenId);
-              console.log('canJudge', userInfoRes.data[0]['canJudge']);
-              console.log('that.properties', that.properties);
-              res.eventChannel.emit('acceptDataFromOpenerPage', { 
-                'openId': that.properties.taskUserOpenId,   //类似'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
-                'taskId': that.properties.taskId,           //类似'task0','task1'
-                'canJudge': userInfoRes.data[0]['canJudge'],  //判断是否可以裁定，志愿者可裁定、普通用户只支持投票
-                'isSelf': currentUserOpenId == that.properties.taskUserOpenId,  //自身：传入的openId与自身openId是同一个
-               })
-            }
-          })
+          console.log('currentUserOpenId', currentUserOpenId);
+          console.log('canJudge', userInfoRes.data[0]['canJudge']);
+          that.jumpTaskDetailWithCanJudgeAndIsSelf(userInfoRes.data[0]['canJudge'], 
+                                                   currentUserOpenId == that.properties.taskUserOpenId);
         },
+        fail: function(err) {
+          that.jumpTaskDetailWithCanJudgeAndIsSelf(false, false);
+        }
        }
       );
     }
