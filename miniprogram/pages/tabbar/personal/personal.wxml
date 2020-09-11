@@ -14,7 +14,7 @@
     userRanking="{{userInfo.customUserInfo.userRanking}}" 
     userPoints="{{userInfo.customUserInfo.userPoints}}">
   </pm-personal-profile-cell>
-  <pm-space-line></pm-space-line>
+  <pm-space-line customHeight='40'></pm-space-line>
 
   <block wx:if='{{userInfo.sdkUserInfo.avatarUrl}}'>
     <pm-user-detail-task-list

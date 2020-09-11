@@ -46,7 +46,9 @@ Component({
 
     taskMediaList: [],
     supportUserList: [],
+    supportUserAvatarList: [],
     opposeUserList: [],
+    opposeUserAvatarList: [],
 
     canJudge: false,
     isSelf: false,
@@ -143,6 +145,10 @@ Component({
           status: that.data.status,
           canJudge: that.properties.propertyCanJudge,   //是否可以裁判，是结合当前使用用户，外部传入属性，不受数据库数据影响
           isSelf: that.properties.propertyIsSelf,       //是否是用户自身，是结合当前使用用户，外部传入属性，不受数据库数据影响
+          supportUserList: that.data.supportUserList,
+          opposeUserList: that.data.opposeUserList,
+          supportUserAvatarList: that.data.supportUserAvatarList.slice(0, 10),
+          opposeUserAvatarList: that.data.opposeUserAvatarList.slice(0, 10),
           taskPlanDesc: that.data.taskPlanDesc,
           taskPlanUploadMediaList: that.data.taskPlanUploadMediaList,
           taskCompleteDesc: that.data.taskCompleteDesc,
@@ -314,12 +320,13 @@ Component({
       var that = this;
       var guessSuccess = false;
       var operationType = '';
-      util.getCurrentUserOpenId({
-        success: function (openId) {
+      util.getCurrentUserInfo({
+        success: function (openId, userInfoRes) {
           if (targetId == 'support') {
             //如果支持的话，将当前用户的openId，加入到支持数据列表
             if (that.data.supportUserList.indexOf(openId) == -1) {
               that.data.supportUserList.push(openId);
+              that.data.supportUserAvatarList.push(userInfoRes.data[0].avatarUrl);
               guessSuccess = true;
               operationType = 'support';
               wx.showLoading({
@@ -334,6 +341,7 @@ Component({
             //如果反对的话，将当前用户的openId，加入到反对数据列表
             if (that.data.opposeUserList.indexOf(openId) == -1) {
               that.data.opposeUserList.push(openId);
+              that.data.opposeUserAvatarList.push(userInfoRes.data[0].avatarUrl);
               guessSuccess = true;
               operationType = 'oppose';
               wx.showLoading({

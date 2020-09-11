@@ -26,7 +26,9 @@ var convertInnerTaskToDatabaseTask = function (innerTaskData) {
     'nickName': innerTaskData['nickName'],
     'pubTime': innerTaskData['pubTime'],
     'supportUserList': innerTaskData['supportUserList'],
+    'supportUserAvatarList': innerTaskData['supportUserAvatarList'],
     'opposeUserList': innerTaskData['opposeUserList'],
+    'opposeUserAvatarList': innerTaskData['opposeUserAvatarList'],
   };
   // console.log('convertInnerTaskToDatabaseTask end', databaseTaskData);
   return databaseTaskData;
@@ -57,7 +59,9 @@ var convertDatabaseTaskToInnerTask = function (databaseTaskData) {
     'nickName': validStr(databaseTaskData['nickName']) ? databaseTaskData['nickName'] : '',
     'pubTime': databaseTaskData['pubTime'] != undefined ? databaseTaskData['pubTime'] : 0,
     'supportUserList': validList(databaseTaskData['supportUserList']) ? databaseTaskData['supportUserList'] : [],
+    'supportUserAvatarList': validList(databaseTaskData['supportUserAvatarList']) ? databaseTaskData['supportUserAvatarList'] : [],
     'opposeUserList': validList(databaseTaskData['opposeUserList']) ? databaseTaskData['opposeUserList'] : [],
+    'opposeUserAvatarList': validList(databaseTaskData['opposeUserAvatarList']) ? databaseTaskData['opposeUserAvatarList'] : [],
   };
   // console.log(innerTaskData);
   return innerTaskData;

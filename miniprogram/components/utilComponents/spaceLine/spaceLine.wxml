@@ -1,2 +1,2 @@
 <!--components/utilComponents/spaceLine/spaceLine.wxml-->
-<view style='height:40rpx;'></view>
+<view style='height:{{customHeight}}rpx;'></view>

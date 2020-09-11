@@ -157,16 +157,72 @@
     </block>
   </van-row>
 
-  <van-cell title="显示分享面板" bind:click="onShareBtnClick" />
-  <van-share-sheet
-    class='share-sheet'
-    show="{{ showShare }}"
-    title="立即分享给好友"
-    options="{{ options }}"
-    bind:select="onSharePannelSelect"
-    bind:close="onSharePannelClose"
-    open-type="share"
-  />
+  <block wx:if='{{supportUserAvatarList.length > 0 || opposeUserAvatarList.length > 0}}'>
+    <van-divider></van-divider>
+    <pm-space-line customHeight='10'></pm-space-line>
+  <!-- 支持反对 用户头像 -->
+    <block wx:if='{{supportUserAvatarList.length > 0}}'>
+      <van-row>
+        <van-col offset="1" span="22">
+          <van-tag plain type="primary" size="large" style='vertical-align: middle;'>支持者</van-tag>
+        </van-col>
+      </van-row>
+      <pm-space-line customHeight='10'></pm-space-line>
+      <van-row>
+        <van-col offset="1" span="22">
+          <van-image
+                  wx:for="{{supportUserAvatarList}}"
+                  wx:for-index="idx"
+                  wx:for-item="supportUserAvatar"
+                  wx:key='idx'
+                  round
+                  width="50rpx"
+                  height="50rpx"
+                  src="{{supportUserAvatar}}"
+                  style="margin-left:7rpx;"
+                />
+        </van-col>
+      </van-row>  
+      <pm-space-line customHeight='10'></pm-space-line>
+    </block>
+    <block wx:if='{{opposeUserAvatarList.length > 0}}'>
+      <van-row>
+        <van-col offset="1" span="22">
+          <van-tag plain type="warning" size="large">反对者</van-tag>
+        </van-col>
+      </van-row>
+      <pm-space-line customHeight='10'></pm-space-line>
+      <van-row>
+        <van-col offset="1" span="22">
+          <van-image
+                  wx:for="{{opposeUserAvatarList}}"
+                  wx:for-index="idx"
+                  wx:for-item="supportUserAvatar"
+                  wx:key='idx'
+                  round
+                  width="50rpx"
+                  height="50rpx"
+                  src="{{opposeUserAvatar}}"
+                  style="margin-left:7rpx;"
+                />
+        </van-col>
+      </van-row>  
+      <pm-space-line customHeight='10'></pm-space-line>
+    </block>
+  </block>
+
+  <van-row>
+    <van-cell title="显示分享面板" bind:click="onShareBtnClick" />
+    <van-share-sheet
+      class='share-sheet'
+      show="{{ showShare }}"
+      title="立即分享给好友"
+      options="{{ options }}"
+      bind:select="onSharePannelSelect"
+      bind:close="onSharePannelClose"
+      open-type="share"
+    />
+  </van-row>
 
   <!-- 提交取消 -->
   <block wx:if="{{isSelf && status==0 && taskId==''}}">
@@ -202,7 +258,7 @@
         <van-button type="danger" plain size="large" id='oppose' bindtap="onGuessPannelClick">反对</van-button>
       </van-col>
     </van-row>
-    <pm-space-line></pm-space-line>
+    <pm-space-line customHeight='40'></pm-space-line>
   </block>
 
   <!-- 完成失败 具备裁判能力 && 不是当前用户自身 && 任务正在进行中-->

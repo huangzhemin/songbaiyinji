@@ -39,6 +39,7 @@ Page({
   onLoad: function(options) {
     console.log('options', options);
     if (options['share']) {
+      console.log('share scheme');
       this.setData({
         openId: options['openId'],
         taskId: options['taskId'],
@@ -46,6 +47,7 @@ Page({
         isSelf: options['isSelf'],
       });
     } else {
+      console.log('list entrance');
       // 获取传入参数
       const eventChannel = this.getOpenerEventChannel()
       // 监听acceptDataFromOpenerPage事件，获取上一页面通过eventChannel传送到当前页面的数据
