@@ -11,6 +11,17 @@ var debugLog = function (logContent) {
   }
 }
 
+//判断字符串有效性
+var validStr = function(inputStr) {
+  return !(typeof(inputStr) == '' || typeof(inputStr) == 'undefined' || inputStr == undefined || inputStr.length == 0);
+}
+
+//判断列表有效性
+var validList = function(inputList) {
+  return !(typeof(inputList) == [] || inputList == undefined || inputList.length == 0);
+}
+
+//转换内部任务数据 到 数据库写入任务数据，方便数据传输
 var convertInnerTaskToDatabaseTask = function (innerTaskData) {
   // console.log('convertInnerTaskToDatabaseTask start', innerTaskData);
   let databaseTaskData = {
@@ -34,14 +45,7 @@ var convertInnerTaskToDatabaseTask = function (innerTaskData) {
   return databaseTaskData;
 }
 
-var validStr = function(inputStr) {
-  return !(typeof(inputStr) == '' || typeof(inputStr) == 'undefined' || inputStr == undefined || inputStr.length == 0);
-}
-
-var validList = function(inputList) {
-  return !(typeof(inputList) == [] || inputList == undefined || inputList.length == 0);
-}
-
+//将数据库的任务数据，转换为小程序内部任务数据（单个taskItem）
 var convertDatabaseTaskToInnerTask = function (databaseTaskData) {
   // console.log(databaseTaskData);
   let innerTaskData = {
@@ -67,6 +71,7 @@ var convertDatabaseTaskToInnerTask = function (databaseTaskData) {
   return innerTaskData;
 }
 
+//批量转换数据库任务数据 到 内部任务数据
 var batchConvertDatabaseTaskToInnerTask = function (databaseTaskDataList) {
   var innerTaskList = [];
   for (const key in databaseTaskDataList) {
@@ -131,20 +136,6 @@ var p_uploadUserInfoToDatabase = function (event) {
   }
 }
 
-var addTaskToDatabase = function (event) {
-  // console.log(event);
-  // taskInfo.add({
-  //   data: this.convertInnerTaskToDatabaseTask(that.data),
-  //   success:(res => {
-  //     event.success(res);
-  //   })
-  // });
-}
-
-var updateTaskToDatabase = function () {
-
-}
-
 //拉取所有的任务列表
 var getAllTaskList = function (event) {
   taskInfo.orderBy('pubTime', 'desc').get({
@@ -182,6 +173,7 @@ var getCurrentUserOpenId = function (event) {
   });
 }
 
+//根据当前的状态类型(doing/complete)，获取当前用户的任务列表
 var getCurrentUserTaskListWithStatusType = function (event) {
   if (event.openId) {
     taskInfo.where({
@@ -211,6 +203,9 @@ var getCurrentUserTaskListWithStatusType = function (event) {
   }
 }
 
+//获取当前用户的任务列表，
+//1.有传入openId，则直接查找
+//2.如果未传入openId，则需先查找openId，再查找用户任务列表
 var getCurrentUserTaskList = function (event) {
   if (event.openId) {
     taskInfo.where({
@@ -253,6 +248,7 @@ var isLogin = function(event) {
   });
 }
 
+//通过openId获取当前的用户信息
 var p_getCurrentUserInfoWithOpenId = function(event) {
   console.log('p_getCurrentUserInfoWithOpenId openId', event.openId)
   userInfo.where({
@@ -268,6 +264,7 @@ var p_getCurrentUserInfoWithOpenId = function(event) {
   });
 }
 
+//获取登录用户的 用户信息
 var p_getCurrentUserInfoLogined = function (event) {
   if (event.openId) {
     p_getCurrentUserInfoWithOpenId(event);
@@ -451,8 +448,9 @@ var getCurrentUserMsgList = function (event) {
   }
 }
 
-var getUserInfo = function(event) {
-  console.log('getUserInfo', event);
+//外部调用方法，拉起用户登录，并获取用户的个人信息
+var userLoginAndGetUserInfo = function(event) {
+  console.log('userLoginAndGetUserInfo', event);
   //获取用户的授权情况
   wx.getSetting({
     withSubscriptions: true,
@@ -461,7 +459,7 @@ var getUserInfo = function(event) {
         title: '登录中..',
       })
       //此处需要判断是否已经获取到用户登录权限
-      //userInfo只能在getUserInfo中输出
+      //userInfo只能在userLoginAndGetUserInfo中输出
       if (result.authSetting['scope.userInfo']) {
         console.log('user has Authorize and login');
         userHasAuthorize(event);
@@ -473,10 +471,11 @@ var getUserInfo = function(event) {
   })
 }
 
+// 微信已经授权过
 var userHasAuthorize = function(event) {
   //此时已授权，则拉取用户的登录数据，检查是否需要 写入或者更新数据库
   console.log('userHasAuthorize', event);
-  writeLocalStorage({
+  p_getOpenIdFromCloudAndWriteLocalStorage({
     success: function(openId) {
       console.log('userHasAuthorize success', event);
       event.userInfo['openId'] = openId;
@@ -485,6 +484,8 @@ var userHasAuthorize = function(event) {
   });
 }
 
+// 微信未授权，需要先获取授权（userInfo），再登录当前用户信息
+// 这里后续需要增加更多的授权能力
 var getUserAuthorize = function(event) {
   //此时未授权，需要询问用户获取授权
   wx.authorize({
@@ -493,7 +494,7 @@ var getUserAuthorize = function(event) {
     //此时成功授权
     console.log('authorize success');
     //授权成功后第一步操作，使用云函数，请求用户对应的openId，该openId是用户的唯一标记
-    writeLocalStorage({
+    p_getOpenIdFromCloudAndWriteLocalStorage({
       success: function(openId) {
         getUserAuth(openId);
       },
@@ -510,6 +511,9 @@ var getUserAuthorize = function(event) {
   })
 }
 
+// 获取用户的登录信息
+// 目前只有 自己存储的 用户信息
+// 后续需要添加 登录票据
 var getUserAuth = function(openId, event) {
   //此处判断用户是否在数据库中，如果在的话，则直接读取，不在的话，则需要写入
   console.log('getUserAuth', openId, event);
@@ -521,10 +525,12 @@ var getUserAuth = function(openId, event) {
       //因为登录这里比较特殊，如果返回数据，则说明数据库已经有用户数据，可以直接返回
       //如果没有用户数据，则认为是新用户，直接添加即可
       if (validList(remoteUserInfo.data)) {
+        //userInfo数据库中已经有数据存储
         event.success(currentOpenId, remoteUserInfo.data[0]);
         //隐藏loadingView
         wx.hideLoading();
       } else {
+        //userInfo数据库中 无该用户，需要将用户数据，添加到数据库中
         p_uploadUserInfoToDatabase({
           openId: remoteUserInfo.data.length > 0 ?currentOpenId : '',
           data: event.userInfo,
@@ -546,13 +552,15 @@ var getUserAuth = function(openId, event) {
   });
 }
 
-var writeLocalStorage = function(event) {
-  console.log('writeLocalStorage', event);
+//////////////private method////////////////
+// 将从云端拉取的用户OpenId，写入本地磁盘，方便后续使用
+var p_getOpenIdFromCloudAndWriteLocalStorage = function(event) {
+  console.log('p_getOpenIdFromCloudAndWriteLocalStorage', event);
   wx.cloud.callFunction({
     // 要调用的云函数名称
     name: "login",
   }).then(loginRes =>{
-    console.log('writeLocalStorage loginRes', loginRes);
+    console.log('p_getOpenIdFromCloudAndWriteLocalStorage loginRes', loginRes);
     //这里当前js持有一份
     let currentOpenId = loginRes['result']['openid'];
     //写入到磁盘一份，方便下次启动时读取
@@ -564,7 +572,7 @@ var writeLocalStorage = function(event) {
   });
 }
 
-//private method
+// 返回当前任务「正在进行」中的判断，type = (doing/complete)
 var p_getDoingTaskStatusCondition = function(type) {
   return (type == 'doing' ? _.or(0, 1, 2) : _.or(3, 4));
 }
@@ -575,7 +583,6 @@ module.exports = {
   convertDatabaseTaskToInnerTask: convertDatabaseTaskToInnerTask,
   batchConvertDatabaseTaskToInnerTask: batchConvertDatabaseTaskToInnerTask,
   getUploadMediaList: getUploadMediaList,
-  addTaskToDatabase: addTaskToDatabase,
   getAllTaskList: getAllTaskList,
   getTaskListWithStatusType: getTaskListWithStatusType,
   getCurrentUserOpenId: getCurrentUserOpenId,
@@ -586,6 +593,6 @@ module.exports = {
   getCurrentUserMsgList: getCurrentUserMsgList,
   validStr: validStr,
   validList: validList,
-  getUserInfo: getUserInfo,
+  userLoginAndGetUserInfo: userLoginAndGetUserInfo,
   isLogin: isLogin,
 }

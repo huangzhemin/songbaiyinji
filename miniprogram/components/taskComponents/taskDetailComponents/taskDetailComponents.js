@@ -131,10 +131,10 @@ Component({
       });
     },
 
-    getUserInfo:function(event) {
+    userLoginAndGetUserInfo:function(event) {
       let that = this;
       //通过用户信息，刷新页面
-      util.getUserInfo({
+      util.userLoginAndGetUserInfo({
         userInfo: event.detail.userInfo,
         success: function(currentOpenId, latestUserInfo) {
           //通过返回的当前用户openId，直接更新登录状态和刷新页面

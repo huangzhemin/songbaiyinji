@@ -6,7 +6,7 @@
     <block wx:if='{{avatarUrl.length==0}}'>
       <button 
         open-type="getUserInfo"
-        bindgetuserinfo="getUserInfo">
+        bindgetuserinfo="userLoginAndGetUserInfo">
         <van-image
         class="avatar"
         round

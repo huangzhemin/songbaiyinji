@@ -3,7 +3,7 @@
 <view wx:if="{{isSelf && needLogin}}">
   <button 
         open-type="getUserInfo"
-        bindgetuserinfo="getUserInfo">
+        bindgetuserinfo="userLoginAndGetUserInfo">
         <van-image
         class="avatar"
         round

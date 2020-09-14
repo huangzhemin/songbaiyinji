@@ -43,10 +43,10 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    getUserInfo:function(event) {
+    userLoginAndGetUserInfo:function(event) {
       let that = this;
       //通过用户信息，刷新页面
-      util.getUserInfo({
+      util.userLoginAndGetUserInfo({
         userInfo: event.detail.userInfo,
         success: function(currentOpenId, latestUserInfo) {
           console.log('personalProfileCell getUserInfo', currentOpenId, latestUserInfo);
