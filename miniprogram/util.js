@@ -147,9 +147,24 @@ var getAllTaskList = function (event) {
   })
 }
 
-//拉取所有的正在进行中/已结束的任务列表
+//拉取全量 正在进行中/已结束 任务列表
 var getTaskListWithStatusType = function (event) {
   taskInfo.where({
+    status: p_getDoingTaskStatusCondition(event.type)
+  }).orderBy('pubTime', 'desc').get({
+    success: (taskInfoRes => {
+      console.log(taskInfoRes);
+      event.success(taskInfoRes);
+    })
+  })
+}
+
+//拉取下一屏 正在进行中/已结束 任务列表
+var getNextPageTaskListWithStatusType = function (event) {
+  let currentLoadTaskList = event.currentTaskList;
+  let taskNumOnePage = event.taskNumOnePage > 0 ? event.taskNumOnePage : 10;
+  console.log('taskNumOnePage currentLoadTaskList', taskNumOnePage, currentLoadTaskList);
+  taskInfo.limit(taskNumOnePage).skip(currentLoadTaskList.length).where({
     status: p_getDoingTaskStatusCondition(event.type)
   }).orderBy('pubTime', 'desc').get({
     success: (taskInfoRes => {
@@ -592,6 +607,7 @@ module.exports = {
   getUploadMediaList: getUploadMediaList,
   getAllTaskList: getAllTaskList,
   getTaskListWithStatusType: getTaskListWithStatusType,
+  getNextPageTaskListWithStatusType: getNextPageTaskListWithStatusType,
   getCurrentUserOpenId: getCurrentUserOpenId,
   getCurrentUserTaskListWithStatusType: getCurrentUserTaskListWithStatusType,
   getCurrentUserTaskList: getCurrentUserTaskList,

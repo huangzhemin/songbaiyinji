@@ -36,11 +36,13 @@ Component({
         title: '刷新中...',
       })
       var that = this;
-      util.getTaskListWithStatusType({
+      util.getNextPageTaskListWithStatusType({
         type: 'doing',
+        currentTaskList: that.data.taskList,
+        taskNumOnePage: 5,
         success: function(taskInfoRes) {
           that.setData({
-            taskList: util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data),
+            taskList: that.data.taskList.concat(util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data)),
           });
           wx.hideLoading();
         },
