@@ -1,0 +1,35 @@
+<!--components/taskComponents/personalTaskList/personalTaskList.wxml-->
+<!-- 未登录时的展示 -->
+<view class='loginView' wx:if="{{dataNeedLogin}}">
+  <button 
+        open-type="getUserInfo"
+        bindgetuserinfo="userLoginAndGetUserInfo">
+        <van-image
+        class="avatar"
+        round
+        width="5rem"
+        height="5rem"
+        src="https://b.yzcdn.cn/vant/icon-demo-1126.png"
+      />
+  </button>
+  <view class="name">点击头像登录后，查看正在进行任务</view>
+</view>
+<view wx:else>
+  <scroll-view scroll-y="true" style="height: {{swiperHeight+'px'}}">
+    <block wx:for='{{taskList}}' wx:for-index="idx" wx:key="idx">
+      <pm-task-cell 
+        title='{{item.taskTitle}}'
+        desc='{{item.taskPlanDesc}}'
+        status='{{item.status}}'
+        thumbImg='{{item.thumbImg}}'
+        avatar='{{item.avatar}}'
+        nickName='{{item.nickName}}'
+        pubTime='{{item.pubTime}}'
+        taskUserOpenId='{{item.openId}}'
+        taskId='{{item.taskId}}'>
+      </pm-task-cell>
+      <van-divider></van-divider>
+      <!-- <pm-splite-line wx:if="{{index < taskList.length - 1}}"></pm-splite-line> -->
+    </block>
+  </scroll-view>
+</view>

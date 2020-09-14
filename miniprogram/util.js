@@ -3,6 +3,7 @@ const taskInfo = db.collection('taskInfo')
 const userInfo = db.collection('userInfo')
 const taskOperateMsgInfo = db.collection('taskOperateMsgInfo')
 const _ = db.command
+// import Toast from '../miniprogram/miniprogram_npm/@vant/weapp/toast/index'
 
 var debugLog = function (logContent) {
   let debugSwitch = true;
@@ -194,7 +195,7 @@ var getCurrentUserTaskListWithStatusType = function (event) {
           status: p_getDoingTaskStatusCondition(event.type)
         }).skip(event.page * 20).orderBy('pubTime', 'desc').get({
           success: (taskInfoRes => {
-            console.log('getCurrentUserDoingTaskList without openId:', taskInfoRes);
+            console.log('getCurrentUserDoingTaskList without openId:', event, taskInfoRes);
             event.success(taskInfoRes)
           })
         })
@@ -552,6 +553,12 @@ var getUserAuth = function(openId, event) {
   });
 }
 
+var showToast = function(event) {
+  if (event.type == 'text') {
+    Toast(event.content);
+  }
+}
+
 //////////////private method////////////////
 // 将从云端拉取的用户OpenId，写入本地磁盘，方便后续使用
 var p_getOpenIdFromCloudAndWriteLocalStorage = function(event) {
@@ -595,4 +602,5 @@ module.exports = {
   validList: validList,
   userLoginAndGetUserInfo: userLoginAndGetUserInfo,
   isLogin: isLogin,
+  showToast: showToast,
 }

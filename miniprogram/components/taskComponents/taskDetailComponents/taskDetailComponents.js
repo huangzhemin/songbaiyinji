@@ -107,6 +107,7 @@ Component({
       } else {
         //当openId 和 taskId都没有的时候，代表目前是未登录状态创建任务
         //这种情况下，提示用户登录即可
+        console.log('showLoginPage');
         this.showLoginPage();
       }
     },
@@ -127,6 +128,7 @@ Component({
 
     showLoginPage: function(event) {
       this.setData({
+        isSelf: true,
         needLogin: true,
       });
     },
@@ -353,8 +355,8 @@ Component({
       });
     },
 
-    //非当前用户，猜一猜相关
-    onGuessPannelClick: function (event) {
+    //猜一猜相关，登录时，非任务创建者
+    p_onGuessPannelClickLogined: function(event) {
       let targetId = event.target['id'];
       var that = this;
       var guessSuccess = false;
@@ -407,6 +409,34 @@ Component({
             wx.navigateBack();
           }
         },
+      });
+    },
+
+    //猜一猜相关，未登录时
+    p_onGuessPannelClickNotLogined: function(event) {
+      //此时需要先拉起登录
+      //在登录结束后判断登录的账号，是否为任务用户，如果是，则toast提示，无法支持自己
+      //如果不是，则直接调用p_onGuessPannelClickLogined方法
+      
+    },
+
+    //非当前用户，猜一猜相关
+    onGuessPannelClick: function (event) {
+      let targetId = event.target['id'];
+      var that = this;
+      var guessSuccess = false;
+      var operationType = '';
+      //此处需要做用户是否登录判断
+      util.isLogin({
+        success: function(logined) {
+          if (logined) {
+            //用户已登录
+            that.p_onGuessPannelClickLogined(event);
+          } else {
+            //用户未登录
+            that.p_onGuessPannelClickNotLogined(event);
+          }
+        }
       });
     },
 

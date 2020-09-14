@@ -16,6 +16,10 @@
   margin: 0 8px 8px 0;
 }
 
+.loginView {
+  margin-top: 200rpx;
+}
+
 .share-sheet {
   position: absolute;
   z-index: 100;

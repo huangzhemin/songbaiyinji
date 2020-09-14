@@ -1,0 +1,9 @@
+/* components/taskComponents/personalTaskList/personalTaskList.wxss */
+.loginView {
+  margin-top: 200rpx;
+}
+
+.name {
+  font-size:40rpx;
+  text-align: center;
+}
