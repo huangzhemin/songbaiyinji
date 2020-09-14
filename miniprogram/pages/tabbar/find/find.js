@@ -6,4 +6,10 @@ Page({
    */
   data: {
   },
+
+  onReachBottom: function() {
+    // Do something when page reach bottom.
+    let _findTaskList = this.selectComponent('#findTaskList').findTaskList;
+    _findTaskList.loadNextPage();
+  },
 })

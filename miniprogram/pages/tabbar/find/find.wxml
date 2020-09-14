@@ -1,2 +1,2 @@
 <!--miniprogram/pages/tabbar/find/find.wxml-->
-<pm-find-task-list></pm-find-task-list>
+<pm-find-task-list id='findTaskList'></pm-find-task-list>

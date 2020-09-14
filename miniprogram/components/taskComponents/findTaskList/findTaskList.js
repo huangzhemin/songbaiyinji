@@ -15,12 +15,17 @@ Component({
     taskList: [],
   },
 
+  behaviors: ['wx://component-export'],  
+  export() {
+      return {findTaskList: this} 
+  },
+
   pageLifetimes: {
     // 组件所在页面的生命周期函数
     show: function () { 
       //当页面展示的时候
       console.log('doingTaskList show');
-      this.refreshTaskList();
+      this.loadNextPage();
     },
     hide: function () { },
     resize: function () { },
@@ -31,20 +36,37 @@ Component({
    */
   methods: {
     refreshTaskList: function(event) {
+      console.log('refreshTaskList', this.data.taskList)
       this.data.taskList = [];
       wx.showLoading({
         title: '刷新中...',
       })
+      var that = this;
+      util.getTaskListWithStatusType({
+        type: 'doing',
+        success: function(taskInfoRes) {
+          that.setData({
+            taskList: util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data),
+          });
+          wx.hideLoading();
+        },
+      });
+    },
+
+    loadNextPage: function(event) {
+      console.log('loadNextPage', this.data.taskList)
       var that = this;
       util.getNextPageTaskListWithStatusType({
         type: 'doing',
         currentTaskList: that.data.taskList,
         taskNumOnePage: 5,
         success: function(taskInfoRes) {
+          console.log('that.data.taskList before', that.data.taskList)
+          let newTaskList = that.data.taskList.concat(util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data));
+          console.log('that.data.taskList after', newTaskList)
           that.setData({
-            taskList: that.data.taskList.concat(util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data)),
+            taskList: newTaskList,
           });
-          wx.hideLoading();
         },
       });
     }

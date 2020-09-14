@@ -168,7 +168,8 @@ var getNextPageTaskListWithStatusType = function (event) {
     status: p_getDoingTaskStatusCondition(event.type)
   }).orderBy('pubTime', 'desc').get({
     success: (taskInfoRes => {
-      console.log(taskInfoRes);
+      console.log('currentLoadTaskList', event.currentTaskList);
+      console.log('newPageTaskInfo', taskInfoRes.data);
       event.success(taskInfoRes);
     })
   })
