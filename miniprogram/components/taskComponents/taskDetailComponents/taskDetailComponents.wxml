@@ -1,6 +1,20 @@
 <!--components/taskComponents/taskDetailComponents/taskDetailComponents.wxml-->
 <!-- 计划标题 -->
-<view wx:if="{{openId}}">
+<view wx:if="{{isSelf && needLogin}}">
+  <button 
+        open-type="getUserInfo"
+        bindgetuserinfo="getUserInfo">
+        <van-image
+        class="avatar"
+        round
+        width="5rem"
+        height="5rem"
+        src="https://b.yzcdn.cn/vant/icon-demo-1126.png"
+      />
+  </button>
+  <view class="name">点击头像登录后，创建任务</view>
+</view>
+<view wx:elif="{{openId}}">
   <van-row>
     <van-col class='taskTitle' span="24" >
       <!-- 如果是自己 而且 当前状态是进行中 则可修改 -->

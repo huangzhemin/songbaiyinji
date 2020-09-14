@@ -35,6 +35,7 @@ Component({
     openId: "",
     status: 0,
 
+    thumbImg: "",
     taskTitle: "",
     taskPlanDesc: "",
     taskPlanUploadMediaList: [],
@@ -53,6 +54,7 @@ Component({
     canJudge: false,
     isSelf: false,
 
+    needLogin: false,
     showShare: false,
     options: 
     [
@@ -88,17 +90,24 @@ Component({
   observers: {
     'propertyTaskId, propertyOpenId': function (propertyTaskId, propertyOpenId) {
       //底层页 变量不会随时变换，这里改变必然伴随外部page传值               
-      console.log('propertyTaskId', propertyTaskId);
       console.log('propertyOpenId', propertyOpenId);
-      this.data.taskId = propertyTaskId;
+      console.log('propertyTaskId', propertyTaskId);
       this.data.openId = propertyOpenId;
-      if (propertyTaskId && propertyOpenId) {         
+      this.data.taskId = propertyTaskId;
+      //这里propertyOpenId 和 propertyTaskId 均是任务创建者信息
+      if (propertyOpenId && propertyTaskId) {         
         //只有在父组件数据准备好，刷新完成后，根据字段变化情况，监听有值时，触发组件读取
+        //当openId 和 taskId都有的情况下，进入任务详情页
         console.log('componentLoadPage');
         this.componentLoadPage();
       } else if (propertyOpenId && !util.validStr(propertyTaskId)) {
+        //当有openId 但是 没有taskId的时候，认为任务没有创建，此时代表进入创建任务页
         console.log('createTaskPage');
         this.createTaskPage();
+      } else {
+        //当openId 和 taskId都没有的时候，代表目前是未登录状态创建任务
+        //这种情况下，提示用户登录即可
+        this.showLoginPage();
       }
     },
   },
@@ -112,6 +121,33 @@ Component({
         openId: this.data.openId,
         canJudge: this.properties.propertyCanJudge,
         isSelf: this.properties.propertyIsSelf,
+        needLogin: false,
+      });
+    },
+
+    showLoginPage: function(event) {
+      this.setData({
+        needLogin: true,
+      });
+    },
+
+    getUserInfo:function(event) {
+      let that = this;
+      //通过用户信息，刷新页面
+      util.getUserInfo({
+        userInfo: event.detail.userInfo,
+        success: function(currentOpenId, latestUserInfo) {
+          //通过返回的当前用户openId，直接更新登录状态和刷新页面
+          if (util.validStr(currentOpenId)) {
+            console.log('getUserInfo', currentOpenId, latestUserInfo)
+            that.setData({
+              needLogin: false,
+              openId: currentOpenId,
+              canJudge: latestUserInfo.canJudge,
+              isSelf: true,
+            });
+          }
+        }
       });
     },
 
@@ -153,6 +189,7 @@ Component({
           taskPlanUploadMediaList: that.data.taskPlanUploadMediaList,
           taskCompleteDesc: that.data.taskCompleteDesc,
           taskCompleteUploadMediaList: that.data.taskCompleteUploadMediaList,
+          needLogin: false,
         });
       }).then(res1 => {
         wx.hideLoading();
@@ -239,6 +276,8 @@ Component({
         taskCompleteUploadMediaList: [],
         taskCompleteShowUpload: true,
         taskMediaList: [],
+        thumbImg: "",
+        needLogin: false,
       });
     },
 

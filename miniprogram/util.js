@@ -104,7 +104,8 @@ var getUploadMediaList = function (openId, taskId, taskMediaList) {
 }
 
 //更新当前数据库中的用户数据，如果携带openId，则update，未携带add添加
-var uploadUserInfoToDatabase = function (event) {
+var p_uploadUserInfoToDatabase = function (event) {
+  console.log('p_uploadUserInfoToDatabase', event);
   if (event.openId) {
     //如果数据库中已经有存储，则直接更新数据库
     userInfo.where({
@@ -112,6 +113,7 @@ var uploadUserInfoToDatabase = function (event) {
     }).update({
       data: event.data,
     }).then(userInfoDatabaseRes => {
+      console.log('p_uploadUserInfoToDatabase update', userInfoDatabaseRes);
       event.success(userInfoDatabaseRes);
     }).catch(err => {
       event.fail(err);
@@ -121,6 +123,7 @@ var uploadUserInfoToDatabase = function (event) {
     userInfo.add({
       data: event.data,
     }).then(userInfoDatabaseRes => {
+      console.log('p_uploadUserInfoToDatabase add', userInfoDatabaseRes);
       event.success(userInfoDatabaseRes);
     }).catch(err => {
       event.fail(err);
@@ -142,6 +145,7 @@ var updateTaskToDatabase = function () {
 
 }
 
+//拉取所有的任务列表
 var getAllTaskList = function (event) {
   taskInfo.orderBy('pubTime', 'desc').get({
     success: (taskInfoRes => {
@@ -151,6 +155,19 @@ var getAllTaskList = function (event) {
   })
 }
 
+//拉取所有的正在进行中/已结束的任务列表
+var getTaskListWithStatusType = function (event) {
+  taskInfo.where({
+    status: p_getDoingTaskStatusCondition(event.type)
+  }).orderBy('pubTime', 'desc').get({
+    success: (taskInfoRes => {
+      console.log(taskInfoRes);
+      event.success(taskInfoRes);
+    })
+  })
+}
+
+//获取当前用户的openId
 var getCurrentUserOpenId = function (event) {
   wx.getStorage({
     key: 'openid',
@@ -169,7 +186,7 @@ var getCurrentUserTaskListWithStatusType = function (event) {
   if (event.openId) {
     taskInfo.where({
       openId: event.openId, //当前用户 openId
-      status: (event.type == 'doing' ? _.or(0, 1, 2) : _.or(3, 4))
+      status: p_getDoingTaskStatusCondition(event.type)
     }).skip(event.page * 20).orderBy('pubTime', 'desc').get({
       success: (taskInfoRes => {
         console.log('getCurrentUserDoingTaskList with openId:', taskInfoRes);
@@ -182,7 +199,7 @@ var getCurrentUserTaskListWithStatusType = function (event) {
       success: (res => {
         taskInfo.where({
           openId: res.data, // 填入当前用户 openid
-          status: (event.type == 'doing' ? _.or(0, 1, 2) : _.or(3, 4))
+          status: p_getDoingTaskStatusCondition(event.type)
         }).skip(event.page * 20).orderBy('pubTime', 'desc').get({
           success: (taskInfoRes => {
             console.log('getCurrentUserDoingTaskList without openId:', taskInfoRes);
@@ -237,10 +254,12 @@ var isLogin = function(event) {
 }
 
 var p_getCurrentUserInfoWithOpenId = function(event) {
+  console.log('p_getCurrentUserInfoWithOpenId openId', event.openId)
   userInfo.where({
     _openid: event.openId
   }).get({
     success: (userInfoRes => {
+      console.log('p_getCurrentUserInfoWithOpenId', userInfoRes);
       event.success(event.openId, userInfoRes)
     }),
     fail: (err => {
@@ -274,18 +293,23 @@ var p_getCurrentUserInfoLogined = function (event) {
 //如果用户没有登录，直接返回空
 //在调用getCurrentUserInfo的地方，通过判断返回结果，来调整
 var getCurrentUserInfo = function (event) {
-  isLogin({
-    success: function(logined) {
-      if (logined) {
-        console.log('getCurrentUserInfo logined');
-        p_getCurrentUserInfoLogined(event)
-      } else {
-        console.log('getCurrentUserInfo logout');
-        event.fail('user logout');
-      }
-    },
-  })
-  
+  if (validStr(event.openId)) {
+    console.log('getCurrentUserInfo', event);
+    p_getCurrentUserInfoWithOpenId(event);
+  } else {
+    console.log('getCurrentUserInfo 2', event);
+    isLogin({
+      success: function(logined) {
+        if (logined) {
+          console.log('getCurrentUserInfo logined');
+          p_getCurrentUserInfoLogined(event)
+        } else {
+          console.log('getCurrentUserInfo logout');
+          event.fail('user logout');
+        }
+      },
+    })  
+  }
 }
 
 //将任务信息处理信息更新至消息数据库
@@ -427,15 +451,133 @@ var getCurrentUserMsgList = function (event) {
   }
 }
 
+var getUserInfo = function(event) {
+  console.log('getUserInfo', event);
+  //获取用户的授权情况
+  wx.getSetting({
+    withSubscriptions: true,
+    success: (result) => {
+      wx.showLoading({
+        title: '登录中..',
+      })
+      //此处需要判断是否已经获取到用户登录权限
+      //userInfo只能在getUserInfo中输出
+      if (result.authSetting['scope.userInfo']) {
+        console.log('user has Authorize and login');
+        userHasAuthorize(event);
+      } else {
+        console.log('user no Authorize');
+        getUserAuthorize(event);
+      }
+    }
+  })
+}
+
+var userHasAuthorize = function(event) {
+  //此时已授权，则拉取用户的登录数据，检查是否需要 写入或者更新数据库
+  console.log('userHasAuthorize', event);
+  writeLocalStorage({
+    success: function(openId) {
+      console.log('userHasAuthorize success', event);
+      event.userInfo['openId'] = openId;
+      getUserAuth(openId, event);
+    },
+  });
+}
+
+var getUserAuthorize = function(event) {
+  //此时未授权，需要询问用户获取授权
+  wx.authorize({
+    scope: 'scope.userInfo',
+  }).then(res => {
+    //此时成功授权
+    console.log('authorize success');
+    //授权成功后第一步操作，使用云函数，请求用户对应的openId，该openId是用户的唯一标记
+    writeLocalStorage({
+      success: function(openId) {
+        getUserAuth(openId);
+      },
+    });
+  }).catch(err => {
+    //授权失败
+    console.error(err);
+    //此处没有必要跳转到授权页，直接弹出弹窗即可
+    wx.showToast({
+      title: '需要登录才可查看',
+      icon: 'fail',
+      duration: 2000
+    })
+  })
+}
+
+var getUserAuth = function(openId, event) {
+  //此处判断用户是否在数据库中，如果在的话，则直接读取，不在的话，则需要写入
+  console.log('getUserAuth', openId, event);
+  getCurrentUserInfo({
+    openId: openId,
+    success: function(currentOpenId, remoteUserInfo) {
+      console.log('getUserAuth getCurrentUserInfo', currentOpenId, remoteUserInfo, event);
+      //因为本地无更新用户数据的功能，所以本地只有可能是创建用户
+      //因为登录这里比较特殊，如果返回数据，则说明数据库已经有用户数据，可以直接返回
+      //如果没有用户数据，则认为是新用户，直接添加即可
+      if (validList(remoteUserInfo.data)) {
+        event.success(currentOpenId, remoteUserInfo.data[0]);
+        //隐藏loadingView
+        wx.hideLoading();
+      } else {
+        p_uploadUserInfoToDatabase({
+          openId: remoteUserInfo.data.length > 0 ?currentOpenId : '',
+          data: event.userInfo,
+          success: function(userInfoDatabaseRes) {
+            console.log('getUserAuth return', event, currentOpenId, remoteUserInfo, userInfoDatabaseRes)
+            event.success(currentOpenId, event.userInfo);
+            //隐藏loadingView
+            wx.hideLoading();
+          },
+          fail: function(err) {
+            console.log('getUserAuth error', err);
+            console.error(err)
+            //隐藏loadingView
+            wx.hideLoading();
+          }
+        });
+      }
+    }
+  });
+}
+
+var writeLocalStorage = function(event) {
+  console.log('writeLocalStorage', event);
+  wx.cloud.callFunction({
+    // 要调用的云函数名称
+    name: "login",
+  }).then(loginRes =>{
+    console.log('writeLocalStorage loginRes', loginRes);
+    //这里当前js持有一份
+    let currentOpenId = loginRes['result']['openid'];
+    //写入到磁盘一份，方便下次启动时读取
+    wx.setStorage({
+      key:'openid',
+      data:currentOpenId,          
+    })
+    event.success(currentOpenId);
+  });
+}
+
+//private method
+var p_getDoingTaskStatusCondition = function(type) {
+  return (type == 'doing' ? _.or(0, 1, 2) : _.or(3, 4));
+}
+
 module.exports = {
   debugLog: debugLog,
   convertInnerTaskToDatabaseTask: convertInnerTaskToDatabaseTask,
   convertDatabaseTaskToInnerTask: convertDatabaseTaskToInnerTask,
   batchConvertDatabaseTaskToInnerTask: batchConvertDatabaseTaskToInnerTask,
   getUploadMediaList: getUploadMediaList,
-  uploadUserInfoToDatabase: uploadUserInfoToDatabase,
   addTaskToDatabase: addTaskToDatabase,
   getAllTaskList: getAllTaskList,
+  getTaskListWithStatusType: getTaskListWithStatusType,
   getCurrentUserOpenId: getCurrentUserOpenId,
   getCurrentUserTaskListWithStatusType: getCurrentUserTaskListWithStatusType,
   getCurrentUserTaskList: getCurrentUserTaskList,
@@ -444,4 +586,6 @@ module.exports = {
   getCurrentUserMsgList: getCurrentUserMsgList,
   validStr: validStr,
   validList: validList,
+  getUserInfo: getUserInfo,
+  isLogin: isLogin,
 }

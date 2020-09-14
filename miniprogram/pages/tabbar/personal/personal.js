@@ -53,7 +53,7 @@ Page({
     util.getCurrentUserTaskList({
       openId: openId,
       success: function(taskInfoRes) {
-        // console.log(currentUserInfo);
+        console.log('p_refreshPersonalPage', currentUserInfo);
         // console.log(taskInfoRes);
         that.setData({
           //当前用户的openId

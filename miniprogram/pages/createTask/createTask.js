@@ -20,6 +20,14 @@ Page({
           canJudge: userInfoRes.data[0].canJudge,
           isSelf: true,
         });
+      },
+      fail: function(err) {
+        that.setData({
+          openId: '',
+          taskId: '',
+          canJudge: false,
+          isSelf: true,
+        });
       }
     });
   },

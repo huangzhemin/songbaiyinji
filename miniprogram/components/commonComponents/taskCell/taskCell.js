@@ -51,15 +51,15 @@ Component({
     tag: '',
     pubTimeStr: '',
   },
-  
+
   observers: {
-    'status': function(status) {
+    'status': function (status) {
       // 当property statusc传入的状态改变的时候，tag需要做相应的调整
       this.setData({
         tag: this.getTagNameWithStatus(this.properties.status),
       });
     },
-    'pubTime': function(pubTime) {
+    'pubTime': function (pubTime) {
       this.setData({
         pubTimeStr: new Date(this.properties.pubTime * 1000).toLocaleString(),
       });
@@ -75,7 +75,7 @@ Component({
     // 2 - 投票
     // 3 - 完成
     // 4 - 失败
-    getTagNameWithStatus: function(status) {
+    getTagNameWithStatus: function (status) {
       var tag = '标签';
       switch (status) {
         case 0:
@@ -86,7 +86,7 @@ Component({
           break;
         case 2:
           tag = '投票';
-          break;  
+          break;
         case 3:
           tag = '完成';
           break;
@@ -104,34 +104,37 @@ Component({
       var that = this;
       wx.navigateTo({
         url: url,
-        success: function(res) {
+        success: function (res) {
           // 通过eventChannel向被打开页面传送数据
           console.log('that.properties', that.properties);
-          res.eventChannel.emit('acceptDataFromOpenerPage', { 
-            'openId': that.properties.taskUserOpenId,   //类似'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
-            'taskId': that.properties.taskId,           //类似'task0','task1'
-            'canJudge': canJudge,  //判断是否可以裁定，志愿者可裁定、普通用户只支持投票
-            'isSelf': isSelf,  //自身：传入的openId与自身openId是同一个
-           })
+          res.eventChannel.emit('acceptDataFromOpenerPage', {
+            'openId': that.properties.taskUserOpenId, //类似'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
+            'taskId': that.properties.taskId, //类似'task0','task1'
+            'canJudge': canJudge, //判断是否可以裁定，志愿者可裁定、普通用户只支持投票
+            'isSelf': isSelf, //自身：传入的openId与自身openId是同一个
+          })
         }
       })
     },
 
     onClick(event) {
       var that = this;
-      util.getCurrentUserInfo({
-        success: function(currentUserOpenId, userInfoRes) {
-          //此处判断需要跳转的 任务详情页样式
-          console.log('currentUserOpenId', currentUserOpenId);
-          console.log('canJudge', userInfoRes.data[0]['canJudge']);
-          that.jumpTaskDetailWithCanJudgeAndIsSelf(userInfoRes.data[0]['canJudge'], 
-                                                   currentUserOpenId == that.properties.taskUserOpenId);
-        },
-        fail: function(err) {
-          that.jumpTaskDetailWithCanJudgeAndIsSelf(false, false);
-        }
-       }
-      );
+      if (util.isLogin) {
+        util.getCurrentUserInfo({
+          success: function (currentUserOpenId, userInfoRes) {
+            //此处判断需要跳转的 任务详情页样式
+            console.log('currentUserOpenId', currentUserOpenId);
+            console.log('canJudge', userInfoRes.data[0]['canJudge']);
+            that.jumpTaskDetailWithCanJudgeAndIsSelf(userInfoRes.data[0]['canJudge'],
+              currentUserOpenId == that.properties.taskUserOpenId);
+          },
+          fail: function (err) {
+            that.jumpTaskDetailWithCanJudgeAndIsSelf(false, false);
+          }
+        });
+      } else {
+        that.jumpTaskDetailWithCanJudgeAndIsSelf(false, false);
+      }
     }
   }
 })

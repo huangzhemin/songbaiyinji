@@ -36,7 +36,8 @@ Component({
         title: '刷新中...',
       })
       var that = this;
-      util.getAllTaskList({
+      util.getTaskListWithStatusType({
+        type: 'doing',
         success: function(taskInfoRes) {
           that.setData({
             taskList: util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data),
