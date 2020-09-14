@@ -35,9 +35,20 @@ Component({
       if (needLogin) {
         this.showLoginView();
       } else {
-        this.refreshDoingTaskList();
+        this.refreshPersonalTaskList();
       }
     }
+  },
+
+  pageLifetimes: {
+    // 组件所在页面的生命周期函数
+    show: function () { 
+      if (!this.data.dataNeedLogin) {
+        this.refreshPersonalTaskList();
+      }
+    },
+    hide: function () { },
+    resize: function () { },
   },
 
   /**
@@ -61,22 +72,21 @@ Component({
           //通过返回的当前用户openId，直接更新登录状态和刷新页面
           if (util.validStr(currentOpenId)) {
             that.data.dataNeedLogin = false;
-            that.refreshDoingTaskList();
+            that.refreshPersonalTaskList();
           }
         }
       });
     },
 
-    refreshDoingTaskList: function(event) {
-      console.log('refreshDoingTaskList');
+    refreshPersonalTaskList: function(event) {
       wx.showLoading({
         title: '刷新中...',
       })
       var that = this;
       //这里直接从云数据库层面筛掉 status == 3 和 status == 4的数据， 剩下的就是正在进行中的任务，逆向排序
-      console.log('refreshDoingTaskList before getCurrentUserTaskListWithStatusType', event);
+      console.log('refreshPersonalTaskList before getCurrentUserTaskListWithStatusType', event);
       var taskStatusType = '';
-      console.log('this.properties.taskStatusType', this.properties.taskStatusType);
+      console.log('refreshPersonalTaskList taskStatusType', this.properties.taskStatusType);
       if (this.properties.taskStatusType == 'doing'
         || this.properties.taskStatusType == 'complete') {
           taskStatusType = this.properties.taskStatusType;
@@ -85,7 +95,7 @@ Component({
         util.getCurrentUserTaskListWithStatusType({
           type: taskStatusType,
           success: function(taskInfoRes) {
-            console.log('refreshDoingTaskList getCurrentUserTaskListWithStatusType', taskInfoRes, that.data.dataNeedLogin);
+            console.log('refreshPersonalTaskList getCurrentUserTaskListWithStatusType', taskInfoRes, that.data.dataNeedLogin);
             that.setData({
               taskList: taskInfoRes.data,
               dataNeedLogin: that.data.dataNeedLogin,
