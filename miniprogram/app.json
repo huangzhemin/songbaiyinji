@@ -36,6 +36,7 @@
     "van-divider": "@vant/weapp/divider/index",
     "van-tag": "@vant/weapp/tag/index",
     "van-toast": "@vant/weapp/toast/index",
+    "van-popup": "@vant/weapp/popup/index",
     "pm-ranking-cell": "components/rankingComponents/rankingCell/rankingCell",
     "pm-personal-profile-cell": "components/personalComponents/personalProfileCell/personalProfileCell",
     "pm-task-cell": "components/commonComponents/taskCell/taskCell",

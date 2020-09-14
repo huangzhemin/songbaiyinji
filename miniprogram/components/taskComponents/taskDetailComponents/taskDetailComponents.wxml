@@ -288,4 +288,21 @@
     </van-row>
   </block>
 
+  <van-popup show="{{ loginPopupShow }}" bind:close="onLoginPopupClose">
+    <button 
+        open-type="getUserInfo"
+        bindgetuserinfo="userLoginAndGetUserInfo">
+        <van-image
+        class="avatar"
+        round
+        width="5rem"
+        height="5rem"
+        src="https://b.yzcdn.cn/vant/icon-demo-1126.png"
+      />
+    </button>
+    <view class="name">
+    点击头像登录后，投票任务
+    </view>
+  </van-popup>
+
 </view>

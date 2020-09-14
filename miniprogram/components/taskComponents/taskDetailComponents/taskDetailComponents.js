@@ -56,6 +56,7 @@ Component({
 
     needLogin: false,
     showShare: false,
+    loginPopupShow: false,
     options: 
     [
       [{
@@ -142,11 +143,14 @@ Component({
           //通过返回的当前用户openId，直接更新登录状态和刷新页面
           if (util.validStr(currentOpenId)) {
             console.log('getUserInfo', currentOpenId, latestUserInfo)
+            //此处需要根据 当前的具体来源，做不同的操作
+            //刷新页面
             that.setData({
               needLogin: false,
               openId: currentOpenId,
               canJudge: latestUserInfo.canJudge,
               isSelf: true,
+              loginPopupShow: false,
             });
           }
         }
@@ -417,7 +421,17 @@ Component({
       //此时需要先拉起登录
       //在登录结束后判断登录的账号，是否为任务用户，如果是，则toast提示，无法支持自己
       //如果不是，则直接调用p_onGuessPannelClickLogined方法
-      
+      //此处需要创建popup展示，方便未来登录入口拓展
+      console.log('p_onGuessPannelClickNotLogined', event);
+      this.showLoginPopup();
+    },
+
+    showLoginPopup() {
+      this.setData({ loginPopupShow: true });
+    },
+  
+    onLoginPopupClose() {
+      this.setData({ loginPopupShow: false });
     },
 
     //非当前用户，猜一猜相关
