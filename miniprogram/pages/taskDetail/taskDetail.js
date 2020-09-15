@@ -1,3 +1,5 @@
+const util = require("../../util");
+
 // miniprogram/pages/taskDetail/taskDetail.js
 Page({
   /**
@@ -44,7 +46,7 @@ Page({
         openId: options['openId'],
         taskId: options['taskId'],
         canJudge: options['canJudge'],
-        isSelf: options['isSelf'],
+        isSelf: (util.getCurrentUserOpenId() == options['openId']),
       });
     } else {
       console.log('list entrance');
@@ -73,7 +75,7 @@ Page({
     }
     return {
       title: this.data.taskTitle,
-      path: '/pages/taskDetail/taskDetail?share=true&openId='+this.data.openId+'&taskId='+this.data.taskId+'&canJudge='+this.data.canJudge+'&isSelf='+this.data.isSelf,
+      path: '/pages/taskDetail/taskDetail?share=true&openId='+this.data.openId+'&taskId='+this.data.taskId+'&canJudge='+this.data.canJudge,
     }
   },
 })

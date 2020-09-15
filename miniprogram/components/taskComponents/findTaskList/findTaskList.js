@@ -25,6 +25,8 @@ Component({
     show: function () { 
       //当页面展示的时候
       console.log('doingTaskList show');
+      //warning 先调整为，每次onShow，清空后重新拉取，保证能展示最新数据，后续改为下拉刷新
+      this.data.taskList = [];
       this.loadNextPage();
     },
     hide: function () { },
