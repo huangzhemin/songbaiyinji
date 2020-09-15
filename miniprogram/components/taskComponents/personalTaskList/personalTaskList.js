@@ -82,7 +82,7 @@ Component({
       wx.showLoading({
         title: '刷新中...',
       })
-      var that = this;
+      let that = this;
       //这里直接从云数据库层面筛掉 status == 3 和 status == 4的数据， 剩下的就是正在进行中的任务，逆向排序
       console.log('refreshPersonalTaskList before getCurrentUserTaskListWithStatusType', event);
       var taskStatusType = '';

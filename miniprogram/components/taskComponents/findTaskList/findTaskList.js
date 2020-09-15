@@ -13,6 +13,7 @@ Component({
    */
   data: {
     taskList: [],
+    loadMore: true,
   },
 
   behaviors: ['wx://component-export'],  
@@ -43,7 +44,7 @@ Component({
       wx.showLoading({
         title: '刷新中...',
       })
-      var that = this;
+      let that = this;
       util.getTaskListWithStatusType({
         type: 'doing',
         success: function(taskInfoRes) {
@@ -56,18 +57,26 @@ Component({
     },
 
     loadNextPage: function(event) {
-      console.log('loadNextPage', this.data.taskList)
-      var that = this;
+      //如果已经加载完全部的列表，则直接返回
+      if (!this.data.loadMore) {
+        return;
+      }
+
+      //准备拉取「发现页」下一页的任务数据
+      let that = this;
+      let taskNumOnePage = 5;
       util.getNextPageTaskListWithStatusType({
         type: 'doing',
         currentTaskList: that.data.taskList,
-        taskNumOnePage: 5,
+        taskNumOnePage: taskNumOnePage,
         success: function(taskInfoRes) {
-          console.log('that.data.taskList before', that.data.taskList)
-          let newTaskList = that.data.taskList.concat(util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data));
-          console.log('that.data.taskList after', newTaskList)
+          console.log('findTaskList before', that.data.taskList)
+          let newPageTaskList = util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data);
+          let newTaskList = that.data.taskList.concat(newPageTaskList);
+          console.log('findTaskList after', newTaskList)
           that.setData({
             taskList: newTaskList,
+            loadMore: newPageTaskList.length == taskNumOnePage,
           });
         },
       });

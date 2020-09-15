@@ -101,7 +101,7 @@ Component({
 
     jumpTaskDetailWithCanJudgeAndIsSelf(canJudge, isSelf) {
       var url = '/pages/taskDetail/taskDetail';
-      var that = this;
+      let that = this;
       wx.navigateTo({
         url: url,
         success: function (res) {
@@ -118,7 +118,7 @@ Component({
     },
 
     onClick(event) {
-      var that = this;
+      let that = this;
       if (util.isLogin) {
         util.getCurrentUserInfo({
           success: function (currentUserOpenId, userInfoRes) {

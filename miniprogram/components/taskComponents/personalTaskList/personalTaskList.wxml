@@ -12,7 +12,7 @@
         src="https://b.yzcdn.cn/vant/icon-demo-1126.png"
       />
   </button>
-  <view class="name">点击头像登录后，查看正在进行任务</view>
+  <view class="name">点击头像登录后，查看个人任务</view>
 </view>
 <view wx:else>
   <scroll-view scroll-y="true" style="height: {{swiperHeight+'px'}}">

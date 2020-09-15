@@ -158,7 +158,7 @@ Component({
     },
 
     componentLoadPage: function (event) {
-      var that = this;
+      let that = this;
       wx.showLoading({
         title: 'loading...',
       })
@@ -248,7 +248,7 @@ Component({
       }
 
       if (targetId == 'create') {
-        var that = this;
+        let that = this;
         this.addTaskToDatabase({
           status: status,
           operationType: operationType,
@@ -341,7 +341,7 @@ Component({
   
     //包含 taskId, avatar，nickName，pubTime
     getTaskInfo: function(event) {
-      var that = this;
+      let that = this;
       util.getCurrentUserTaskList({
         success: function(taskInfoRes) {
           console.log('createTask currentTaskInfoLength:'+taskInfoRes.data.length);
@@ -362,7 +362,7 @@ Component({
     //猜一猜相关，登录时，非任务创建者
     p_onGuessPannelClickLogined: function(event) {
       let targetId = event.target['id'];
-      var that = this;
+      let that = this;
       var guessSuccess = false;
       var operationType = '';
       util.getCurrentUserInfo({
@@ -437,7 +437,7 @@ Component({
     //非当前用户，猜一猜相关
     onGuessPannelClick: function (event) {
       let targetId = event.target['id'];
-      var that = this;
+      let that = this;
       var guessSuccess = false;
       var operationType = '';
       //此处需要做用户是否登录判断
@@ -468,7 +468,7 @@ Component({
         status = 4;
         operationType = 'fail';
       }
-      var that = this;
+      let that = this;
       this.updateTaskToDatabase({
         operationType: operationType,
         status: status,
@@ -494,7 +494,7 @@ Component({
     },
 
     updateTaskToDatabase: function (event) {
-      var that = this;
+      let that = this;
       //此处赋值任务状态，是继续进行，还是放弃
       that.data.status = event.status;
       //更新资源信息

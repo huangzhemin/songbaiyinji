@@ -163,13 +163,18 @@ var getTaskListWithStatusType = function (event) {
 var getNextPageTaskListWithStatusType = function (event) {
   let currentLoadTaskList = event.currentTaskList;
   let taskNumOnePage = event.taskNumOnePage > 0 ? event.taskNumOnePage : 10;
-  console.log('taskNumOnePage currentLoadTaskList', taskNumOnePage, currentLoadTaskList);
-  taskInfo.limit(taskNumOnePage).skip(currentLoadTaskList.length).where({
-    status: p_getDoingTaskStatusCondition(event.type)
+  let currentLoadTaskListLastTaskPubTime;
+  if (validList(currentLoadTaskList)) {
+    currentLoadTaskListLastTaskPubTime = currentLoadTaskList[currentLoadTaskList.length - 1].pubTime;  
+  } else {
+    currentLoadTaskListLastTaskPubTime = Date.parse(new Date()) / 1000;
+  }
+  console.log('taskNumOnePage currentLoadTaskList currentLoadTaskListLastTaskPubTime', taskNumOnePage, currentLoadTaskList, currentLoadTaskListLastTaskPubTime);
+  taskInfo.limit(taskNumOnePage).where({
+    status: p_getDoingTaskStatusCondition(event.type),
+    pubTime: _.lt(currentLoadTaskListLastTaskPubTime)
   }).orderBy('pubTime', 'desc').get({
     success: (taskInfoRes => {
-      console.log('currentLoadTaskList', event.currentTaskList);
-      console.log('newPageTaskInfo', taskInfoRes.data);
       event.success(taskInfoRes);
     })
   })
@@ -343,7 +348,7 @@ var addUserOperationMsgWithOperateAndCurrentTaskInfo = function (userOperationMs
   let operationType = userOperationMsg.operationType;
   let operateTime = Date.parse(new Date()) / 1000;
   //获取当前用户信息
-  var that = this;
+  let that = this;
   getCurrentUserInfo({
     success: function (currentUserOpenId, userInfoRes) {
       let operateUserOpenId = currentUserOpenId;

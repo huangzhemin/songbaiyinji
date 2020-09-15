@@ -27,7 +27,7 @@ Page({
       title: '加载中...',
     })
 
-    var that = this;
+    let that = this;
     util.getCurrentUserInfo({
       success: function(openId, userInfoRes) {
         let currentUserInfo = userInfoRes.data[0];
