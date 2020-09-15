@@ -22,6 +22,9 @@ exports.main = async (event, context) => {
     ctx.data.userOpenIdList = event.userOpenIdList;
     ctx.data.userPointsDic = event.userPointsDic;
     ctx.data.userPointsRankingList = event.userPointsRankingList;
+    ctx.data.taskNumOnePage = event.taskNumOnePage;
+    ctx.data.taskListType = event.taskListType;
+    ctx.data.lastPubTime = event.lastPubTime;
     await next(); // 执行下一中间件
   });
 
@@ -33,6 +36,7 @@ exports.main = async (event, context) => {
     'batchGetUserInfo',
     'batchGetUserPointsRankingList',
     'batchWriteUserPointRankingList',
+    'getNextPageTaskListWithCurrentStatus',
   ];
   app.router(routerList, async (ctx, next) => {
     await next();
@@ -156,7 +160,32 @@ exports.main = async (event, context) => {
     });
   });
 
+  app.router('getNextPageTaskListWithCurrentStatus', async (ctx, next) => {
+    console.log('getNextPageTaskListWithCurrentStatus invoke');
+    const db = cloud.database();
+    const _ = db.command;
+
+    console.log('ctx.data', ctx.data);
+
+    ctx.data.res = await db.collection('taskInfo').limit(ctx.data.taskNumOnePage).where({
+      status: p_getDoingTaskStatusCondition(ctx.data.taskListType),
+      pubTime: _.lt(ctx.data.lastPubTime)
+    }).orderBy('pubTime', 'desc').get();
+    await next();
+  }, async (ctx) => {
+    console.log('ctx.data:', ctx.data);
+    ctx.body = {
+      code: 0,
+      data: ctx.data.res,
+    }
+  });
+
   return app.serve();
+}
+
+// 返回当前任务「正在进行」中的判断，type = (doing/complete)
+function p_getDoingTaskStatusCondition(type) {
+  return (type == 'doing' ? _.or(0, 1, 2) : _.or(3, 4));
 }
 
 let result = exports.main({

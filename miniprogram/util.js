@@ -160,7 +160,8 @@ var getTaskListWithStatusType = function (event) {
 }
 
 //拉取下一屏 正在进行中/已结束 任务列表
-var getNextPageTaskListWithStatusType = function (event) {
+var getNextPageTaskListWithCurrentStatus = function (event) {
+  
   let currentLoadTaskList = event.currentTaskList;
   let taskNumOnePage = event.taskNumOnePage > 0 ? event.taskNumOnePage : 10;
   let currentLoadTaskListLastTaskPubTime;
@@ -170,14 +171,22 @@ var getNextPageTaskListWithStatusType = function (event) {
     currentLoadTaskListLastTaskPubTime = Date.parse(new Date()) / 1000;
   }
   console.log('taskNumOnePage currentLoadTaskList currentLoadTaskListLastTaskPubTime', taskNumOnePage, currentLoadTaskList, currentLoadTaskListLastTaskPubTime);
-  taskInfo.limit(taskNumOnePage).where({
-    status: p_getDoingTaskStatusCondition(event.type),
-    pubTime: _.lt(currentLoadTaskListLastTaskPubTime)
-  }).orderBy('pubTime', 'desc').get({
-    success: (taskInfoRes => {
-      event.success(taskInfoRes);
-    })
-  })
+  wx.cloud.callFunction({
+    // 要调用的云函数名称
+    name: 'tcbDatabase',
+    // 传递给云函数的参数
+    data: {
+      $url: "getNextPageTaskListWithCurrentStatus",
+      taskNumOnePage: taskNumOnePage,
+      taskListType: event.type,
+      lastPubTime: currentLoadTaskListLastTaskPubTime,
+    }
+  }).then(res => {
+    //这里层级结构，需要注意
+    event.success(res.result.data.data);
+  }).catch(err => {
+    console.error(err);
+  });
 }
 
 //获取当前用户的openId
@@ -613,7 +622,7 @@ module.exports = {
   getUploadMediaList: getUploadMediaList,
   getAllTaskList: getAllTaskList,
   getTaskListWithStatusType: getTaskListWithStatusType,
-  getNextPageTaskListWithStatusType: getNextPageTaskListWithStatusType,
+  getNextPageTaskListWithCurrentStatus: getNextPageTaskListWithCurrentStatus,
   getCurrentUserOpenId: getCurrentUserOpenId,
   getCurrentUserTaskListWithStatusType: getCurrentUserTaskListWithStatusType,
   getCurrentUserTaskList: getCurrentUserTaskList,

@@ -65,13 +65,13 @@ Component({
       //准备拉取「发现页」下一页的任务数据
       let that = this;
       let taskNumOnePage = 5;
-      util.getNextPageTaskListWithStatusType({
+      util.getNextPageTaskListWithCurrentStatus({
         type: 'doing',
         currentTaskList: that.data.taskList,
         taskNumOnePage: taskNumOnePage,
-        success: function(taskInfoRes) {
+        success: function(newPageTaskOriginList) {
           console.log('findTaskList before', that.data.taskList)
-          let newPageTaskList = util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data);
+          let newPageTaskList = util.batchConvertDatabaseTaskToInnerTask(newPageTaskOriginList);
           let newTaskList = that.data.taskList.concat(newPageTaskList);
           console.log('findTaskList after', newTaskList)
           that.setData({
