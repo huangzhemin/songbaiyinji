@@ -30,6 +30,7 @@ exports.main = async (event, context) => {
 
   // 路由为数组表示，该中间件适用于 任务信息获取
   let routerList = [
+    'getDoingTaskListYesterday',
     'taskInfoWithOpenIdAndTaskId', 
     'batchGetUserPoints', 
     'batchUpdateUserPoints',
@@ -42,10 +43,37 @@ exports.main = async (event, context) => {
     await next();
   });
 
+  // 获取24:00之前所有「正在进行」中的任务
+  app.router('getDoingTaskListYesterday', async (ctx, next) => {
+    console.log('getDoingTaskListYesterday invoke');
+    const db = cloud.database();
+    const _ = db.command;
+
+    let nowtime = new Date();
+    let zero_GMT = nowtime.setHours(0, 0, 0, 0) / 1000;
+    // let offset_GMT = nowtime.getTimezoneOffset() * 60;
+    // console.log('zero_GMT, offset_GMT', zero_GMT, offset_GMT);
+    let yesterday24hourTimestamp = zero_GMT - 8 * 60 * 60; //调整为东八区时间
+    console.log('yesterday24hourTimestamp', yesterday24hourTimestamp);
+    ctx.data.res = await db.collection('taskInfo').where({
+      status: p_getDoingTaskStatusCondition('doing'),
+      pubTime: _.lt(yesterday24hourTimestamp),
+    }).get();
+    await next();
+  }, async (ctx) => {
+    console.log('ctx.data:', ctx.data);
+    ctx.body = {
+      code: 0,
+      data: ctx.data.res
+    };
+  });
+
   // 获取当前用户 当前taskId的任务信息
   app.router('taskInfoWithOpenIdAndTaskId', async (ctx, next) => {
     console.log('taskInfoWithOpenIdAndTaskId invoke');
-    const db = cloud.database()
+    const db = cloud.database();
+    const _ = db.command;
+
     ctx.data.res = await db.collection('taskInfo').where({
       openId: ctx.data.openId,
       taskId: ctx.data.taskId,
@@ -64,6 +92,7 @@ exports.main = async (event, context) => {
     console.log('batchGetUserPoints invoke');
     const db = cloud.database();
     const _ = db.command;
+
     ctx.data.res = await db.collection('userInfo').where({
       openId: _.in(ctx.data.userOpenIdList)
     }).get();
@@ -80,6 +109,7 @@ exports.main = async (event, context) => {
   app.router('batchUpdateUserPoints', async (ctx, next) => {
     console.log('batchUpdateUserPoints invoke');
     const db = cloud.database();
+    const _ = db.command;
 
     var res = [];
     let keysList = Object.keys(ctx.data.userPointsDic);
@@ -105,6 +135,8 @@ exports.main = async (event, context) => {
   app.router('batchGetUserInfo', async (ctx, next) => {
     console.log('batchGetUserInfo invoke');
     const db = cloud.database();
+    const _ = db.command;
+
     ctx.data.res = await db.collection('userInfo').get();
     console.log('res', ctx.data.res);
     await next();
@@ -119,6 +151,8 @@ exports.main = async (event, context) => {
   app.router('batchGetUserPointsRankingList', async (ctx, next) => {
     console.log('batchGetUserPointsRankingList invoke');
     const db = cloud.database();
+    const _ = db.command;
+
     ctx.data.res = await db.collection('userInfo').aggregate()
     .sort(
       {
@@ -136,10 +170,9 @@ exports.main = async (event, context) => {
   
   app.router('batchWriteUserPointRankingList', async (ctx, next) => {
     console.log('batchWriteUserPointRankingList invoke');
+    console.log('userPointsRankingList', ctx.data.userPointsRankingList);
     const db = cloud.database();
     const _ = db.command;
-
-    console.log('userPointsRankingList', ctx.data.userPointsRankingList);
 
     // 根据userPointsRankingList，生成删除数组
     var userPointsRankingOpenIdList = [];
@@ -162,10 +195,9 @@ exports.main = async (event, context) => {
 
   app.router('getNextPageTaskListWithCurrentStatus', async (ctx, next) => {
     console.log('getNextPageTaskListWithCurrentStatus invoke');
+    console.log('ctx.data', ctx.data);
     const db = cloud.database();
     const _ = db.command;
-
-    console.log('ctx.data', ctx.data);
 
     ctx.data.res = await db.collection('taskInfo').limit(ctx.data.taskNumOnePage).where({
       status: p_getDoingTaskStatusCondition(ctx.data.taskListType),
@@ -185,7 +217,8 @@ exports.main = async (event, context) => {
 
 // 返回当前任务「正在进行」中的判断，type = (doing/complete)
 function p_getDoingTaskStatusCondition(type) {
-  return (type == 'doing' ? _.or(0, 1, 2) : _.or(3, 4));
+  const _ = cloud.database().command;
+  return (type == 'doing' ? _.eq(0).or(_.eq(1)).or(_.eq(2)) : _.eq(3).or(_.eq(4)));
 }
 
 let result = exports.main({

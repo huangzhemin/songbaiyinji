@@ -611,7 +611,7 @@ var p_getOpenIdFromCloudAndWriteLocalStorage = function(event) {
 
 // 返回当前任务「正在进行」中的判断，type = (doing/complete)
 var p_getDoingTaskStatusCondition = function(type) {
-  return (type == 'doing' ? _.or(0, 1, 2) : _.or(3, 4));
+  return (type == 'doing' ? _.eq(0).or(_.eq(1)).or(_.eq(2)) : _.eq(3).or(_.eq(4)));
 }
 
 module.exports = {

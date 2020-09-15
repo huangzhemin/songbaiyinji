@@ -1,6 +1,9 @@
 // miniprogram/pages/test/test.js
 const db = wx.cloud.database()
 const userInfo = db.collection('userInfo')
+const taskInfo = db.collection('taskInfo')
+const _ = db.command;
+const util = require('../../util.js');
 
 Page({
 
@@ -15,6 +18,54 @@ Page({
    * 生命周期函数--监听页面显示
    */
   onShow: function () {
+  },
+
+  p_getDoingTaskStatusCondition: function(type) {
+    return (type == 'doing' ? _.eq(0).or(_.eq(1)).or(_.eq(2)) : _.eq(3).or(_.eq(4)));
+  },
+
+  calculatePoints: function() {
+    console.log('calculatePoints local test');
+    wx.cloud.callFunction({
+      // 要调用的云函数名称
+      name: "calculatePoints",
+    }).then(res => {
+      console.log('res', res);
+    });
+
+    // console.log('nowtime.getTimezoneOffset()', new Date().getTimezoneOffset());
+    // let yesterday24hourTimestamp = (new Date().setHours(0, 0, 0, 0)) / 1000;
+    // console.log('yesterday24hourTimestamp', yesterday24hourTimestamp);
+    // wx.cloud.callFunction({
+    //   // 要调用的云函数名称
+    //   name: "tcbDatabase",
+    //   data: {
+    //     $url: 'getDoingTaskListYesterday',
+    //   }
+    // }).then(res => {
+    //   //拿到到截止日期前一天24:00的 所有正在进行中的数据
+    //   console.log('res', res.result.data.data);
+    //   let yesterday24hourDoingTaskList = res.result.data.data;
+    //   //对数据进行处理，逻辑，循环遍历，检查任务的完成数据，是否为空
+    //   yesterday24hourDoingTaskList.forEach(doingTask => {
+    //     console.log('doingTask', doingTask.status);
+    //     if (util.validList(doingTask.taskMediaList)) {
+    //       doingTask.status = 3;
+    //     } else {
+    //       doingTask.status = 4;
+    //     }
+    //     console.log('doingTask', doingTask.status);
+    //   });
+    // });
+
+    //批量获取用户积分，返回用户积分字典, {openId1: points1, openId2: points2, openId3: point3}
+    // userInfo.get().then(res => {
+    //   var userPointsMap = {};
+    //   res.data.forEach(userInfoDic => {
+    //     userPointsMap[userInfoDic['openId']] = userInfoDic['points'] != undefined ? userInfoDic['points'] : 0;
+    //   });
+    //   console.log('userPointsMap', userPointsMap);
+    // });
   },
 
   updateRankingList: function() {

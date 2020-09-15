@@ -5,27 +5,74 @@ cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
 })
 
+//判断字符串有效性
+function validStr(inputStr) {
+  return !(typeof(inputStr) == '' 
+          || typeof(inputStr) == 'undefined' 
+          || inputStr == undefined 
+          || inputStr.length == 0);
+}
+
+//判断列表有效性
+function validList(inputList) {
+  return !(typeof(inputList) == [] 
+          || inputList == undefined 
+          || inputList.length == 0);
+}
+
+//判断截止至昨天24点的任务完成情况
+function p_batchJudgeYesterdayDoingTaskList(yesterdayDoingTaskList) {
+  //对数据进行处理，逻辑，循环遍历，检查任务的完成数据，是否为空
+  yesterdayDoingTaskList.forEach(doingTask => {
+    if (validList(doingTask.taskMediaList)) {
+      doingTask.status = 3;
+    } else {
+      doingTask.status = 4;
+    }
+  });
+}
 // 云函数入口函数
 exports.main = async (event, context) => {
-  //此处创建用户任务字典
-  var taskInfoDic = {};
-  //拉取用户对应taskId的记录
+  //此处拉取今天0点之前的所有的任务列表
   cloud.callFunction({
     // 要调用的云函数名称
     name: 'tcbDatabase',
     // 传递给云函数的参数
     data: {
-      $url: "taskInfoWithOpenIdAndTaskId",
-      openId: event['openId'],
-      taskId: event['taskId'],
+      $url: "getDoingTaskListYesterday",
     }
   }).then(res => {
-    //这里层级结构，需要注意
-    taskInfoDic = res.result.data.data[0];
-    console.log('taskInfoDic', taskInfoDic)
-    updateUserPointsWithCurrentTask(taskInfoDic);
-  }).catch(erro => {
-    console.error(err);
+    //此处根据返回数据，直接判断任务是否完成
+    var yesterdayDoingTaskList = res.result.data.data;
+    p_batchJudgeYesterdayDoingTaskList(yesterdayDoingTaskList);
+    //将处理后的yesterdayDoingTaskList，批量计算分值
+    //创建现有用户积分字典
+    const db = cloud.database();
+    db.collection('userInfo').get().then(userInfoRes => {
+      var finalUserPointsMap = {};
+      userInfoRes.data.forEach(userInfoDic => {
+        finalUserPointsMap[userInfoDic['openId']] = userInfoDic['points'] != undefined ? userInfoDic['points'] : 0;
+      });
+
+      console.log('finalUserPointsMap start:', finalUserPointsMap);
+      yesterdayDoingTaskList.forEach(completeTask => {
+        //更新数据库任务状态
+        updateTaskStatusWithCompleteTask(completeTask);
+        //更新用户积分映射字典
+        updateUserPointsWithCurrentTask(completeTask, finalUserPointsMap);
+      });
+      console.log('finalUserPointsMap end:', finalUserPointsMap);
+      
+      //此处准备最终的 openId 和 Points的map写入
+      //积分上传，写数据库
+      cloud.callFunction({
+        name: 'tcbDatabase',
+        data: {
+          $url: "batchUpdateUserPoints",
+          userPointsDic: finalUserPointsMap,
+        },
+      });
+    })
   });
   
   const wxContext = cloud.getWXContext()
@@ -38,7 +85,19 @@ exports.main = async (event, context) => {
   }
 }
 
-function updateUserPointsWithCurrentTask(taskInfoDic) {
+function updateTaskStatusWithCompleteTask(taskInfoDic) {
+  const db = cloud.database();
+  db.collection('taskInfo').where({
+    openId: taskInfoDic['openId'],
+    taskId: taskInfoDic['taskId'],
+  }).update({
+    data: {
+      status: taskInfoDic['status'],
+    }
+  });
+}
+
+function updateUserPointsWithCurrentTask(taskInfoDic, finalUserPointsMap) {
   // taskInfoDic = {
   //   "_id":"f241f5fe5f534a55001626f301bf7c5c",
   //   "pubTime":"下午4:20:47",
@@ -65,43 +124,16 @@ function updateUserPointsWithCurrentTask(taskInfoDic) {
   userOpenIdList = generateUserOpenIdList(taskInfoDic)
   console.log('userOpenIdList', userOpenIdList);
 
-  //此处创建空字典
-  var userPointsDic = {};
-  //数据库积分拉取
-  cloud.callFunction({
-    name: 'tcbDatabase',
-    data: {
-      $url: "batchGetUserPoints",
-      userOpenIdList: userOpenIdList,
-    },
-  }).then(res => {
-    //此处res返回的是用户OpenId与Points构成的字典
-    userPointsDic = convertDatabaseUserInfoListToUserPointsDic(res.result.data.data);
-    //此处模拟userPointDic
-    // userPointsDic = {
-    //   'oBG1A5f75CT8Bj1gAG4OMkXgDyXM': 0, 
-    //   'oBG1A5f75CT8Bj1gAG4OMkXgDyX1': 0,
-    //   'oBG1A5f75CT8Bj1gAG4OMkXgDyX2': 0,
-    //   'oBG1A5f75CT8Bj1gAG4OMkXgDyX3': 0,
-    //   'oBG1A5f75CT8Bj1gAG4OMkXgDyY1': 0,
-    // };
-
-    //计算积分情况
-    console.log('start:', userPointsDic);
-    userPointsDic = calculatePoints(taskInfoDic, userPointsDic);
-    console.log('end:', userPointsDic);
-    
-    //积分上传，写数据库
-    cloud.callFunction({
-      name: 'tcbDatabase',
-      data: {
-        $url: "batchUpdateUserPoints",
-        userPointsDic: userPointsDic,
-      },
-    });
-  }).catch(err => {
-    console.error(err);
-  });
+  //此处模拟userPointDic
+  // userPointsDic = {
+  //   'oBG1A5f75CT8Bj1gAG4OMkXgDyXM': 0, 
+  //   'oBG1A5f75CT8Bj1gAG4OMkXgDyX1': 0,
+  //   'oBG1A5f75CT8Bj1gAG4OMkXgDyX2': 0,
+  //   'oBG1A5f75CT8Bj1gAG4OMkXgDyX3': 0,
+  //   'oBG1A5f75CT8Bj1gAG4OMkXgDyY1': 0,
+  // };
+  //计算积分情况
+  finalUserPointsMap = calculatePoints(taskInfoDic, finalUserPointsMap);
 }
 
 //通过任务的字典信息，生成需要更新的用户的OpenIdList
@@ -120,19 +152,9 @@ function generateUserOpenIdList(taskInfoDic) {
   return userOpenIdList;
 }
 
-function convertDatabaseUserInfoListToUserPointsDic(userInfoList) {
-  var userPointsDic = {};
-  userInfoList.forEach(userInfo => {
-    let key = userInfo['openId'];
-    let value = userInfo['points'] != undefined ? userInfo['points'] : 0;
-    userPointsDic[key] = value;
-  });
-  return userPointsDic;
-}
-
 //taskDic代表当前结束的任务
 //这里userPointsDic表示着所有需要更新的用户与积分的对应关系
-function calculatePoints(taskDic, userPointsDic) {
+function calculatePoints(taskDic, finalUserPointsMap) {
   //获取支持者数组
   let supportUserList = taskDic['supportUserList'];
   //获取反对者数组
@@ -153,29 +175,29 @@ function calculatePoints(taskDic, userPointsDic) {
   
   //计算积分调整后的结果
   //之前任务创建者的积分
-  let taskPlannerPoints = userPointsDic[taskDic['openId']];
+  let taskPlannerPoints = finalUserPointsMap[taskDic['openId']];
   //任务创建者获得的积分
   let taskPlannerGainPoints = multiRatio;
   //更新任务创建者积分
-  userPointsDic[taskDic['openId']] = taskPlannerPoints + taskPlannerGainPoints;
+  finalUserPointsMap[taskDic['openId']] = taskPlannerPoints + taskPlannerGainPoints;
 
   //支持者积分计算
   supportUserList.forEach(supportUserOpenId => {
     //支持者的当前积分
-    let taskSupportUserPoints = userPointsDic[supportUserOpenId];
+    let taskSupportUserPoints = finalUserPointsMap[supportUserOpenId];
     //更新支持者积分
-    userPointsDic[supportUserOpenId] = taskSupportUserPoints + multiRatio;
+    finalUserPointsMap[supportUserOpenId] = taskSupportUserPoints + multiRatio;
   });
   //反对者积分计算
   opposeUserList.forEach(opposeUserOpenId => {
     //反对者的当前积分
-    let taskOpposeUserPoints = userPointsDic[opposeUserOpenId];
+    let taskOpposeUserPoints = finalUserPointsMap[opposeUserOpenId];
     //更新反对者积分
-    userPointsDic[opposeUserOpenId] = taskOpposeUserPoints - multiRatio;
+    finalUserPointsMap[opposeUserOpenId] = taskOpposeUserPoints - multiRatio;
   });
   
   //这里返回更新后的用户积分字典
-  return userPointsDic;
+  return finalUserPointsMap;
 }
 
 //通过openId 和 taskId，可以拼接出task的where信息
