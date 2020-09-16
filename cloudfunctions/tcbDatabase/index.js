@@ -6,6 +6,21 @@ cloud.init({
   env: cloud.DYNAMIC_CURRENT_ENV
 })
 
+//判断字符串有效性
+function validStr(inputStr) {
+  return !(typeof(inputStr) == '' 
+          || typeof(inputStr) == 'undefined' 
+          || inputStr == undefined 
+          || inputStr.length == 0);
+}
+
+//判断列表有效性
+function validList(inputList) {
+  return !(typeof(inputList) == [] 
+          || inputList == undefined 
+          || inputList.length == 0);
+}
+
 // 云函数入口函数
 exports.main = async (event, context) => {
   console.log(event);
@@ -21,10 +36,12 @@ exports.main = async (event, context) => {
     ctx.data.taskId = event.taskId;
     ctx.data.userOpenIdList = event.userOpenIdList;
     ctx.data.userPointsDic = event.userPointsDic;
+    ctx.data.userRankingDic = event.userRankingDic;
     ctx.data.userPointsRankingList = event.userPointsRankingList;
     ctx.data.taskNumOnePage = event.taskNumOnePage;
     ctx.data.taskListType = event.taskListType;
     ctx.data.lastPubTime = event.lastPubTime;
+    ctx.data.yesterdayCompleteTaskList = event.yesterdayCompleteTaskList;
     await next(); // 执行下一中间件
   });
 
@@ -38,6 +55,7 @@ exports.main = async (event, context) => {
     'batchGetUserPointsRankingList',
     'batchWriteUserPointRankingList',
     'getNextPageTaskListWithCurrentStatus',
+    'updateTaskStatusWithCompleteTaskList',
   ];
   app.router(routerList, async (ctx, next) => {
     await next();
@@ -111,15 +129,24 @@ exports.main = async (event, context) => {
     const db = cloud.database();
     const _ = db.command;
 
-    var res = [];
     let keysList = Object.keys(ctx.data.userPointsDic);
-    keysList.forEach(userPointsKey => {
-      var points = ctx.data.userPointsDic[userPointsKey];
+    if (!validList(keysList)) {
+      return;
+    }
+    if (!validList(keysList)) {
+      console.log('keysList is empty');
+      return;
+    }
+    console.log('ctx.data', ctx.data);
+    keysList.forEach(userOpenId => {
+      var points = ctx.data.userPointsDic[userOpenId];
+      var ranking = ctx.data.userRankingDic[userOpenId]
       db.collection('userInfo').where({
-        openId: userPointsKey,
+        openId: userOpenId,
       }).update({
         data: {
           points: points,
+          ranking: ranking,
         }
       });
     });
@@ -176,7 +203,12 @@ exports.main = async (event, context) => {
 
     // 根据userPointsRankingList，生成删除数组
     var userPointsRankingOpenIdList = [];
-    ctx.data.userPointsRankingList.forEach(userInfo => {
+    let userPointsRankingList = ctx.data.userPointsRankingList;
+    if (!validList(userPointsRankingList)) {
+      console.log('userPointsRankingList is empty');
+      return;
+    }
+    userPointsRankingList.forEach(userInfo => {
       userPointsRankingOpenIdList.push(userInfo['openId']);
     });
     console.log('userPointsRankingOpenIdList', userPointsRankingOpenIdList);
@@ -210,6 +242,31 @@ exports.main = async (event, context) => {
       code: 0,
       data: ctx.data.res,
     }
+  });
+
+  app.router('updateTaskStatusWithCompleteTaskList', async (ctx, next) => {
+    console.log('updateTaskStatusWithCompleteTaskList invoke');
+    console.log('ctx.data', ctx.data);
+    const db = cloud.database();
+    const _ = db.command;
+
+    console.log('updateTaskStatusWithCompleteTaskList before', ctx.data.yesterdayCompleteTaskList)
+    let yesterdayCompleteTaskList = ctx.data.yesterdayCompleteTaskList;
+    console.log('updateTaskStatusWithCompleteTaskList after', yesterdayCompleteTaskList)
+    if (!validList(yesterdayCompleteTaskList)) {
+      console.log('yesterdayCompleteTaskList is empty');
+      return;
+    }
+    yesterdayCompleteTaskList.forEach(completeTask => {
+      db.collection('taskInfo').where({
+        openId: completeTask['openId'],
+        taskId: completeTask['taskId'],
+      }).update({
+        data: {
+          status: completeTask['status'],
+        }
+      });
+    });
   });
 
   return app.serve();
