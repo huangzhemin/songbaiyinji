@@ -28,7 +28,7 @@ Page({
     let that = this;
     eventChannel.on('acceptDataFromOpenerPage', function (data) {
       that.data.openId = data.openId;
-      that.data.userInfo.customUserInfo.userRanking = data.userRanking;
+      that.data.userInfo.customUserInfo.userRanking = data.ranking;
 
       that.loadUserDetailInfo();
     });
@@ -73,7 +73,7 @@ Page({
         taskList: taskInfo.data,
         ['userInfo.sdkUserInfo.avatarUrl']: userInfo.data[0].avatarUrl,
         ['userInfo.sdkUserInfo.nickName']: userInfo.data[0].nickName,
-        ['userInfo.customUserInfo.userRanking']: that.data.userInfo.customUserInfo.userRanking,
+        ['userInfo.customUserInfo.userRanking']: userInfo.data[0].ranking,
         ['userInfo.customUserInfo.userPoints']: userInfo.data[0].points,
       });
       wx.hideLoading();

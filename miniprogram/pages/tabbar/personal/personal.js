@@ -61,7 +61,7 @@ Page({
           //用户头像数据
           ['userInfo.sdkUserInfo.avatarUrl']: currentUserInfo['avatarUrl'],
           ['userInfo.sdkUserInfo.nickName']: currentUserInfo['nickName'],
-          ['userInfo.customUserInfo.userRanking']: 'x',//currentUserInfo['userRanking'], 
+          ['userInfo.customUserInfo.userRanking']: currentUserInfo['ranking'], 
           ['userInfo.customUserInfo.userPoints']: currentUserInfo['points'],
           //用户任务列表数据
           taskList: util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data),
