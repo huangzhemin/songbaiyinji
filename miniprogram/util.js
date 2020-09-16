@@ -164,7 +164,7 @@ var getNextPageTaskListWithCurrentStatus = function (event) {
   
   let currentLoadTaskList = event.currentTaskList;
   let taskNumOnePage = event.taskNumOnePage > 0 ? event.taskNumOnePage : 10;
-  let currentLoadTaskListLastTaskPubTime;
+  var currentLoadTaskListLastTaskPubTime;
   if (validList(currentLoadTaskList)) {
     currentLoadTaskListLastTaskPubTime = currentLoadTaskList[currentLoadTaskList.length - 1].pubTime;  
   } else {
