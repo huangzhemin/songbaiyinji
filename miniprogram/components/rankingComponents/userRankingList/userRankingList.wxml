@@ -1,7 +1,7 @@
 <!--components/userRankingList/userRankingList.wxml-->
 <block wx:for='{{userRankingList}}'  wx:for-index="idx" wx:key="idx">
   <pm-ranking-cell
-    ranking='{{idx + 1}}'
+    ranking='{{item.ranking}}'
     openId='{{item.openId}}'
     avatar='{{item.avatarUrl}}'
     nickName='{{item.nickName}}'
