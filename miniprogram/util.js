@@ -204,6 +204,45 @@ var getCurrentUserOpenId = function (event) {
   });
 }
 
+//获取当前用户新创建任务的 taskId，通过拉取当前用户数据库最后一条taskId，推测下一条taskId
+var getCurrentUserNewTaskId = function (event) {
+  if (event.openId) {
+    taskInfo.where({
+      openId: event.openId // 填入当前用户 openid
+    }).orderBy('pubTime', 'desc').limit(1).get({
+      success: (taskInfoRes => {
+        console.log('getCurrentUserTaskList with openId:', taskInfoRes);
+        event.success(p_generateNewTaskIdWithOldTaskList(taskInfoRes.data));
+      })
+    })
+  } else {
+    wx.getStorage({
+      key: 'openid',
+      success: (res => {
+        taskInfo.where({
+          openId: res.data // 填入当前用户 openid
+        }).orderBy('pubTime', 'desc').limit(1).get({
+          success: (taskInfoRes => {
+            console.log('getCurrentUserTaskList without openId:', taskInfoRes);
+            event.success(p_generateNewTaskIdWithOldTaskList(taskInfoRes.data));
+          })
+        })
+      })
+    })
+  }
+}
+
+var p_generateNewTaskIdWithOldTaskList = function(oldTaskList) {
+  var newTaskId = 'task0';
+  if (validList(oldTaskList)) {
+    //如果数组不为空，则直接向后计算
+    let latestTaskId = oldTaskList[0]['taskId'];
+    newTaskId = 'task' + (+latestTaskId.substring(4, latestTaskId.length) + 1);
+  }
+  // console.log(newTaskId);
+  return newTaskId;
+}
+
 //根据当前的状态类型(doing/complete)，获取当前用户的任务列表
 var getCurrentUserTaskListWithStatusType = function (event) {
   if (event.openId) {
@@ -626,6 +665,7 @@ module.exports = {
   getCurrentUserOpenId: getCurrentUserOpenId,
   getCurrentUserTaskListWithStatusType: getCurrentUserTaskListWithStatusType,
   getCurrentUserTaskList: getCurrentUserTaskList,
+  getCurrentUserNewTaskId: getCurrentUserNewTaskId,
   getCurrentUserInfo: getCurrentUserInfo,
   addUserOperationMsgWithOperateAndCurrentTaskInfo: addUserOperationMsgWithOperateAndCurrentTaskInfo,
   getCurrentUserMsgList: getCurrentUserMsgList,

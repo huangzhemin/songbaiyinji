@@ -342,10 +342,10 @@ Component({
     //包含 taskId, avatar，nickName，pubTime
     getTaskInfo: function(event) {
       let that = this;
-      util.getCurrentUserTaskList({
-        success: function(taskInfoRes) {
-          console.log('createTask currentTaskInfoLength:'+taskInfoRes.data.length);
-          that.data.taskId = 'task'+taskInfoRes.data.length;
+      util.getCurrentUserNewTaskId({
+        success: function(newTaskId) {
+          console.log('createTask:', newTaskId);
+          that.data.taskId = newTaskId;
           util.getCurrentUserInfo({
             success: function(openId, userInfoRes) {
               that.data.openId = openId;
