@@ -76,7 +76,7 @@ Component({
 
       //准备拉取「发现页」下一页的任务数据
       let that = this;
-      let taskNumOnePage = 5;
+      let taskNumOnePage = 10;
       util.getNextPageTaskListWithCurrentStatus({
         type: 'doing',
         currentTaskList: that.data.taskList,
