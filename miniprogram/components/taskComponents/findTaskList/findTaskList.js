@@ -1,5 +1,6 @@
 // components/taskComponents/findTaskList/findTaskList.js
 const util = require("../../../util");
+const { validList } = require("../../../util");
 
 Component({
   /**
@@ -63,6 +64,16 @@ Component({
         return;
       }
 
+      //如果是空列表第一次加载，则展示loading动画
+      var isFirstLoad = false;
+      if (!validList(this.data.taskList)) {
+        //数据为空的时候，是第一次加载
+        isFirstLoad = true;
+        wx.showLoading({
+          title: '加载中..',
+        })
+      }
+
       //准备拉取「发现页」下一页的任务数据
       let that = this;
       let taskNumOnePage = 5;
@@ -81,6 +92,10 @@ Component({
             taskList: that.data.taskList,
             loadMore: that.data.loadMore,
           });
+          if (isFirstLoad) {
+            //第一次加载时，需要hide掉loading动画
+            wx.hideLoading();
+          }
         },
       });
     }
