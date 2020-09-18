@@ -28,6 +28,7 @@ Component({
       console.log('doingTaskList show');
       //warning 先调整为，每次onShow，清空后重新拉取，保证能展示最新数据，后续改为下拉刷新
       this.data.taskList = [];
+      this.data.loadMore = true;
       this.loadNextPage();
     },
     hide: function () { },
@@ -72,11 +73,13 @@ Component({
         success: function(newPageTaskOriginList) {
           console.log('findTaskList before', that.data.taskList)
           let newPageTaskList = util.batchConvertDatabaseTaskToInnerTask(newPageTaskOriginList);
-          let newTaskList = that.data.taskList.concat(newPageTaskList);
-          console.log('findTaskList after', newTaskList)
+          that.data.taskList = that.data.taskList.concat(newPageTaskList);
+          that.data.loadMore = newPageTaskList.length == taskNumOnePage;
+
+          console.log('findTaskList after', that.data.taskList)
           that.setData({
-            taskList: newTaskList,
-            loadMore: newPageTaskList.length == taskNumOnePage,
+            taskList: that.data.taskList,
+            loadMore: that.data.loadMore,
           });
         },
       });

@@ -67,11 +67,14 @@ exports.main = async (event, context) => {
     const db = cloud.database();
     const _ = db.command;
 
+    let beijingLondonTimeDifference = 8 * 60 * 60;
     let nowtime = new Date();
-    let zero_GMT = nowtime.setHours(0, 0, 0, 0) / 1000;
-    // let offset_GMT = nowtime.getTimezoneOffset() * 60;
-    // console.log('zero_GMT, offset_GMT', zero_GMT, offset_GMT);
-    let yesterday24hourTimestamp = zero_GMT - 8 * 60 * 60; //调整为东八区时间
+    //第一步，需要将格林尼治时间转换到北京时间同样的时间点上
+    let nowBeijingTime = new Date(nowtime + beijingLondonTimeDifference * 1000);
+    //第二步，将时间还原到北京时间的0点
+    let zero_beijing = nowBeijingTime.setHours(0, 0, 0, 0) / 1000;
+    //第三步，因为北京位于东八区，还原到格林尼治的0点，需要-8
+    yesterday24hourTimestamp = zero_beijing - beijingLondonTimeDifference;
     console.log('yesterday24hourTimestamp', yesterday24hourTimestamp);
     ctx.data.res = await db.collection('taskInfo').where({
       status: p_getDoingTaskStatusCondition('doing'),
@@ -275,7 +278,8 @@ exports.main = async (event, context) => {
 // 返回当前任务「正在进行」中的判断，type = (doing/complete)
 function p_getDoingTaskStatusCondition(type) {
   const _ = cloud.database().command;
-  return (type == 'doing' ? _.eq(0).or(_.eq(1)).or(_.eq(2)) : _.eq(3).or(_.eq(4)));
+  return (type == 'doing' ? _.in([0, 1, 2]) : _.in([3, 4]));
+  //return (type == 'doing' ? _.eq(0).or(_.eq(1)).or(_.eq(2)) : _.eq(3).or(_.eq(4))); 
 }
 
 let result = exports.main({
