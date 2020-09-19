@@ -43,8 +43,12 @@ Component({
   pageLifetimes: {
     // 组件所在页面的生命周期函数
     show: function () { 
+      console.log('personalTaskList show');
       if (!this.data.dataNeedLogin) {
+        console.log('personalTaskList show need not login');
         this.refreshPersonalTaskList();
+      } else {
+        console.log('personalTaskList show need login');
       }
     },
     hide: function () { },

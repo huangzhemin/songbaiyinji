@@ -22,7 +22,13 @@ Page({
   },
 
   onLoad: function(event) {
+    console.log('taskTab onLoad');
     this.updateDoingTaskPageHeight();
+  },
+
+  onShow: function(event) {
+    console.log('taskTab onShow');
+    this.p_setSwipterHeight(this.data.swiper.swiperHeight);
   },
 
   clickChange(event) {
@@ -55,6 +61,20 @@ Page({
     // console.log(this.data.active)
   },
 
+  p_setSwipterHeight: function(swiperHeight) {
+    //拿到页面尺寸之后，需要判断当前用户是否处于登录的状态
+    let that = this;
+    util.isLogin({
+      success: function(logined) {
+        console.log('logined', logined);
+        that.setData({
+          ['swiper.swiperHeight']: swiperHeight,
+          needLogin: !logined, //未登录状态，需要展示登录头像UI，已登录，则直接展示个人任务页面
+        });
+      }
+    })
+  },
+
   updateDoingTaskPageHeight: function(event) {
     console.log(event);
     let that = this;
@@ -65,16 +85,7 @@ Page({
         wx.createSelectorQuery()
           .select('#start-doing-task-list').boundingClientRect().exec(rect => {
             console.log('getSystemInfo', rect);
-            //拿到页面尺寸之后，需要判断当前用户是否处于登录的状态
-            util.isLogin({
-              success: function(logined) {
-                console.log('logined', logined);
-                that.setData({
-                  ['swiper.swiperHeight']: res.windowHeight - rect[0].bottom,
-                  needLogin: !logined, //未登录状态，需要展示登录头像UI，已登录，则直接展示个人任务页面
-                });
-              }
-            })
+            that.p_setSwipterHeight(res.windowHeight - rect[0].bottom);
         })
       }
     });

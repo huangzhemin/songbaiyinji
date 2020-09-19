@@ -69,10 +69,13 @@ exports.main = async (event, context) => {
 
     let beijingLondonTimeDifference = 8 * 60 * 60;
     let nowtime = new Date();
+    console.log('nowtime', nowtime);
     //第一步，需要将格林尼治时间转换到北京时间同样的时间点上
-    let nowBeijingTime = new Date(nowtime + beijingLondonTimeDifference * 1000);
+    let nowBeijingTime = new Date(Date.parse(nowtime) + beijingLondonTimeDifference * 1000);
+    console.log('nowBeijingTime', nowBeijingTime);
     //第二步，将时间还原到北京时间的0点
     let zero_beijing = nowBeijingTime.setHours(0, 0, 0, 0) / 1000;
+    console.log('zero_beijing', zero_beijing);
     //第三步，因为北京位于东八区，还原到格林尼治的0点，需要-8
     yesterday24hourTimestamp = zero_beijing - beijingLondonTimeDifference;
     console.log('yesterday24hourTimestamp', yesterday24hourTimestamp);
