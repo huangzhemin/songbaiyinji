@@ -17,10 +17,6 @@ Component({
       type: String,
       value: '',
     },
-    propertyCanJudge: {
-      type: Boolean,
-      value: false,
-    },
     propertyIsSelf: {
       type: Boolean,
       value: true,
@@ -51,7 +47,6 @@ Component({
     opposeUserList: [],
     opposeUserAvatarList: [],
 
-    canJudge: false,
     isSelf: false,
 
     needLogin: false,
@@ -121,7 +116,6 @@ Component({
     createTaskPage: function(event) {
       this.setData({
         openId: this.data.openId,
-        canJudge: this.properties.propertyCanJudge,
         isSelf: this.properties.propertyIsSelf,
         needLogin: false,
       });
@@ -148,7 +142,6 @@ Component({
             that.setData({
               needLogin: false,
               openId: currentOpenId,
-              canJudge: latestUserInfo.canJudge,
               isSelf: true,
               loginPopupShow: false,
             });
@@ -185,7 +178,6 @@ Component({
           taskId: that.data.taskId,
           taskTitle: that.data.taskTitle,
           status: that.data.status,
-          canJudge: that.properties.propertyCanJudge,   //是否可以裁判，是结合当前使用用户，外部传入属性，不受数据库数据影响
           isSelf: that.properties.propertyIsSelf,       //是否是用户自身，是结合当前使用用户，外部传入属性，不受数据库数据影响
           supportUserList: that.data.supportUserList,
           opposeUserList: that.data.opposeUserList,
@@ -450,32 +442,6 @@ Component({
             //用户未登录
             that.p_onGuessPannelClickNotLogined(event);
           }
-        }
-      });
-    },
-
-    //裁判相关 judge
-    onJudgePannelClick: function (event) {
-      let targetId = event.target['id'];
-      var status = 0;
-      var operationType = '';
-      if (targetId == 'complete') {
-        //如果完成，则任务进入state=3，并更新
-        status = 3;
-        operationType = 'complete';
-      } else if (targetId == 'fail') {
-        //如果失败，则任务进入state=4，并更新
-        status = 4;
-        operationType = 'fail';
-      }
-      let that = this;
-      this.updateTaskToDatabase({
-        operationType: operationType,
-        status: status,
-        success: function (openId, taskId) {
-          that.calculatePoints(openId, taskId);
-          wx.hideLoading();
-          wx.navigateBack();
         }
       });
     },
@@ -759,7 +725,7 @@ Component({
       }
       return {
         title: this.data.taskTitle,
-        path: '/pages/taskDetail/taskDetail?share=true&openId='+this.data.openId+'&taskId='+this.data.taskId+'&canJudge='+this.data.canJudge,
+        path: '/pages/taskDetail/taskDetail?share=true&openId='+this.data.openId+'&taskId='+this.data.taskId,
       }
     },
 

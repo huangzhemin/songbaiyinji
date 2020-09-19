@@ -3,6 +3,5 @@
 <pm-task-detail 
   propertyTaskId='{{taskId}}'
   propertyOpenId='{{openId}}'
-  propertyCanJudge='{{canJudge}}'
   propertyIsSelf='{{isSelf}}'>
 </pm-task-detail>

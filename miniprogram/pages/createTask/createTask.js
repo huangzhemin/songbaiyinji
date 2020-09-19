@@ -29,7 +29,6 @@ Page({
         that.setData({
           openId: currentUserOpenId,
           taskId: '',
-          canJudge: userInfoRes.data[0].canJudge,
           isSelf: true,
         });
         wx.hideLoading();
@@ -38,7 +37,6 @@ Page({
         that.setData({
           openId: '',
           taskId: '',
-          canJudge: false,
           isSelf: true,
         });
         wx.hideLoading();

@@ -50,7 +50,6 @@ Page({
           that.setData({
             openId: options['openId'],
             taskId: options['taskId'],
-            canJudge: options['canJudge'],
             isSelf: (openId == options['openId']),
           });
         },
@@ -66,7 +65,6 @@ Page({
         that.setData({
           openId: prePageData.openId,
           taskId: prePageData.taskId,
-          canJudge: prePageData.canJudge,
           isSelf: prePageData.isSelf,
         });
       })
@@ -83,7 +81,7 @@ Page({
     console.log('this.data.openId', this.data.openId);
     return {
       title: this.data.taskTitle,
-      path: '/pages/taskDetail/taskDetail?share=true&openId='+this.data.openId+'&taskId='+this.data.taskId+'&canJudge='+this.data.canJudge,
+      path: '/pages/taskDetail/taskDetail?share=true&openId='+this.data.openId+'&taskId='+this.data.taskId,
     }
   },
 })
