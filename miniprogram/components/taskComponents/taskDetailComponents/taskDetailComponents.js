@@ -759,7 +759,7 @@ Component({
       }
       return {
         title: this.data.taskTitle,
-        path: '/pages/taskDetail/taskDetail?share=true&openId='+this.data.openId+'&taskId='+this.data.taskId+'&canJudge='+this.data.canJudge+'&isSelf='+this.data.isSelf,
+        path: '/pages/taskDetail/taskDetail?share=true&openId='+this.data.openId+'&taskId='+this.data.taskId+'&canJudge='+this.data.canJudge,
       }
     },
 

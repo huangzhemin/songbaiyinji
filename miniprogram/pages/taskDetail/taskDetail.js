@@ -42,11 +42,18 @@ Page({
     console.log('options', options);
     if (options['share']) {
       console.log('share scheme');
-      this.setData({
-        openId: options['openId'],
-        taskId: options['taskId'],
-        canJudge: options['canJudge'],
-        isSelf: (util.getCurrentUserOpenId() == options['openId']),
+      console.log('util.getCurrentUserOpenId()', util.getCurrentUserOpenId());
+      console.log('options_openId' , options['openId']);
+      let that = this;
+      util.getCurrentUserOpenId({
+        success: function(openId) {
+          that.setData({
+            openId: options['openId'],
+            taskId: options['taskId'],
+            canJudge: options['canJudge'],
+            isSelf: (openId == options['openId']),
+          });
+        },
       });
     } else {
       console.log('list entrance');
@@ -73,6 +80,7 @@ Page({
       // 来自页面内转发按钮
       console.log(res.target)
     }
+    console.log('this.data.openId', this.data.openId);
     return {
       title: this.data.taskTitle,
       path: '/pages/taskDetail/taskDetail?share=true&openId='+this.data.openId+'&taskId='+this.data.taskId+'&canJudge='+this.data.canJudge,
