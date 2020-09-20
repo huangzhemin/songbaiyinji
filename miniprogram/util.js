@@ -186,6 +186,7 @@ var getNextPageTaskListWithCurrentStatus = function (event) {
     event.success(res.result.data.data);
   }).catch(err => {
     console.error(err);
+    event.fail(err);
   });
 }
 

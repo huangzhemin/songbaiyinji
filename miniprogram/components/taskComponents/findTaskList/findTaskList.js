@@ -15,6 +15,7 @@ Component({
   data: {
     taskList: [],
     loadMore: true,
+    lock: false,
   },
 
   behaviors: ['wx://component-export'],  
@@ -30,6 +31,7 @@ Component({
       //warning 先调整为，每次onShow，清空后重新拉取，保证能展示最新数据，后续改为下拉刷新
       this.data.taskList = [];
       this.data.loadMore = true;
+      this.data.lock = false;
       this.loadNextPage();
     },
     hide: function () { },
@@ -59,6 +61,13 @@ Component({
     },
 
     loadNextPage: function(event) {
+      //此处需要加一个简单变量作为锁变量，用来控制是否可以拉取下一屏
+      //只有当 一屏数据回来之后，锁变量才可以再次打开，保证不重新加载当前页
+      if (this.data.lock) {
+        return;
+      }
+      this.data.lock = true;
+
       //如果已经加载完全部的列表，则直接返回
       if (!this.data.loadMore) {
         return;
@@ -96,7 +105,11 @@ Component({
             //第一次加载时，需要hide掉loading动画
             wx.hideLoading();
           }
+          that.data.lock = false;
         },
+        fail: function(err) {
+          that.data.lock = false;
+        }
       });
     }
   }
