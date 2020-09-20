@@ -619,6 +619,7 @@ Component({
       var type = dataset['type'];
       var index = dataset['index'];
       var currentMediaList = [];
+      console.log('currentMediaList before', currentMediaList);
       //此处需要根据当前的页面情况来判断
       if (util.validList(this.data.taskMediaList)) {
         //如果当前taskMediaList中有值，说明是已经创建的页面
@@ -644,12 +645,16 @@ Component({
       }
       for (const key in taskUploadMediaList) {
         const element = taskUploadMediaList[key];
-        if (element.match('http')) {
+        //此处很神奇，模拟器为http://tmp/xxx
+        //真机为wxfile://tmp_xxx
+        //所以选择://tmp作为公共部分
+        if (element.match('://tmp')) {
           newAddMediaList.push(element);
         }
       }
       currentMediaList = currentMediaList.concat(newAddMediaList);
-      
+      console.log('currentMediaList after', currentMediaList);
+
       wx.previewImage({
         current: currentMediaList[index], // 当前显示图片的http链接
         urls: currentMediaList // 需要预览的图片http链接列表
