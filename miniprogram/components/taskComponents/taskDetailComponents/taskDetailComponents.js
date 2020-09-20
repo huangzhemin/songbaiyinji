@@ -388,6 +388,10 @@ Component({
               wx.showLoading({
                 title: '支持成功...',
               });
+              that.setData({
+                supportUserList: that.data.supportUserList,
+                supportUserAvatarList: that.data.supportUserAvatarList,
+              });
             } else {
               wx.showToast({
                 title: '您已支持过',
@@ -403,6 +407,10 @@ Component({
               wx.showLoading({
                 title: '反对成功...',
               });
+              that.setData({
+                opposeUserList: that.data.opposeUserList,
+                opposeUserAvatarList: that.data.opposeUserAvatarList,
+              });
             } else {
               wx.showToast({
                 title: '您已反对过',
@@ -416,12 +424,8 @@ Component({
               operationType: operationType,
               success: function (openId, taskId) {
                 wx.hideLoading();
-                wx.navigateBack();
               }
             })
-          } else {
-            //如果已经猜一猜，则直接退出
-            wx.navigateBack();
           }
         },
       });

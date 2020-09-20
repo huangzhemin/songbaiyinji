@@ -212,7 +212,7 @@
           <van-image
                   wx:for="{{opposeUserAvatarList}}"
                   wx:for-index="idx"
-                  wx:for-item="supportUserAvatar"
+                  wx:for-item="opposeUserAvatar"
                   wx:key='idx'
                   round
                   width="50rpx"
