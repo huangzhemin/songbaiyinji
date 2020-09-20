@@ -99,7 +99,7 @@ Component({
       return tag;
     },
 
-    jumpTaskDetailWithIsSelf(isSelf) {
+    jumpTaskDetail() {
       var url = '/pages/taskDetail/taskDetail';
       let that = this;
       wx.navigateTo({
@@ -110,28 +110,14 @@ Component({
           res.eventChannel.emit('acceptDataFromOpenerPage', {
             'openId': that.properties.taskUserOpenId, //类似'oBG1A5f75CT8Bj1gAG4OMkXgDyXM',
             'taskId': that.properties.taskId, //类似'task0','task1'
-            'isSelf': isSelf, //自身：传入的openId与自身openId是同一个
           })
         }
       })
     },
 
     onClick(event) {
-      let that = this;
-      if (util.isLogin) {
-        util.getCurrentUserInfo({
-          success: function (currentUserOpenId, userInfoRes) {
-            //此处判断需要跳转的 任务详情页样式
-            console.log('currentUserOpenId', currentUserOpenId);
-            that.jumpTaskDetailWithIsSelf(currentUserOpenId == that.properties.taskUserOpenId);
-          },
-          fail: function (err) {
-            that.jumpTaskDetailWithIsSelf(false);
-          }
-        });
-      } else {
-        that.jumpTaskDetailWithIsSelf(false);
-      }
+      console.log('taskCell click jumpTaskDetail');
+      this.jumpTaskDetail();
     }
   }
 })

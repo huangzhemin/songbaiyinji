@@ -17,30 +17,20 @@ Page({
   },
 
   p_getCurrentUserInfoForCreateTask: function() {
-    wx.showLoading({
-      title: '加载中..',
-    });
-
     let that = this;
-    util.getCurrentUserInfo({
-      success: function(currentUserOpenId, userInfoRes) {
-        console.log('currentUserOpenId', currentUserOpenId),
-        console.log('userInfoRes', userInfoRes),
+    util.getCurrentUserOpenId({
+      success: function(currentUserOpenId) {
         that.setData({
           openId: currentUserOpenId,
           taskId: '',
-          isSelf: true,
         });
-        wx.hideLoading();
       },
       fail: function(err) {
         that.setData({
           openId: '',
           taskId: '',
-          isSelf: true,
         });
-        wx.hideLoading();
       }
-    });
+    })
   },
 })

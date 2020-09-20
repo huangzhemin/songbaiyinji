@@ -2,6 +2,5 @@
 
 <pm-task-detail 
   propertyTaskId='{{taskId}}'
-  propertyOpenId='{{openId}}'
-  propertyIsSelf='{{isSelf}}'>
+  propertyOpenId='{{openId}}'>
 </pm-task-detail>

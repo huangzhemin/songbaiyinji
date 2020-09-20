@@ -1,132 +1,136 @@
 {
-	"miniprogramRoot": "miniprogram/",
-	"cloudfunctionRoot": "cloudfunctions/",
-	"setting": {
-		"urlCheck": true,
-		"es6": true,
-		"enhance": true,
-		"postcss": true,
-		"preloadBackgroundData": false,
-		"minified": true,
-		"newFeature": true,
-		"coverView": true,
-		"nodeModules": true,
-		"autoAudits": false,
-		"showShadowRootInWxmlPanel": true,
-		"scopeDataCheck": false,
-		"uglifyFileName": false,
-		"checkInvalidKey": true,
-		"checkSiteMap": false,
-		"uploadWithSourceMap": true,
-		"compileHotReLoad": false,
-		"babelSetting": {
-			"ignore": [],
-			"disablePlugins": [],
-			"outputPath": ""
-		},
-		"useIsolateContext": true,
-		"useCompilerModule": false,
-		"userConfirmedUseCompilerModuleSwitch": false
-	},
-	"appid": "wx0c256066d5729114",
-	"projectname": "%E6%9D%BE%E6%9F%8F%E5%8D%B0%E8%AE%B01.0",
-	"libVersion": "2.11.1",
-	"simulatorType": "wechat",
-	"simulatorPluginLibVersion": {},
-	"cloudfunctionTemplateRoot": "cloudfunctionTemplate",
-	"condition": {
-		"search": {
-			"current": -1,
-			"list": []
-		},
-		"conversation": {
-			"current": -1,
-			"list": []
-		},
-		"plugin": {
-			"current": -1,
-			"list": []
-		},
-		"game": {
-			"list": []
-		},
-		"gamePlugin": {
-			"current": -1,
-			"list": []
-		},
-		"miniprogram": {
-			"current": 0,
-			"list": [
-				{
-					"id": -1,
-					"name": "db guide",
-					"pathName": "pages/databaseGuide/databaseGuide",
-					"query": ""
-				},
-				{
-					"id": 1,
-					"name": "创建任务",
-					"pathName": "pages/createTask/createTask",
-					"query": "",
-					"scene": null
-				},
-				{
-					"id": -1,
-					"name": "任务详情页",
-					"pathName": "pages/taskDetail/taskDetail",
-					"query": "",
-					"scene": null
-				},
-				{
-					"id": -1,
-					"name": "公告页",
-					"pathName": "pages/tabbar/guess/guess",
-					"query": "",
-					"scene": null
-				},
-				{
-					"id": -1,
-					"name": "tcbRouterTest",
-					"pathName": "pages/tcbRouterTest/tcbRouterTest",
-					"query": "",
-					"scene": null
-				},
-				{
-					"id": -1,
-					"name": "我的个人页",
-					"pathName": "pages/tabbar/personal/personal",
-					"query": "",
-					"scene": null
-				},
-				{
-					"id": -1,
-					"name": "排行榜",
-					"pathName": "pages/tabbar/ranking/ranking",
-					"query": "",
-					"scene": null
-				},
-				{
-					"id": -1,
-					"name": "发现页",
-					"pathName": "pages/tabbar/find/find",
-					"query": "",
-					"scene": null
-				},
-				{
-					"id": -1,
-					"name": "测试页面",
-					"pathName": "pages/test/test",
-					"query": "",
-					"scene": null
-				},
-				{
-					"id": -1,
-					"name": "任务页",
-					"pathName": "pages/tabbar/task/task",
-					"query": "",
-					"scene": null
-				}
-			]
-		}
-	}
+  "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
+  "setting": {
+    "urlCheck": true,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "preloadBackgroundData": false,
+    "minified": true,
+    "newFeature": true,
+    "coverView": true,
+    "nodeModules": true,
+    "autoAudits": false,
+    "showShadowRootInWxmlPanel": true,
+    "scopeDataCheck": false,
+    "uglifyFileName": false,
+    "checkInvalidKey": true,
+    "checkSiteMap": false,
+    "uploadWithSourceMap": true,
+    "compileHotReLoad": false,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "useIsolateContext": true,
+    "useCompilerModule": true,
+    "userConfirmedUseCompilerModuleSwitch": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "useMultiFrameRuntime": false,
+    "useApiHook": false
+  },
+  "appid": "wx0c256066d5729114",
+  "projectname": "%E6%9D%BE%E6%9F%8F%E5%8D%B0%E8%AE%B01.0",
+  "libVersion": "2.11.1",
+  "simulatorType": "wechat",
+  "simulatorPluginLibVersion": {},
+  "cloudfunctionTemplateRoot": "cloudfunctionTemplate",
+  "condition": {
+    "search": {
+      "current": -1,
+      "list": []
+    },
+    "conversation": {
+      "current": -1,
+      "list": []
+    },
+    "plugin": {
+      "current": -1,
+      "list": []
+    },
+    "game": {
+      "list": []
+    },
+    "gamePlugin": {
+      "current": -1,
+      "list": []
+    },
+    "miniprogram": {
+      "current": 0,
+      "list": [
+        {
+          "id": -1,
+          "name": "db guide",
+          "pathName": "pages/databaseGuide/databaseGuide",
+          "query": ""
+        },
+        {
+          "id": 1,
+          "name": "创建任务",
+          "pathName": "pages/createTask/createTask",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "任务详情页",
+          "pathName": "pages/taskDetail/taskDetail",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "公告页",
+          "pathName": "pages/tabbar/guess/guess",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "tcbRouterTest",
+          "pathName": "pages/tcbRouterTest/tcbRouterTest",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "我的个人页",
+          "pathName": "pages/tabbar/personal/personal",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "排行榜",
+          "pathName": "pages/tabbar/ranking/ranking",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "发现页",
+          "pathName": "pages/tabbar/find/find",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "测试页面",
+          "pathName": "pages/test/test",
+          "query": "",
+          "scene": null
+        },
+        {
+          "id": -1,
+          "name": "任务页",
+          "pathName": "pages/tabbar/task/task",
+          "query": "",
+          "scene": null
+        }
+      ]
+    }
+  }
 }

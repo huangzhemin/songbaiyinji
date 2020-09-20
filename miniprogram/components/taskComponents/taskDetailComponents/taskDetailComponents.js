@@ -1,7 +1,7 @@
 // components/taskComponents/taskDetailComponents/taskDetailComponents.js
 const db = wx.cloud.database()
 const taskInfo = db.collection('taskInfo')
-const util = require('../../../util.js')
+const util = require('../../../util.js');
 
 Component({
   /**
@@ -16,10 +16,6 @@ Component({
     propertyOpenId: {
       type: String,
       value: '',
-    },
-    propertyIsSelf: {
-      type: Boolean,
-      value: true,
     },
   },
 
@@ -90,6 +86,16 @@ Component({
       console.log('propertyTaskId', propertyTaskId);
       this.data.openId = propertyOpenId;
       this.data.taskId = propertyTaskId;
+
+      this.p_taskDetailShowWithOpenIdAndTaskId(propertyOpenId, propertyTaskId);
+    },
+  },
+
+  /**
+   * 组件的方法列表
+   */
+  methods: {
+    p_taskDetailShowWithOpenIdAndTaskId: function(propertyOpenId, propertyTaskId) {
       //这里propertyOpenId 和 propertyTaskId 均是任务创建者信息
       if (propertyOpenId && propertyTaskId) {         
         //只有在父组件数据准备好，刷新完成后，根据字段变化情况，监听有值时，触发组件读取
@@ -107,16 +113,11 @@ Component({
         this.showLoginPage();
       }
     },
-  },
 
-  /**
-   * 组件的方法列表
-   */
-  methods: {
     createTaskPage: function(event) {
       this.setData({
         openId: this.data.openId,
-        isSelf: this.properties.propertyIsSelf,
+        isSelf: true,
         needLogin: false,
       });
     },
@@ -130,21 +131,23 @@ Component({
 
     userLoginAndGetUserInfo:function(event) {
       let that = this;
+      console.log('userLoginAndGetUserInfo', event.detail.userInfo);
+      console.log('userLoginAndGetUserInfo before openId, taskId', that.properties);
       //通过用户信息，刷新页面
       util.userLoginAndGetUserInfo({
         userInfo: event.detail.userInfo,
         success: function(currentOpenId, latestUserInfo) {
           //通过返回的当前用户openId，直接更新登录状态和刷新页面
           if (util.validStr(currentOpenId)) {
-            console.log('getUserInfo', currentOpenId, latestUserInfo)
+            console.log('userLoginAndGetUserInfo', currentOpenId, latestUserInfo)
             //此处需要根据 当前的具体来源，做不同的操作
             //刷新页面
-            that.setData({
-              needLogin: false,
-              openId: currentOpenId,
-              isSelf: true,
-              loginPopupShow: false,
-            });
+            //此处需要根据taskDetail.js传入的onLoadOptions的具体参数，来判断展示
+            //外部传值，恒定，不管onLoad以是吗方式拉起，分享拉起，还是列表点击进入，传入的数据propertyOpenId 和 propertyTaskId都是参考
+            console.log('userLoginAndGetUserInfo openId, taskId', that.properties);
+            that.data.openId = util.validList(that.properties.propertyOpenId) ? that.properties.propertyOpenId : currentOpenId;
+            that.data.taskId = that.properties.propertyTaskId;
+            that.p_taskDetailShowWithOpenIdAndTaskId(that.data.openId, that.data.taskId);
           }
         }
       });
@@ -152,9 +155,23 @@ Component({
 
     componentLoadPage: function (event) {
       let that = this;
+      util.getCurrentUserOpenId({
+        success: function(openId) {
+          that.p_componentLoadPage(openId == that.properties.propertyOpenId);
+        },
+        fail: function(err) {
+          that.p_componentLoadPage(false);
+        }
+      });
+    },
+
+    p_componentLoadPage: function(isSelf) {
+      console.log('p_componentLoadPage isSelf', isSelf);
+      console.log('p_componentLoadPage data', this.data)
       wx.showLoading({
         title: 'loading...',
       })
+      let that = this;
       //通过传入的openId和taskId，拉取用户数据
       taskInfo.where({
         openId: that.data.openId,
@@ -178,7 +195,7 @@ Component({
           taskId: that.data.taskId,
           taskTitle: that.data.taskTitle,
           status: that.data.status,
-          isSelf: that.properties.propertyIsSelf,       //是否是用户自身，是结合当前使用用户，外部传入属性，不受数据库数据影响
+          isSelf: isSelf, //是否是用户自身，是结合当前使用用户，外部传入属性，不受数据库数据影响
           supportUserList: that.data.supportUserList,
           opposeUserList: that.data.opposeUserList,
           supportUserAvatarList: that.data.supportUserAvatarList.slice(0, 10),
@@ -188,7 +205,9 @@ Component({
           taskCompleteDesc: that.data.taskCompleteDesc,
           taskCompleteUploadMediaList: that.data.taskCompleteUploadMediaList,
           needLogin: false,
+          loginPopupShow: false,
         });
+        wx.hideLoading();
       }).then(res1 => {
         wx.hideLoading();
       });

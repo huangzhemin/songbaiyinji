@@ -44,15 +44,12 @@ Page({
       console.log('share scheme');
       console.log('util.getCurrentUserOpenId()', util.getCurrentUserOpenId());
       console.log('options_openId' , options['openId']);
-      let that = this;
-      util.getCurrentUserOpenId({
-        success: function(openId) {
-          that.setData({
-            openId: options['openId'],
-            taskId: options['taskId'],
-            isSelf: (openId == options['openId']),
-          });
-        },
+      console.log('options_taskId' , options['taskId']);
+      //直接传入拉起的openId 和 taskId
+      //判断是否为自身，则应交由component内部处理
+      this.setData({
+        openId: options['openId'],
+        taskId: options['taskId'],
       });
     } else {
       console.log('list entrance');
@@ -65,7 +62,6 @@ Page({
         that.setData({
           openId: prePageData.openId,
           taskId: prePageData.taskId,
-          isSelf: prePageData.isSelf,
         });
       })
     }
