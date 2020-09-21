@@ -34,49 +34,38 @@ Page({
     });
   },
 
+  onReachBottom: function() {
+    //暂时屏蔽，列表拉取逻辑移动到component内部
+    //再上拉加载
+    // Do something when page reach bottom.
+    console.log('personalTaskList onReachBottom');
+    this.p_loadUserDetailNextPageTaskList(this.data.openId);
+  },
+
   loadUserDetailInfo: function() {
     wx.showLoading({
       title: '加载中..',
     })
 
     //此处根据传入的openId，对用户信息 和 用户的任务列表进行请求
-    var promiseArr = [];
-    var userInfo = {};
-    var taskInfo = {};
     let that = this;
-
-    let promiseUserInfo = new Promise((resolve, reject) => {
-      util.getCurrentUserInfo({
-        openId: that.data.openId,
-        success: function(openId, userInfoRes) {
-          userInfo = userInfoRes;
-          resolve(userInfo);
-        }
-      })
+    util.getCurrentUserInfo({
+      openId: that.data.openId,
+      success: function(openId, userInfoRes) {
+        that.setData({
+          ['userInfo.sdkUserInfo.avatarUrl']: userInfoRes.data[0].avatarUrl,
+          ['userInfo.sdkUserInfo.nickName']: userInfoRes.data[0].nickName,
+          ['userInfo.customUserInfo.userRanking']: userInfoRes.data[0].ranking,
+          ['userInfo.customUserInfo.userPoints']: userInfoRes.data[0].points,
+        });
+      }
     });
-    promiseArr.push(promiseUserInfo);
+    that.p_loadUserDetailNextPageTaskList(that.data.openId);
+  },
 
-    let promiseUserTaskList = new Promise((resolve, reject) => {
-      util.getCurrentUserTaskList({
-        openId: that.data.openId,
-        success: function(taskInfoRes) {
-          taskInfo = taskInfoRes;
-          resolve(taskInfo);
-        }
-      })
-    });
-    promiseArr.push(promiseUserTaskList);
-
-    Promise.all(promiseArr).then((result) => {
-      promiseArr = [];
-      that.setData({
-        taskList: taskInfo.data,
-        ['userInfo.sdkUserInfo.avatarUrl']: userInfo.data[0].avatarUrl,
-        ['userInfo.sdkUserInfo.nickName']: userInfo.data[0].nickName,
-        ['userInfo.customUserInfo.userRanking']: userInfo.data[0].ranking,
-        ['userInfo.customUserInfo.userPoints']: userInfo.data[0].points,
-      });
-      wx.hideLoading();
-    });
-  }
+  p_loadUserDetailNextPageTaskList: function(openId) {
+    console.log('p_loadUserDetailNextPageTaskList invoked');
+    let _userDetailTaskList = this.selectComponent('#userDetailTaskList').userDetailTaskList;
+    _userDetailTaskList.loadNextPage(openId);
+  },
 })

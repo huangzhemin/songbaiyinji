@@ -18,7 +18,7 @@
 
   <block wx:if='{{userInfo.sdkUserInfo.avatarUrl}}'>
     <pm-user-detail-task-list
-      taskList='{{taskList}}'>
+      id='userDetailTaskList'>
     </pm-user-detail-task-list>
   </block>
 

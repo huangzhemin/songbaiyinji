@@ -13,3 +13,5 @@
     taskId='{{item.taskId}}'>
   </pm-task-cell>
 </block>
+<view class="loading" hidden="{{!loadMore}}">上拉加载更多</view>
+<view class="loading" hidden="{{loadMore}}">已加载全部</view>

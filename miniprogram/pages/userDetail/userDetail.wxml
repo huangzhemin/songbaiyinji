@@ -1,6 +1,7 @@
 <!--miniprogram/pages/userDetail/userDetail.wxml-->
-<view wx:if='{{userInfo.sdkUserInfo.avatarUrl}}'>
+<view>
   <pm-personal-profile-cell 
+    wx:if='{{userInfo.sdkUserInfo.avatarUrl}}'
     avatarUrl="{{userInfo.sdkUserInfo.avatarUrl}}" 
     nickName="{{userInfo.sdkUserInfo.nickName}}" 
     userRanking="{{userInfo.customUserInfo.userRanking}}" 
@@ -9,6 +10,6 @@
   <pm-space-line customHeight='40'></pm-space-line>
 
   <pm-user-detail-task-list
-    taskList='{{taskList}}'>
+    id='userDetailTaskList'>
   </pm-user-detail-task-list>
 </view>

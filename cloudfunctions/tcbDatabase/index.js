@@ -54,6 +54,7 @@ exports.main = async (event, context) => {
     'batchGetUserInfo',
     'batchGetUserPointsRankingList',
     'batchWriteUserPointRankingList',
+    'getUserNextPageTaskListWithCurrentStatus',
     'getNextPageTaskListWithCurrentStatus',
     'updateTaskStatusWithCompleteTaskList',
   ];
@@ -80,7 +81,7 @@ exports.main = async (event, context) => {
     yesterday24hourTimestamp = zero_beijing - beijingLondonTimeDifference;
     console.log('yesterday24hourTimestamp', yesterday24hourTimestamp);
     ctx.data.res = await db.collection('taskInfo').where({
-      status: p_getDoingTaskStatusCondition('doing'),
+      status: p_getStatusCondition('doing'),
       pubTime: _.lt(yesterday24hourTimestamp),
     }).get();
     await next();
@@ -231,6 +232,26 @@ exports.main = async (event, context) => {
     });
   });
 
+  app.router('getUserNextPageTaskListWithCurrentStatus', async (ctx, next) => {
+    console.log('getUserNextPageTaskListWithCurrentStatus invoke');
+    console.log('ctx.data', ctx.data);
+    const db = cloud.database();
+    const _ = db.command;
+
+    ctx.data.res = await db.collection('taskInfo').limit(ctx.data.taskNumOnePage).where({
+      openId: ctx.data.openId,
+      status: p_getStatusCondition(ctx.data.taskListType),
+      pubTime: _.lt(ctx.data.lastPubTime)
+    }).orderBy('pubTime', 'desc').get();
+    await next();
+  }, async (ctx) => {
+    console.log('ctx.data:', ctx.data);
+    ctx.body = {
+      code: 0,
+      data: ctx.data.res,
+    }
+  });
+
   app.router('getNextPageTaskListWithCurrentStatus', async (ctx, next) => {
     console.log('getNextPageTaskListWithCurrentStatus invoke');
     console.log('ctx.data', ctx.data);
@@ -238,7 +259,7 @@ exports.main = async (event, context) => {
     const _ = db.command;
 
     ctx.data.res = await db.collection('taskInfo').limit(ctx.data.taskNumOnePage).where({
-      status: p_getDoingTaskStatusCondition(ctx.data.taskListType),
+      status: p_getStatusCondition(ctx.data.taskListType),
       pubTime: _.lt(ctx.data.lastPubTime)
     }).orderBy('pubTime', 'desc').get();
     await next();
@@ -278,11 +299,16 @@ exports.main = async (event, context) => {
   return app.serve();
 }
 
-// 返回当前任务「正在进行」中的判断，type = (doing/complete)
-function p_getDoingTaskStatusCondition(type) {
+// 返回当前任务状态的判断，type = (all/doing/complete)
+function p_getStatusCondition(type) {
   const _ = cloud.database().command;
-  return (type == 'doing' ? _.in([0, 1, 2]) : _.in([3, 4]));
-  //return (type == 'doing' ? _.eq(0).or(_.eq(1)).or(_.eq(2)) : _.eq(3).or(_.eq(4))); 
+  if (type == 'all') {
+    return _.in([0, 1, 2, 3, 4]);
+  } else if (type == 'doing') {
+    return _.in([0, 1, 2]);
+  } else {
+    return _.in([3, 4]);
+  }
 }
 
 let result = exports.main({

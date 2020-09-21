@@ -29,6 +29,11 @@ Component({
     dataNeedLogin: false,
   },
 
+  behaviors: ['wx://component-export'],  
+  export() {
+      // return {findTaskList: this} 
+  },
+
   observers: {    
     'needLogin': function (needLogin) {
       this.data.dataNeedLogin = needLogin;

@@ -20,9 +20,16 @@ Page({
   onShow: function () {
   },
 
-  p_getDoingTaskStatusCondition: function(type) {
-    return (type == 'doing' ? _.in([0, 1, 2]) : _.in([3, 4]));
-    // return (type == 'doing' ? _.eq(0).or(_.eq(1)).or(_.eq(2)) : _.eq(3).or(_.eq(4)));
+  // 返回当前任务状态的判断，type = (all/doing/complete)
+  p_getStatusCondition: function(type) {
+    const _ = cloud.database().command;
+    if (type == 'all') {
+      return _.in([0, 1, 2, 3, 4]);
+    } else if (type == 'doing') {
+      return _.in([0, 1, 2]);
+    } else {
+      return _.in([3, 4]);
+    }
   },
 
   calculatePoints: function() {

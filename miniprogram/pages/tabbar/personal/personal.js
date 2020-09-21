@@ -8,7 +8,6 @@ Page({
    */
   data: {
     openId: '',
-    taskList: [],
     userInfo: {
       sdkUserInfo: {
         avatarUrl: '',
@@ -22,11 +21,7 @@ Page({
   },
 
   onShow: function() {
-    // // Do some initialize when page load.
-    wx.showLoading({
-      title: '加载中...',
-    })
-
+    // Do some initialize when page load.
     let that = this;
     util.getCurrentUserInfo({
       success: function(openId, userInfoRes) {
@@ -43,32 +38,38 @@ Page({
     })
   },
 
+  onReachBottom: function() {
+    //暂时屏蔽，列表拉取逻辑移动到component内部
+    //再上拉加载
+    // Do something when page reach bottom.
+    console.log('personalTaskList onReachBottom');
+    this.p_loadUserDetailNextPageTaskList(this.data.openId);
+  },
+
   refreshPersonalPage: function(event) {
     this.p_refreshPersonalPage(event.detail.openId, event.detail.userInfo);
   },
 
   p_refreshPersonalPage: function(openId, userInfo) {
+    console.log('p_refreshPersonalPage', openId, userInfo);
     let currentUserInfo = userInfo;
-    let that = this;
-    util.getCurrentUserTaskList({
-      openId: openId,
-      success: function(taskInfoRes) {
-        console.log('p_refreshPersonalPage', currentUserInfo);
-        // console.log(taskInfoRes);
-        that.setData({
-          //当前用户的openId
-          openId: openId,
-          //用户头像数据
-          ['userInfo.sdkUserInfo.avatarUrl']: currentUserInfo['avatarUrl'],
-          ['userInfo.sdkUserInfo.nickName']: currentUserInfo['nickName'],
-          ['userInfo.customUserInfo.userRanking']: currentUserInfo['ranking'], 
-          ['userInfo.customUserInfo.userPoints']: currentUserInfo['points'],
-          //用户任务列表数据
-          taskList: util.batchConvertDatabaseTaskToInnerTask(taskInfoRes.data),
-        })
-        wx.hideLoading();
-      }
+
+    this.data.openId = openId; //更新当前用户的openId
+    //刷新用户头像
+    this.setData({
+      //用户头像数据
+      ['userInfo.sdkUserInfo.avatarUrl']: currentUserInfo['avatarUrl'],
+      ['userInfo.sdkUserInfo.nickName']: currentUserInfo['nickName'],
+      ['userInfo.customUserInfo.userRanking']: currentUserInfo['ranking'], 
+      ['userInfo.customUserInfo.userPoints']: currentUserInfo['points'],
     });
+    //用户任务列表数据
+    this.p_loadUserDetailNextPageTaskList(openId);
+  },
+
+  p_loadUserDetailNextPageTaskList: function(openId) {
+    let _userDetailTaskList = this.selectComponent('#userDetailTaskList').userDetailTaskList;
+    _userDetailTaskList.loadNextPage(openId);
   },
 
   // 跳转至消息页

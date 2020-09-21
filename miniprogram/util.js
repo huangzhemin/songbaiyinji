@@ -150,7 +150,7 @@ var getAllTaskList = function (event) {
 //拉取全量 正在进行中/已结束 任务列表
 var getTaskListWithStatusType = function (event) {
   taskInfo.where({
-    status: p_getDoingTaskStatusCondition(event.type)
+    status: p_getStatusCondition(event.type)
   }).orderBy('pubTime', 'desc').get({
     success: (taskInfoRes => {
       console.log(taskInfoRes);
@@ -249,7 +249,7 @@ var getCurrentUserTaskListWithStatusType = function (event) {
   if (event.openId) {
     taskInfo.where({
       openId: event.openId, //当前用户 openId
-      status: p_getDoingTaskStatusCondition(event.type)
+      status: p_getStatusCondition(event.type)
     }).skip(event.page * 20).orderBy('pubTime', 'desc').get({
       success: (taskInfoRes => {
         console.log('getCurrentUserDoingTaskList with openId:', taskInfoRes);
@@ -262,7 +262,7 @@ var getCurrentUserTaskListWithStatusType = function (event) {
       success: (res => {
         taskInfo.where({
           openId: res.data, // 填入当前用户 openid
-          status: p_getDoingTaskStatusCondition(event.type)
+          status: p_getStatusCondition(event.type)
         }).skip(event.page * 20).orderBy('pubTime', 'desc').get({
           success: (taskInfoRes => {
             console.log('getCurrentUserDoingTaskList without openId:', event, taskInfoRes);
@@ -272,6 +272,70 @@ var getCurrentUserTaskListWithStatusType = function (event) {
       })
     });
   }
+}
+
+//获取当前用户的下一刷任务列表
+//1.有传入openId，则直接查找
+//2.如果未传入openId，则需先查找openId，再查找用户任务列表
+//3.传入现有的任务列表
+var getUserDetailNextPageTaskListWithCurrentStatus = function(event) {
+  let currentUserDetailLoadTaskList = event.currentUserDetailTaskList;
+  let taskNumOnePage = event.taskNumOnePage > 0 ? event.taskNumOnePage : 10;
+  let taskListType = validStr(event.taskListType) ? event.taskListType : 'all';
+  var currentUserDetailLoadTaskListLastTaskPubTime;
+  if (validList(currentUserDetailLoadTaskList)) {
+    currentUserDetailLoadTaskListLastTaskPubTime = currentUserDetailLoadTaskList[currentUserDetailLoadTaskList.length - 1].pubTime;
+  } else {
+    currentUserDetailLoadTaskListLastTaskPubTime = Date.parse(new Date()) / 1000;
+  }
+  console.log('taskNumOnePage taskListType currentUserDetailLoadTaskList currentUserDetailLoadTaskListLastTaskPubTime', taskNumOnePage, taskListType, currentUserDetailLoadTaskList, currentUserDetailLoadTaskListLastTaskPubTime);
+
+  if (validStr(event.openId)) {
+    console.log('getUserDetailNextPageTaskListWithCurrentStatus has openId', event.openId);
+    p_getUserDetailNextPageTaskListWithCurrentStatus({
+      openId: event.openId,
+      taskNumOnePage: taskNumOnePage,
+      taskListType: taskListType,
+      lastPubTime: currentUserDetailLoadTaskListLastTaskPubTime,
+      success: event.success,
+    });
+  } else {
+    console.log('getUserDetailNextPageTaskListWithCurrentStatus has not openId', event.openId);
+    wx.getStorage({
+      key: 'openid',
+      success: (res => {
+        p_getUserDetailNextPageTaskListWithCurrentStatus({
+          openId: res.data,
+          taskNumOnePage: taskNumOnePage,
+          taskListType: taskListType,
+          lastPubTime: currentUserDetailLoadTaskListLastTaskPubTime,
+          success: event.success,
+        });
+      })
+    });
+  }
+}
+
+var p_getUserDetailNextPageTaskListWithCurrentStatus = function(event) {
+  console.log('p_getUserDetailNextPageTaskListWithCurrentStatus invoked');
+  wx.cloud.callFunction({
+    // 要调用的云函数名称
+    name: 'tcbDatabase',
+    // 传递给云函数的参数
+    data: {
+      $url: "getUserNextPageTaskListWithCurrentStatus",
+      openId: event.openId,
+      taskNumOnePage: event.taskNumOnePage,
+      taskListType: event.taskListType,
+      lastPubTime: event.lastPubTime,
+    }
+  }).then(res => {
+    //这里层级结构，需要注意
+    event.success(res.result.data.data);
+  }).catch(err => {
+    console.error(err);
+    event.fail(err);
+  });
 }
 
 //获取当前用户的任务列表，
@@ -649,10 +713,16 @@ var p_getOpenIdFromCloudAndWriteLocalStorage = function(event) {
   });
 }
 
-// 返回当前任务「正在进行」中的判断，type = (doing/complete)
-var p_getDoingTaskStatusCondition = function(type) {
-  return (type == 'doing' ? _.in([0, 1, 2]) : _.in([3, 4]));
-  //return (type == 'doing' ? _.eq(0).or(_.eq(1)).or(_.eq(2)) : _.eq(3).or(_.eq(4))); 
+// 返回当前任务状态的判断，type = (all/doing/complete)
+var p_getStatusCondition = function(type) {
+  const _ = cloud.database().command;
+  if (type == 'all') {
+    return _.in([0, 1, 2, 3, 4]);
+  } else if (type == 'doing') {
+    return _.in([0, 1, 2]);
+  } else {
+    return _.in([3, 4]);
+  }
 }
 
 module.exports = {
@@ -664,6 +734,7 @@ module.exports = {
   getAllTaskList: getAllTaskList,
   getTaskListWithStatusType: getTaskListWithStatusType,
   getNextPageTaskListWithCurrentStatus: getNextPageTaskListWithCurrentStatus,
+  getUserDetailNextPageTaskListWithCurrentStatus: getUserDetailNextPageTaskListWithCurrentStatus,
   getCurrentUserOpenId: getCurrentUserOpenId,
   getCurrentUserTaskListWithStatusType: getCurrentUserTaskListWithStatusType,
   getCurrentUserTaskList: getCurrentUserTaskList,
