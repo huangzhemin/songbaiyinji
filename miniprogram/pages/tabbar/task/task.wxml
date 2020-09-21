@@ -17,12 +17,12 @@
               bind:change="swipeChange">
       <swiper-item>
           <view class="swiper-item-doing-task-list">
-            <pm-personal-task-list id='personalDoingTaskList' taskStatusType='doing' swiperHeight='{{swiper.swiperHeight}}' needLogin='{{needLogin}}'></pm-personal-task-list>
+            <pm-personal-task-list taskStatusType='doing' swiperHeight='{{swiper.swiperHeight}}' needLogin='{{needLogin}}'></pm-personal-task-list>
           </view>
       </swiper-item>
       <swiper-item>
         <view class="swiper-item-over-task-list">
-          <pm-personal-task-list id='personalCompleteTaskList' taskStatusType='complete' swiperHeight='{{swiper.swiperHeight}}' needLogin='{{needLogin}}'></pm-personal-task-list>
+          <pm-personal-task-list taskStatusType='complete' swiperHeight='{{swiper.swiperHeight}}' needLogin='{{needLogin}}'></pm-personal-task-list>
         </view>
       </swiper-item>
   </swiper>

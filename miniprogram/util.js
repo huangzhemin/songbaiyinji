@@ -149,6 +149,7 @@ var getAllTaskList = function (event) {
 
 //拉取全量 正在进行中/已结束 任务列表
 var getTaskListWithStatusType = function (event) {
+  console.log('getTaskListWithStatusType event', event);
   taskInfo.where({
     status: p_getStatusCondition(event.type)
   }).orderBy('pubTime', 'desc').get({
@@ -715,7 +716,6 @@ var p_getOpenIdFromCloudAndWriteLocalStorage = function(event) {
 
 // 返回当前任务状态的判断，type = (all/doing/complete)
 var p_getStatusCondition = function(type) {
-  const _ = cloud.database().command;
   if (type == 'all') {
     return _.in([0, 1, 2, 3, 4]);
   } else if (type == 'doing') {

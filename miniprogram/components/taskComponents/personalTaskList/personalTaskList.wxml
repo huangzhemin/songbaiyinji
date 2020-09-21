@@ -15,7 +15,7 @@
   <view class="name">点击头像登录后，查看个人任务</view>
 </view>
 <view wx:else>
-  <scroll-view scroll-y="true" style="height: {{swiperHeight+'px'}}">
+  <scroll-view scroll-y="true" style="height: {{swiperHeight+'px'}}" bindscrolltolower="loadMoreData">
     <block wx:for='{{taskList}}' wx:for-index="idx" wx:key="idx">
       <pm-task-cell 
         title='{{item.taskTitle}}'
@@ -31,7 +31,8 @@
       <van-divider></van-divider>
       <!-- <pm-splite-line wx:if="{{index < taskList.length - 1}}"></pm-splite-line> -->
     </block>
-    <view class="loading">上拉加载更多</view>
+    <view class="loading" hidden="{{!loadMore}}">上拉加载更多</view>
+    <view class="loading" hidden="{{loadMore}}">已加载全部</view>
   </scroll-view>
   <!-- <view class="loading" hidden="{{!loadMore}}">上拉加载更多</view>
   <view class="loading" hidden="{{loadMore}}">已加载全部</view> -->

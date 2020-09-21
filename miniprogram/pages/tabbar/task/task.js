@@ -31,20 +31,6 @@ Page({
     this.p_setSwipterHeight(this.data.swiper.swiperHeight);
   },
 
-  onReachBottom: function() {
-    console.log('task onReachBottom');
-    // Do something when page reach bottom.
-    var _personalTaskList = [];
-    if (this.data.swiper.active == 0) {
-      console.log('personalDoingTaskList loadNextPage');
-      _personalTaskList = this.selectComponent('#personalDoingTaskList').personalDoingTaskList;
-    } else {
-      console.log('personalCompleteTaskList loadNextPage');
-      _personalTaskList = this.selectComponent('#personalCompleteTaskList').personalCompleteTaskList;
-    }
-    _personalTaskList.loadNextPage();
-  },
-
   clickChange(event) {
     console.log('clickChange', event);
     // console.log(this.data.active)

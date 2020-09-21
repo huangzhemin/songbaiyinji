@@ -27,11 +27,8 @@ Component({
   data: {
     taskList: [],
     dataNeedLogin: false,
-  },
-
-  behaviors: ['wx://component-export'],  
-  export() {
-      // return {findTaskList: this} 
+    loadMore: true,
+    lock: false,
   },
 
   observers: {    
@@ -40,7 +37,7 @@ Component({
       if (needLogin) {
         this.showLoginView();
       } else {
-        this.refreshPersonalTaskList();
+        this.loadNextPage();
       }
     }
   },
@@ -51,7 +48,7 @@ Component({
       console.log('personalTaskList show');
       if (!this.data.dataNeedLogin) {
         console.log('personalTaskList show need not login');
-        this.refreshPersonalTaskList();
+        this.loadNextPage();
       } else {
         console.log('personalTaskList show need login');
       }
@@ -64,6 +61,11 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    loadMoreData: function(event) {
+      console.log('personalTaskList loadMoreData', event);
+      this.loadNextPage();
+    },
+
     showLoginView: function(event) {
       this.setData({
         dataNeedLogin: this.data.dataNeedLogin,
@@ -81,43 +83,52 @@ Component({
           //通过返回的当前用户openId，直接更新登录状态和刷新页面
           if (util.validStr(currentOpenId)) {
             that.data.dataNeedLogin = false;
-            that.refreshPersonalTaskList();
+            that.loadNextPage();
           }
         }
       });
     },
 
-    refreshPersonalTaskList: function(event) {
+    loadNextPage: function() {
+      if (!this.data.loadMore) {
+        console.log('loadNextPage cannot loadMore', this.data);
+        return;
+      }
+      if (this.data.lock) {
+        return;
+      }
+      this.data.lock = true;
+
+      console.log('loadNextPage invoked');
+
       wx.showLoading({
         title: '刷新中...',
       })
       let that = this;
-      //这里直接从云数据库层面筛掉 status == 3 和 status == 4的数据， 剩下的就是正在进行中的任务，逆向排序
-      console.log('refreshPersonalTaskList before getCurrentUserTaskListWithStatusType', event);
-      var taskStatusType = '';
-      console.log('refreshPersonalTaskList taskStatusType', this.properties.taskStatusType);
-      if (this.properties.taskStatusType == 'doing'
-        || this.properties.taskStatusType == 'complete') {
-          taskStatusType = this.properties.taskStatusType;
-      }
-      if (util.validStr(taskStatusType)) {
-        util.getCurrentUserTaskListWithStatusType({
-          type: taskStatusType,
-          success: function(taskInfoRes) {
-            console.log('refreshPersonalTaskList getCurrentUserTaskListWithStatusType', taskInfoRes, that.data.dataNeedLogin);
-            that.setData({
-              taskList: taskInfoRes.data,
-              dataNeedLogin: that.data.dataNeedLogin,
-            });
-            wx.hideLoading();
-          }
-        });
-      } else {
-        //给开发者提示
-        wx.showToast({
-          title: '错误列表',
-        })
-      }
-    }
+      let taskNumOnePage = 10;
+      util.getUserDetailNextPageTaskListWithCurrentStatus({
+        currentUserDetailTaskList: that.data.taskList,
+        taskListType: that.properties.taskStatusType,
+        taskNumOnePage: taskNumOnePage,
+        success: function(taskInfoRes) {
+          console.log('taskInfoRes', taskInfoRes);
+          let newUserTaskList = util.batchConvertDatabaseTaskToInnerTask(taskInfoRes);
+          that.data.loadMore = newUserTaskList.length == taskNumOnePage;
+          that.data.taskList = that.data.taskList.concat(newUserTaskList);
+          that.setData({
+            taskList: that.data.taskList,
+            loadMore: that.data.loadMore,
+            dataNeedLogin: that.data.dataNeedLogin,
+          });
+          wx.hideLoading();
+          that.data.lock = false;
+        },
+        fail: function(err) {
+          wx.hideLoading();
+          that.data.lock = false;
+          console.log('err', err);
+        },
+      });
+    },
   }
 })

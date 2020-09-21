@@ -22,7 +22,6 @@ Page({
 
   // 返回当前任务状态的判断，type = (all/doing/complete)
   p_getStatusCondition: function(type) {
-    const _ = cloud.database().command;
     if (type == 'all') {
       return _.in([0, 1, 2, 3, 4]);
     } else if (type == 'doing') {
