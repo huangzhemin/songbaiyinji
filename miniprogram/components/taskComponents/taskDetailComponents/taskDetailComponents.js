@@ -265,10 +265,12 @@ Component({
           operationType: operationType,
           success: function(res1) {
             that.clearTaskContent();
-            wx.hideLoading();
-            wx.switchTab({
-              url: '/pages/tabbar/task/task',
-            })
+            setTimeout(() => {
+              wx.hideLoading();
+              wx.switchTab({
+                url: '/pages/tabbar/task/task',
+              })
+            }, 500);
           }
         })
       } else {

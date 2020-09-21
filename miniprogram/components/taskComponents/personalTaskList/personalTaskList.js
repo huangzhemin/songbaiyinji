@@ -36,8 +36,6 @@ Component({
       this.data.dataNeedLogin = needLogin;
       if (needLogin) {
         this.showLoginView();
-      } else {
-        this.loadNextPage();
       }
     }
   },
@@ -48,6 +46,9 @@ Component({
       console.log('personalTaskList show');
       if (!this.data.dataNeedLogin) {
         console.log('personalTaskList show need not login');
+        this.data.taskList = [];
+        this.data.loadMore = true;
+        this.data.lock = false;
         this.loadNextPage();
       } else {
         console.log('personalTaskList show need login');

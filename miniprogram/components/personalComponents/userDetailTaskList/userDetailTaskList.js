@@ -37,6 +37,10 @@ Component({
         return;
       }
 
+      if (!this.data.loadMore) {
+        return;
+      }
+
       if (this.data.lock) {
         return;
       }
