@@ -390,9 +390,18 @@ Component({
               wx.showLoading({
                 title: '支持成功...',
               });
+              //清理自己的反对票
+              let opposeIndex = that.data.opposeUserList.indexOf(openId);
+              if (opposeIndex != -1) {
+                that.data.opposeUserList.splice(opposeIndex, 1);
+                that.data.opposeUserAvatarList.splice(opposeIndex, 1);
+              }
+              //更新
               that.setData({
                 supportUserList: that.data.supportUserList,
                 supportUserAvatarList: that.data.supportUserAvatarList,
+                opposeUserList: that.data.opposeUserList,
+                opposeUserAvatarList: that.data.opposeUserAvatarList,
               });
             } else {
               wx.showToast({
@@ -409,9 +418,18 @@ Component({
               wx.showLoading({
                 title: '反对成功...',
               });
+              //清理自己的反对票
+              let supportIndex = that.data.supportUserList.indexOf(openId);
+              if (supportIndex != -1) {
+                that.data.supportUserList.splice(supportIndex, 1);
+                that.data.supportUserAvatarList.splice(supportIndex, 1);
+              }
+              //更新
               that.setData({
                 opposeUserList: that.data.opposeUserList,
                 opposeUserAvatarList: that.data.opposeUserAvatarList,
+                supportUserList: that.data.supportUserList,
+                supportUserAvatarList: that.data.supportUserAvatarList,
               });
             } else {
               wx.showToast({
@@ -453,10 +471,7 @@ Component({
 
     //非当前用户，猜一猜相关
     onGuessPannelClick: function (event) {
-      let targetId = event.target['id'];
       let that = this;
-      var guessSuccess = false;
-      var operationType = '';
       //此处需要做用户是否登录判断
       util.isLogin({
         success: function(logined) {
