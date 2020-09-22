@@ -22,16 +22,26 @@ function validList(inputList) {
 
 //判断截止至昨天24点的任务完成情况
 function p_batchJudgeYesterdayDoingTaskList(yesterdayDoingTaskList) {
+  //调整产品能量计算方式，用爱投票，无法用单一的标准衡量多元化的人
+  //多元化应该用多元化来衡量，而时间在其中充当每天的串连者，真正的裁判应该是爱
   //对数据进行处理，逻辑，循环遍历，检查任务的完成数据，是否为空
   if (!validList(yesterdayDoingTaskList)) {
     console.log('yesterdayDoingTaskList is empty');
     return [];
   }
   yesterdayDoingTaskList.forEach(doingTask => {
-    if (validList(doingTask.taskMediaList)) {
-      doingTask.status = 3;
+    if (validList(doingTask.supportUserList) && validList(doingTask.opposeUserList)) {
+      //有人投支持票、反对票，自己是默认的支持者，只要支持者不小于反对者，就算成功
+      //三心二意
+      doingTask.status = (doingTask.supportUserList.length - doingTask.opposeUserList.length >= 0) ? 3 : 4;
+    } else if (validList(doingTask.opposeUserList)) {
+      //只有反对票，如果是1票，则仍然算成功，如果>1票，则算失败
+      //二心二意
+      doingTask.status = doingTask.opposeUserList.length > 1 ? 4 : 3;
     } else {
-      doingTask.status = 4;
+      //只有支持票，则成功(自己是默认的支持者)
+      //一心一意
+      doingTask.status = 3;
     }
   });
   return yesterdayDoingTaskList;
