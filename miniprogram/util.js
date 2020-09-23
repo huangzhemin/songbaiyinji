@@ -92,14 +92,11 @@ var getUploadMediaList = function (openId, taskId, taskMediaList) {
   for (let index = 0; index < taskMediaList.length; index++) {
     const element = taskMediaList[index];
     //匹配字符串，定位
+    //本来就是顺序的，那就按照顺序来，未来移动图片后，依然还是顺序，与图片初始所带index无关
     if (element.match(openId + '_' + taskId + '_plan')) {
-      let i = element.charAt(element.search('plan_') + 5);
-      //因为只有9张，所以可以采用这种tricky方法
-      taskPlanUploadMediaList[i] = element;
+      taskPlanUploadMediaList.push(element) ;
     } else if (element.match(openId + '_' + taskId + '_complete')) {
-      let i = element.charAt(element.search('complete_') + 9);
-      //因为只有9张，所以可以采用这种tricky方法
-      taskCompleteUploadMediaList[i] = element;
+      taskCompleteUploadMediaList.push(element);
     }
   }
 
@@ -725,6 +722,15 @@ var p_getStatusCondition = function(type) {
   }
 }
 
+var getCurrentStatusTypeWithStatus = function(status) {
+  if (status == 0 || status == 1 || status == 2) {
+    return 'doing';
+  } else if (status = 3 || status == 4) {
+    return 'complete';
+  }
+  return 'other';
+}
+
 module.exports = {
   debugLog: debugLog,
   convertInnerTaskToDatabaseTask: convertInnerTaskToDatabaseTask,
@@ -747,4 +753,5 @@ module.exports = {
   userLoginAndGetUserInfo: userLoginAndGetUserInfo,
   isLogin: isLogin,
   showToast: showToast,
+  getCurrentStatusTypeWithStatus: getCurrentStatusTypeWithStatus,
 }

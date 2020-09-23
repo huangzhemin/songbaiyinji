@@ -96,6 +96,8 @@
           src="{{item}}" 
           data-index="{{idx}}" 
           data-type="plan" 
+          data-url="{{item}}"
+          bindlongpress="deleteMedia"
           bindtap="previewImage"/>
       </block>
     </van-col>
@@ -158,6 +160,8 @@
           src="{{item}}" 
           data-index="{{idx}}" 
           data-type="complete" 
+          data-url="{{item}}"
+          bindlongpress="deleteMedia"
           bindtap="previewImage"/>
       </block>
     </van-col>

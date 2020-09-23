@@ -305,12 +305,10 @@ Component({
       if (mediasRes && mediasRes.length > 0) {
         for (const key in mediasRes) {
           const element = mediasRes[key];
-          if (element['fileID'].match('plan_0')) {
-            this.data.thumbImg = element['fileID'];
-          }
           this.data.taskMediaList.push(element['fileID']);
         }
       }
+      this.data.thumbImg = util.validList(this.data.taskMediaList) ? this.data.taskMediaList[0] : '';
     },
 
     addGenerateTaskDataToDatabase: function(event) {
@@ -562,10 +560,30 @@ Component({
       });
     },
 
+    p_generateNewMediaIdWithUploadMediaList: function(uploadMediaList) {
+      var newMediaId = '';
+      var generateComplete = false;
+      while (!generateComplete) {
+        newMediaId = Math.ceil(Math.random() * 100);
+        console.log('newMediaId', newMediaId);
+        for (const key in uploadMediaList) {
+          const element = uploadMediaList[key];
+          if (element.match('_'+newMediaId+'.png')) {
+            console.log('conflict', newMediaId, uploadMediaList);
+            generateComplete = false;
+            break;
+          } else {
+            generateComplete = true;
+          }
+        }
+      }
+      return newMediaId;
+    },
+
     uploadBatchMedia: function (event) {
       let type = event['type'];
       let uploadMediaList = event['uploadMediaList'];
-  
+
       for (var i = 0; i < uploadMediaList.length; i++) {
         //此处需要判断当前的filePath的前缀是否符合预期
         let filePath = uploadMediaList[i];
@@ -576,7 +594,7 @@ Component({
         }
         let promise = new Promise((resolve, reject) => {
           //此处path拼接规则 openid + taskid + plan/complete + index
-          let userMediaCloudPath = event.openId + '_' + event.taskId + '_' + type + '_' + i.toString() + '.png'; //此处需要结合用户登录态的openid，随机函数也需要优化
+          let userMediaCloudPath = event.openId + '_' + event.taskId + '_' + type + '_' + this.p_generateNewMediaIdWithUploadMediaList(uploadMediaList) + '.png'; //此处需要结合用户登录态的openid，随机函数也需要优化
           wx.cloud.uploadFile({
             cloudPath: userMediaCloudPath,
             filePath: filePath,
@@ -629,6 +647,70 @@ Component({
       }).catch(err => {
         console.error(err)
       })
+    },
+
+    deleteMedia: function (event) {
+      if (util.getCurrentStatusTypeWithStatus(this.data.status) != 'doing') {
+        return;
+      }
+      console.log('deleteImage');
+      let that = this;
+      wx.showModal({
+        title: '提示',
+        content: '确定要删除吗？',
+        success (res) {
+          if (res.confirm) {
+            console.log('用户点击确定')
+            that.p_confirmDeleteMedia(event);
+          }
+        }
+      })
+    },
+
+    p_confirmDeleteMedia: function(event) {
+      console.log('event', event);
+      //定位
+      let deleteType = event.target.dataset.type;
+      let sourceUrl = event.target.dataset.url;
+      console.log('deleteType', deleteType);
+      console.log('sourceUrl', sourceUrl);
+
+      this.p_deleteMediaWithSourceUrl(deleteType, sourceUrl);
+    },
+
+    p_deleteMediaWithSourceUrl: function(deleteType, sourceUrl) {
+      //删除已上传部分
+      if (util.validList(this.data.taskMediaList)) {
+        console.log('taskMediaList before taskMediaList', this.data.taskMediaList);
+        this.p_deleteMediaWithMediaListAndSourceUrl(this.data.taskMediaList, sourceUrl);
+        console.log('taskMediaList after taskMediaList', this.data.taskMediaList);  
+      }
+      
+      //删除展示部分
+      if (deleteType == 'plan') {
+        console.log('plan before taskPlanUploadMediaList', this.data.taskPlanUploadMediaList);
+        this.p_deleteMediaWithMediaListAndSourceUrl(this.data.taskPlanUploadMediaList, sourceUrl);
+        console.log('plan after taskPlanUploadMediaList', this.data.taskPlanUploadMediaList);
+        //更新UI
+        this.setData({
+          taskPlanUploadMediaList: this.data.taskPlanUploadMediaList,
+        });
+      } else if (deleteType == 'complete') {
+        console.log('complete before taskCompleteUploadMediaList', this.data.taskCompleteUploadMediaList);
+        this.p_deleteMediaWithMediaListAndSourceUrl(this.data.taskCompleteUploadMediaList, sourceUrl);
+        console.log('complete after taskCompleteUploadMediaList', this.data.taskCompleteUploadMediaList);
+        //更新UI
+        this.setData({
+          taskCompleteUploadMediaList: this.data.taskCompleteUploadMediaList,
+        });
+      }
+    },
+
+    p_deleteMediaWithMediaListAndSourceUrl: function(mediaList,  sourceUrl) {
+      let deleteIndex = mediaList.indexOf(sourceUrl)
+      if (deleteIndex != -1) {
+        mediaList.splice(deleteIndex, 1);
+      }
     },
 
     previewImage: function (event) {
