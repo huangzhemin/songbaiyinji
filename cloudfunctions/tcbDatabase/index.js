@@ -187,12 +187,7 @@ exports.main = async (event, context) => {
     const db = cloud.database();
     const _ = db.command;
 
-    ctx.data.res = await db.collection('userInfo').aggregate()
-    .sort(
-      {
-        points: -1,
-      }
-    ).limit(100).end();
+    ctx.data.res = await db.collection('userInfo').orderBy('points', 'desc').limit(100).get();
     await next();
   }, async (ctx) => {
     console.log('ctx.data:', ctx.data);

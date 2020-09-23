@@ -20,11 +20,15 @@ Page({
     //进入页面，这里无需登录，直接拉取先在排行榜前100用户信息，并展示
     wx.cloud.callFunction({
       // 要调用的云函数名称
-      name: "rankingUserPoints",
+      name: 'tcbDatabase',
+      // 传递给云函数的参数
+      data: {
+        $url: "batchGetUserPointsRankingList",
+      }
     }).then(res => {
-      util.debugLog('rankingUserPoints:', res.result.result.data.list);
+      console.log('batchGetUserPointsRankingList:', res.result.data.data);
       this.setData({
-        userRankingList: res.result.result.data.list,
+        userRankingList: res.result.data.data,
       });
       wx.hideLoading();
     });
