@@ -1,3 +1,6 @@
 <!--miniprogram/pages/test/test.wxml-->
-<button bindtap="updateRankingList">刷新用户排名列表</button>
+<button bindtap="pmInformToWeixin">松柏印记通知->微信</button>
 <button bindtap="calculatePoints">计算能量积分相关</button>
+<button bindtap="requestSubscribeMessage">订阅请求</button>
+<button bindtap="adjustDicData">调整字典数据</button>
+

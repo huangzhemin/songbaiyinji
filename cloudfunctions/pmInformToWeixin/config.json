@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "openapi": [
+      "uniformMessage.send"
+    ]
+  },
+
+  "triggers": [
+    {
+      "name": "pmInformToWeixinTrigger",
+      "type": "timer",
+      "config": "0 0 7 * * * *"
+    }
+  ]
+}

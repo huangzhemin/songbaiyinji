@@ -35,6 +35,7 @@ exports.main = async (event, context) => {
     ctx.data.openId = event.openId;
     ctx.data.taskId = event.taskId;
     ctx.data.userOpenIdList = event.userOpenIdList;
+    ctx.data.yesterdayUserPointsDic = event.yesterdayUserPointsDic;
     ctx.data.userPointsDic = event.userPointsDic;
     ctx.data.userRankingDic = event.userRankingDic;
     ctx.data.userPointsRankingList = event.userPointsRankingList;
@@ -146,12 +147,14 @@ exports.main = async (event, context) => {
     }
     console.log('ctx.data', ctx.data);
     keysList.forEach(userOpenId => {
+      var yesterdayPoints = ctx.data.yesterdayUserPointsDic[userOpenId];
       var points = ctx.data.userPointsDic[userOpenId];
       var ranking = ctx.data.userRankingDic[userOpenId]
       db.collection('userInfo').where({
         openId: userOpenId,
       }).update({
         data: {
+          yesterdayPoints: yesterdayPoints,
           points: points,
           ranking: ranking,
         }

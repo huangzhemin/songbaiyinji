@@ -17,7 +17,21 @@ Page({
   /**
    * 生命周期函数--监听页面显示
    */
-  onShow: function () {
+  onShow: function() {
+  },
+
+  requestSubscribeMessage: function() {
+    console.log('test requestSubscribeMessage start');
+    wx.requestSubscribeMessage({
+      tmplIds: ['8WEvy8r0xt4yZ4d5MGCUN4-dlv906nDse9TQOMpQn7g'],
+      success (res) {
+        console.log('requestSubscribeMessage success', res);
+      },
+      fail (err) {
+        console.log('requestSubscribeMessage fail', err);
+      }
+    })
+    console.log('test requestSubscribeMessage end');
   },
 
   // 返回当前任务状态的判断，type = (all/doing/complete)
@@ -29,6 +43,15 @@ Page({
     } else {
       return _.in([3, 4]);
     }
+  },
+
+  pmInformToWeixin: function() {
+    console.log('pmInformToWeixin');
+    wx.cloud.callFunction({
+      name: "pmInformToWeixin",
+    }).then(res => {
+      console.log('pmInformToWeixin res', res);
+    });
   },
 
   calculatePoints: function() {
@@ -90,5 +113,23 @@ Page({
     //   //   console.log('userPointsRankingList write result', res1);
     //   // });
     // });
+  },
+
+  adjustDicData: function() {
+    console.log('adjustDicData');
+    var finalUserPointsMap = {
+      'a': 1,
+      'b': 2,
+      'c': 3,
+    };
+    //计算并更新用户积分映射字典
+    console.log('finalUserPointsMap start:', finalUserPointsMap);
+    //在计算之前，先将finalUserPointsMap保存一份下来，最终一起写入数据库
+    var yesterdayUserPointsMap = JSON.parse(JSON.stringify(finalUserPointsMap));
+    finalUserPointsMap['a'] = 2;
+    finalUserPointsMap['b'] = 3;
+    finalUserPointsMap['c'] = 4;
+    console.log('yesterdayUserPointsMap end:', yesterdayUserPointsMap);
+    console.log('finalUserPointsMap end:', finalUserPointsMap);
   }
 })
