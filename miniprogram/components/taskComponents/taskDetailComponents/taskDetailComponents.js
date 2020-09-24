@@ -650,6 +650,24 @@ Component({
     },
 
     deleteMedia: function (event) {
+      let that = this;
+      util.getCurrentUserOpenId({
+        success: function(openId) {
+          //如果成功，则将当前用户的openId与传入的propertyOpenId对比，判断是否为当前用户，只有当前用户可以删除自己
+          console.log('openId', openId);
+          console.log('propertyOpenId', that.properties.propertyOpenId);
+          if (openId == that.properties.propertyOpenId) {
+            that.p_deleteMedia(event);
+          }
+        },
+        fail: function(err) {
+          //如果失败，则说明当前用户未登录，不可能有删除图片的能力
+          return;
+        }
+      });
+    },
+
+    p_deleteMedia: function (event) {
       if (util.getCurrentStatusTypeWithStatus(this.data.status) != 'doing') {
         return;
       }
