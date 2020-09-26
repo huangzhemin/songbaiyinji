@@ -43,6 +43,10 @@ exports.main = async (event, context) => {
     ctx.data.taskListType = event.taskListType;
     ctx.data.lastPubTime = event.lastPubTime;
     ctx.data.yesterdayCompleteTaskList = event.yesterdayCompleteTaskList;
+    ctx.data.subscribeList = event.subscribeList;
+    ctx.data.subscribeId = event.subscribeId;
+    ctx.data.openIdList = event.openIdList;
+    ctx.data.updateSubscribeType = event.updateSubscribeType;
     await next(); // 执行下一中间件
   });
 
@@ -52,12 +56,17 @@ exports.main = async (event, context) => {
     'taskInfoWithOpenIdAndTaskId', 
     'batchGetUserPoints', 
     'batchUpdateUserPoints',
+    'getUserInfoWithOpenId',
     'batchGetUserInfo',
     'batchGetUserPointsRankingList',
     'batchWriteUserPointRankingList',
     'getUserNextPageTaskListWithCurrentStatus',
     'getNextPageTaskListWithCurrentStatus',
     'updateTaskStatusWithCompleteTaskList',
+    'getSubscribeList',
+    'updateOpenIdSubscribeList',   //用户Id 与 订阅Id的map
+    'getSubscribeOpenIdList',     //通过订阅Id 获取用户List
+    'updateSubscribeOpenIdList',  //订阅Id 绑定的openIdList
   ];
   app.router(routerList, async (ctx, next) => {
     await next();
@@ -169,6 +178,23 @@ exports.main = async (event, context) => {
     };
   });
 
+  app.router('getUserInfoWithOpenId', async (ctx, next) => {
+    console.log('getUserInfoWithOpenId invoke');
+    const db = cloud.database();
+    const _ = db.command;
+
+    ctx.data.res = await db.collection('userInfo').where({
+      openId: ctx.data.openId,
+    }).get();
+    await next();
+  }, async (ctx) => {
+    console.log('ctx.data:', ctx.data);
+    ctx.body = {
+      code: 0,
+      data: ctx.data.res
+    }
+  });
+
   app.router('batchGetUserInfo', async (ctx, next) => {
     console.log('batchGetUserInfo invoke');
     const db = cloud.database();
@@ -260,6 +286,105 @@ exports.main = async (event, context) => {
       status: p_getStatusCondition(ctx.data.taskListType),
       pubTime: _.lt(ctx.data.lastPubTime)
     }).orderBy('pubTime', 'desc').get();
+    await next();
+  }, async (ctx) => {
+    console.log('ctx.data:', ctx.data);
+    ctx.body = {
+      code: 0,
+      data: ctx.data.res,
+    }
+  });
+
+  //通过用户的openId获取用户的订阅map，map结构{key:subscribeId, value:0/1}
+  app.router('getSubscribeList', async (ctx, next) => {
+    console.log('getSubscribeList invoke');
+    console.log('ctx.data', ctx.data);
+    const db = cloud.database();
+    const _ = db.command;
+
+    ctx.data.res = await db.collection('userInfo').where({
+      openId: ctx.data.openId,
+    }).get();
+    await next();
+  }, async (ctx) => {
+    console.log('ctx.data:', ctx.data);
+    ctx.body = {
+      code: 0,
+      data: ctx.data.res,
+    }
+  });
+
+  //更新用户与其订阅的对应map
+  //key为用户openId
+  //value为字典，其中{key:订阅id, value:0/1}，如果添加了订阅信息，则置为1，反之无key，或者查询为0
+  //这样做添加/更新/查询时间复杂度能在O(1)
+  app.router('updateOpenIdSubscribeList', async (ctx, next) => {
+    console.log('updateOpenIdSubscribeList invoke');
+    console.log('ctx.data', ctx.data);
+    const db = cloud.database();
+    const _ = db.command;
+
+    console.log('openId', ctx.data.openId);
+    console.log('subscribeList', ctx.data.subscribeList);
+    ctx.data.res = await db.collection('userInfo').where({
+      openId: ctx.data.openId,
+    }).update({
+      data: {
+        subscribeList: ctx.data.subscribeList,
+      },
+    });  
+    await next();
+  }, async (ctx) => {
+    console.log('ctx.data:', ctx.data);
+    ctx.body = {
+      code: 0,
+      data: ctx.data.res,
+    }
+  });
+
+  //根据订阅Id获取其对应的用户list
+  app.router('getSubscribeOpenIdList', async (ctx, next) => {
+    console.log('getSubscribeOpenIdList invoke');
+    console.log('ctx.data', ctx.data);
+    const db = cloud.database();
+    const _ = db.command;
+
+    ctx.data.res = await db.collection('subscribeUserListInfo').where({
+      subscribeId: ctx.data.subscribeId,
+    }).get();
+    await next();
+  }, async (ctx) => {
+    console.log('ctx.data:', ctx.data);
+    ctx.body = {
+      code: 0,
+      data: ctx.data.res,
+    }
+  });
+
+  app.router('updateSubscribeOpenIdList', async (ctx, next) => {
+    console.log('updateSubscribeOpenIdList invoke');
+    console.log('ctx.data', ctx.data);
+    const db = cloud.database();
+    const _ = db.command;
+
+    if (ctx.data.updateSubscribeType == 'add') {
+      console.log('ctx.data.subscribeId', ctx.data.subscribeId);
+      console.log('ctx.data.openIdList', ctx.data.openIdList);
+      ctx.data.res = await db.collection('subscribeUserListInfo').add({
+        data: {
+          subscribeId: ctx.data.subscribeId,
+          openIdList: ctx.data.openIdList,
+        },
+      });
+    } else {
+      ctx.data.res = await db.collection('subscribeUserListInfo').where({
+        subscribeId: ctx.data.subscribeId,
+      }).update({
+        data: {
+          openIdList: ctx.data.openIdList,
+        },
+      });
+    }
     await next();
   }, async (ctx) => {
     console.log('ctx.data:', ctx.data);

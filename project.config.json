@@ -19,6 +19,8 @@
     "checkSiteMap": false,
     "uploadWithSourceMap": true,
     "compileHotReLoad": false,
+    "useMultiFrameRuntime": false,
+    "useApiHook": false,
     "babelSetting": {
       "ignore": [],
       "disablePlugins": [],
@@ -28,9 +30,7 @@
     "useCompilerModule": true,
     "userConfirmedUseCompilerModuleSwitch": false,
     "packNpmManually": false,
-    "packNpmRelationList": [],
-    "useMultiFrameRuntime": false,
-    "useApiHook": false
+    "packNpmRelationList": []
   },
   "appid": "wx0c256066d5729114",
   "projectname": "%E6%9D%BE%E6%9F%8F%E5%8D%B0%E8%AE%B01.0",

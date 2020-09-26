@@ -3,4 +3,4 @@
 <button bindtap="calculatePoints">计算能量积分相关</button>
 <button bindtap="requestSubscribeMessage">订阅请求</button>
 <button bindtap="adjustDicData">调整字典数据</button>
-
+<button open-type="getUserInfo" bindgetuserinfo="userLoginAndGetUserInfo">登录</button>

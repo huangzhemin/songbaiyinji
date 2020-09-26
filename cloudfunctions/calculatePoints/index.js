@@ -89,11 +89,13 @@ exports.main = async (event, context) => {
       //计算并更新用户积分映射字典
       console.log('finalUserPointsMap start:', finalUserPointsMap);
       //在计算之前，先将finalUserPointsMap保存一份下来，最终一起写入数据库
+
       var yesterdayUserPointsMap = JSON.parse(JSON.stringify(finalUserPointsMap));
       yesterdayCompleteTaskList.forEach(completeTask => {
         //更新用户积分映射字典
         updateUserPointsWithCurrentTask(completeTask, finalUserPointsMap);
       });
+      console.log('yesterdayUserPointsMap', yesterdayUserPointsMap);
       console.log('finalUserPointsMap end:', finalUserPointsMap);
       //根据finalUserPointsMap计算finalUserRankingMap，一并写入userInfo数据库表
       let finalUserRankingMap = calculateUserRankingWithUserPointsMap(finalUserPointsMap);
