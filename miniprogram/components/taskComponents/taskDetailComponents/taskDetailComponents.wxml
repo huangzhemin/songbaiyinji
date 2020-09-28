@@ -98,7 +98,7 @@
           data-type="plan" 
           data-url="{{item}}"
           bindlongpress="deleteMedia"
-          bindtap="previewImage"/>
+          bindtap="previewMedia"/>
       </block>
     </van-col>
     <!-- 如果是自己 而且 当前状态是进行中 则可添加照片 -->
@@ -106,7 +106,7 @@
       <view wx:if="{{ taskPlanShowUpload }}"
               class='uploadPartSquare'
               id='taskPlanUploadClick'
-              bindtap="chooseImage">
+              bindtap="chooseMedia">
         <van-icon name="photograph" />
       </view>
     </block>
@@ -162,7 +162,7 @@
           data-type="complete" 
           data-url="{{item}}"
           bindlongpress="deleteMedia"
-          bindtap="previewImage"/>
+          bindtap="previewMedia"/>
       </block>
     </van-col>
     <!-- 如果是自己 而且 当前状态是进行中 则可添加照片 -->
@@ -170,7 +170,7 @@
       <view wx:if="{{ taskCompleteShowUpload }}"
                 class='uploadPartSquare'
                 id='taskCompleteUploadClick'
-                bindtap="chooseImage">
+                bindtap="chooseMedia">
         <van-icon name="photograph" />
       </view>
     </block>

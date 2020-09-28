@@ -568,7 +568,7 @@ Component({
         console.log('newMediaId', newMediaId);
         for (const key in uploadMediaList) {
           const element = uploadMediaList[key];
-          if (element.match('_'+newMediaId+'.png')) {
+          if (element.match('_'+newMediaId+'.')) {
             console.log('conflict', newMediaId, uploadMediaList);
             generateComplete = false;
             break;
@@ -578,6 +578,12 @@ Component({
         }
       }
       return newMediaId;
+    },
+
+    p_getMediaFileSuffix: function(filePath) {
+      var num = filePath.lastIndexOf('.') ;
+      var fileSuffix = filePath.substr(num);
+      return fileSuffix;
     },
 
     uploadBatchMedia: function (event) {
@@ -594,7 +600,7 @@ Component({
         }
         let promise = new Promise((resolve, reject) => {
           //此处path拼接规则 openid + taskid + plan/complete + index
-          let userMediaCloudPath = event.openId + '_' + event.taskId + '_' + type + '_' + this.p_generateNewMediaIdWithUploadMediaList(uploadMediaList) + '.png'; //此处需要结合用户登录态的openid，随机函数也需要优化
+          let userMediaCloudPath = event.openId + '_' + event.taskId + '_' + type + '_' + this.p_generateNewMediaIdWithUploadMediaList(uploadMediaList) + this.p_getMediaFileSuffix(filePath); //此处需要结合用户登录态的openid，随机函数也需要优化
           wx.cloud.uploadFile({
             cloudPath: userMediaCloudPath,
             filePath: filePath,
@@ -611,7 +617,7 @@ Component({
       }
     },
 
-    chooseImage: function (event) {
+    chooseMedia: function (event) {
       let chooseTaskUploadBtnId = event.currentTarget["id"];
       var currentTaskUploadMediaList = this.data.taskPlanUploadMediaList;
       if (chooseTaskUploadBtnId == 'taskPlanUploadClick') {
@@ -619,17 +625,33 @@ Component({
       } else if (chooseTaskUploadBtnId == 'taskCompleteUploadClick') {
         currentTaskUploadMediaList = this.data.taskCompleteUploadMediaList;
       }
-      console.log('chooseImage currentTaskUploadMediaList', currentTaskUploadMediaList);
+      console.log('chooseMedia currentTaskUploadMediaList', currentTaskUploadMediaList);
   
-      wx.chooseImage({
+      wx.chooseMedia({
         count: 9 - currentTaskUploadMediaList.length,
         sizeType: ['original', 'compressed'],
+        mediaType: ['image','video'],
         sourceType: ['album', 'camera'],
-      }).then(res => {
-        currentTaskUploadMediaList = currentTaskUploadMediaList.concat(res.tempFilePaths);
+        maxDuration: 30,
+        camera: 'back',
+      }).then (res => {
+        console.log(res);
+        //整理filePath到tempFilePaths中，等待上传
+        var tempFilePaths = [];
+        for (const key in res.tempFiles) {
+          const element = res.tempFiles[key];
+          tempFilePaths.push(element.tempFilePath);
+        }
+        console.log('tempFilePaths', tempFilePaths);
+        //将tempFilePaths加入上传列表中
+        console.log('currentTaskUploadMediaList before', currentTaskUploadMediaList);
+        currentTaskUploadMediaList = currentTaskUploadMediaList.concat(tempFilePaths);
+        console.log('currentTaskUploadMediaList after', currentTaskUploadMediaList);
+        //检查当前展示数是否超过最大值
         let taskShowUpload = (currentTaskUploadMediaList.length < 9) ? true : false;
         // tempFilePath可以作为img标签的src属性显示图片
         if (chooseTaskUploadBtnId == 'taskPlanUploadClick') {
+          //点击任务计划资料上传
           this.data.taskPlanUploadMediaList = currentTaskUploadMediaList;
           this.data.taskPlanShowUpload = taskShowUpload;
           this.setData({
@@ -637,6 +659,7 @@ Component({
             taskPlanShowUpload: this.data.taskPlanShowUpload,
           })
         } else if (chooseTaskUploadBtnId == 'taskCompleteUploadClick') {
+          //点击任务完成资料上传
           this.data.taskCompleteUploadMediaList = currentTaskUploadMediaList;
           this.data.taskCompleteShowUpload = taskShowUpload;
           this.setData({
@@ -731,7 +754,7 @@ Component({
       }
     },
 
-    previewImage: function (event) {
+    previewMedia: function (event) {
       let dataset = event.target.dataset;
       var type = dataset['type'];
       var index = dataset['index'];
@@ -772,10 +795,45 @@ Component({
       currentMediaList = currentMediaList.concat(newAddMediaList);
       console.log('currentMediaList after', currentMediaList);
 
-      wx.previewImage({
-        current: currentMediaList[index], // 当前显示图片的http链接
-        urls: currentMediaList // 需要预览的图片http链接列表
-      })
+      wx.previewMedia({
+        current: index, // 当前选中的资源
+        sources: this.p_generatePreviewMediaList(currentMediaList) // 需要预览的图片http链接列表
+      });
+      // 历史只能预览图片的逻辑
+      // wx.previewImage({
+      //   current: currentMediaList[index], // 当前显示图片的http链接
+      //   urls: currentMediaList // 需要预览的图片http链接列表
+      // })
+    },
+
+    p_generatePreviewMediaList: function(currentMediaList) {
+      var preViewMediaList = [];
+      for (const key in currentMediaList) {
+        const url = currentMediaList[key];
+        let element = {
+          url: url,
+          type: this.p_getMediaTypeWithUrl(url),
+          poster: this.p_getMediaPosterIfNeeded(url),
+        }
+        preViewMediaList.push(element);
+      }
+      return preViewMediaList;
+    },
+
+    p_getMediaTypeWithUrl: function(url) {
+      let suffix = this.p_getMediaFileSuffix(url);
+      var mediaType = 'image';
+      //后续观察视频格式，出现不兼容的再添加
+      if (suffix == '.mp4' || suffix == '.m3u8') {
+        mediaType = 'video';
+      }
+      return mediaType;
+    },
+
+    p_getMediaPosterIfNeeded: function(url) {
+      const ctx = wx.createCanvasContext('myCanvas')
+      ctx.drawImage(url, 0, 0, 750, 350)
+      return ctx.draw();
     },
     ////////////////////////////////////
 
