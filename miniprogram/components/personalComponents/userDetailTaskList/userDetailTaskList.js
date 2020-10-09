@@ -30,7 +30,7 @@ Component({
    * 组件的方法列表
    */
   methods: {
-    loadNextPage: function(openId) {
+    loadNextPage: function(openId, loadType) {
       console.log('loadNextPage');
       if (!util.validStr(openId)) {
         console.log('invalid userDetail openId');
@@ -45,6 +45,10 @@ Component({
         return;
       }
       this.data.lock = true;
+
+      if (loadType == 'firstPage') {
+        this.data.taskList = [];
+      }
 
       wx.showLoading({
         title: '加载中...',

@@ -39,7 +39,7 @@ Page({
     //再上拉加载
     // Do something when page reach bottom.
     console.log('personalTaskList onReachBottom');
-    this.p_loadUserDetailNextPageTaskList(this.data.openId);
+    this.p_loadUserDetailNextPageTaskList(this.data.openId, 'onReachBottom');
   },
 
   loadUserDetailInfo: function() {
@@ -60,12 +60,12 @@ Page({
         });
       }
     });
-    that.p_loadUserDetailNextPageTaskList(that.data.openId);
+    that.p_loadUserDetailNextPageTaskList(that.data.openId, 'firstPage');
   },
 
-  p_loadUserDetailNextPageTaskList: function(openId) {
+  p_loadUserDetailNextPageTaskList: function(openId, loadType) {
     console.log('p_loadUserDetailNextPageTaskList invoked');
     let _userDetailTaskList = this.selectComponent('#userDetailTaskList').userDetailTaskList;
-    _userDetailTaskList.loadNextPage(openId);
+    _userDetailTaskList.loadNextPage(openId, loadType);
   },
 })

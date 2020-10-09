@@ -43,7 +43,7 @@ Page({
     //再上拉加载
     // Do something when page reach bottom.
     console.log('personalTaskList onReachBottom');
-    this.p_loadUserDetailNextPageTaskList(this.data.openId);
+    this.p_loadUserDetailNextPageTaskList(this.data.openId, 'onReachBottom');
   },
 
   refreshPersonalPage: function(event) {
@@ -64,12 +64,12 @@ Page({
       ['userInfo.customUserInfo.userPoints']: currentUserInfo['points'],
     });
     //用户任务列表数据
-    this.p_loadUserDetailNextPageTaskList(openId);
+    this.p_loadUserDetailNextPageTaskList(openId, 'firstPage');
   },
 
-  p_loadUserDetailNextPageTaskList: function(openId) {
+  p_loadUserDetailNextPageTaskList: function(openId, loadType) {
     let _userDetailTaskList = this.selectComponent('#userDetailTaskList').userDetailTaskList;
-    _userDetailTaskList.loadNextPage(openId);
+    _userDetailTaskList.loadNextPage(openId, loadType);
   },
 
   // 跳转至消息页
