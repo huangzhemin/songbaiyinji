@@ -660,9 +660,11 @@ Component({
         //此处path拼接规则 openid + taskid + plan/complete + index
         let openId = event.openId;
         let taskId = event.taskId;
+        let fileDirFolder = openId + '_' + taskId;
         let newMediaId = this.p_generateNewMediaIdWithUploadMediaList(uploadMediaList);
         let mediaSuffix = this.p_getMediaFileSuffix(filePath);
-        let userMediaCloudPathMainPath = openId + '_'
+        let userMediaCloudPathMainPath = fileDirFolder + '/'
+                                       + openId + '_'
                                        + taskId + '_'
                                        + type + '_'
                                        + newMediaId;
@@ -677,7 +679,7 @@ Component({
           }).then(res => {
             // get resource ID
             // 绑定资源文件 与 上传后的fileID
-            console.log('hzm taskMediaAndMediaFileIdDic res', this.data.taskMediaAndMediaFileIdDic, res['fileID']);
+            console.log('taskMediaAndMediaFileIdDic res', this.data.taskMediaAndMediaFileIdDic, res['fileID']);
             this.data.taskMediaAndMediaFileIdDic[filePath] = res['fileID'];
             resolve(res);
           }).catch(err => {
