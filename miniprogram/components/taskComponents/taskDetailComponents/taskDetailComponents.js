@@ -660,10 +660,10 @@ Component({
         //此处path拼接规则 openid + taskid + plan/complete + index
         let openId = event.openId;
         let taskId = event.taskId;
-        let fileDirFolder = openId + '_' + taskId;
+        let taskfileFolder = openId + '_' + taskId;  //当前任务的文件夹
         let newMediaId = this.p_generateNewMediaIdWithUploadMediaList(uploadMediaList);
         let mediaSuffix = this.p_getMediaFileSuffix(filePath);
-        let userMediaCloudPathMainPath = fileDirFolder + '/'
+        let userMediaCloudPathMainPath = taskfileFolder + '/'
                                        + openId + '_'
                                        + taskId + '_'
                                        + type + '_'
