@@ -89,14 +89,14 @@
       readonly
     />
     <van-col class='taskPlanUpload' offset="2" span="20">
-      <block wx:for="{{taskPlanUploadMediaList}}" wx:for-index="idx" wx:key="idx">
+      <block wx:for="{{taskPlanUploadMediaPosterList}}" wx:for-index="idx" wx:key="idx">
         <van-image 
           width="100" 
           height="100" 
-          src="{{item}}" 
+          src="{{item.poster}}" 
           data-index="{{idx}}" 
           data-type="plan" 
-          data-url="{{item}}"
+          data-url="{{item.url}}"
           bindlongpress="deleteMedia"
           bindtap="previewMedia"/>
       </block>
@@ -153,14 +153,14 @@
       readonly
     />
     <van-col class='taskCompleteUpload' offset="2" span="20">
-      <block wx:for="{{taskCompleteUploadMediaList}}" wx:for-index="idx" wx:key="idx">
+      <block wx:for="{{taskCompleteUploadMediaPosterList}}" wx:for-index="idx" wx:key="idx">
         <van-image 
           width="100" 
           height="100" 
-          src="{{item}}" 
+          src="{{item.poster}}" 
           data-index="{{idx}}" 
           data-type="complete" 
-          data-url="{{item}}"
+          data-url="{{item.url}}"
           bindlongpress="deleteMedia"
           bindtap="previewMedia"/>
       </block>

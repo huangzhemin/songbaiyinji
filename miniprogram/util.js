@@ -13,16 +13,40 @@ var debugLog = function (logContent) {
 }
 
 //判断字符串有效性
-var validStr = function(inputStr) {
-  return !(typeof(inputStr) == '' || typeof(inputStr) == 'undefined' || inputStr == undefined || inputStr.length == 0);
+var validStr = function (inputStr) {
+  return !(typeof (inputStr) == '' ||
+    typeof (inputStr) == 'undefined' ||
+    inputStr == undefined ||
+    inputStr.length == 0);
 }
 
 //判断列表有效性
-var validList = function(inputList) {
-  return !(typeof(inputList) == [] || inputList == undefined || inputList.length == 0);
+var validList = function (inputList) {
+  return !(typeof (inputList) == [] ||
+    inputList == undefined ||
+    inputList.length == 0);
+}
+
+//判断字典有效性
+var validDic = function (inputDic) {
+  return !(typeof (inputDic) == {} ||
+    inputDic == undefined ||
+    Object.keys(inputDic).length == 0);
 }
 
 //转换内部任务数据 到 数据库写入任务数据，方便数据传输
+//私有方法：生成taskMediaThumbList
+var p_mediaThumbListWithInnerTaskData = function (innerTaskData) {
+  let taskMediaList = innerTaskData['taskMediaList'];
+  let taskMediaAndThumbDic = innerTaskData['taskMediaAndThumbDic'];
+  var taskMediaThumbList = [];
+  for (const key in taskMediaList) {
+    const element = taskMediaList[key];
+    taskMediaThumbList.push(taskMediaAndThumbDic[element]);
+  }
+  return taskMediaThumbList;
+}
+
 var convertInnerTaskToDatabaseTask = function (innerTaskData) {
   // console.log('convertInnerTaskToDatabaseTask start', innerTaskData);
   let databaseTaskData = {
@@ -33,6 +57,7 @@ var convertInnerTaskToDatabaseTask = function (innerTaskData) {
     'taskPlanDesc': innerTaskData['taskPlanDesc'], //innerTaskData['taskPlan']['taskDesc'],
     'taskCompleteDesc': innerTaskData['taskCompleteDesc'], //innerTaskData['taskComplete']['taskDesc'],
     'taskMediaList': innerTaskData['taskMediaList'],
+    'taskMediaThumbList': p_mediaThumbListWithInnerTaskData(innerTaskData),
     'thumbImg': innerTaskData['thumbImg'],
     'avatar': innerTaskData['avatar'],
     'nickName': innerTaskData['nickName'],
@@ -47,18 +72,33 @@ var convertInnerTaskToDatabaseTask = function (innerTaskData) {
 }
 
 //将数据库的任务数据，转换为小程序内部任务数据（单个taskItem）
+//私有方法：生成taskMediaAndThumbDic
+var p_mediaAndThumbDicWithDatabaseTaskData = function (databaseTaskData) {
+  let taskMediaList = validList(databaseTaskData['taskMediaList']) ? databaseTaskData['taskMediaList'] : [];
+  let taskMediaThumbList = validList(databaseTaskData['taskMediaThumbList']) ? databaseTaskData['taskMediaThumbList'] : [];
+  var taskMediaAndThumbDic = {};
+  for (const key in taskMediaList) {
+    const taskMedia = taskMediaList[key];
+    const taskMediaThumb = validList(taskMediaThumbList) ? taskMediaThumbList[key] : taskMedia;
+    taskMediaAndThumbDic[taskMedia] = taskMediaThumb;
+  }
+  return taskMediaAndThumbDic;
+}
+
 var convertDatabaseTaskToInnerTask = function (databaseTaskData) {
-  // console.log(databaseTaskData);
+  // console.log('convertDatabaseTaskToInnerTask start', databaseTaskData);
   let innerTaskData = {
     'taskId': validStr(databaseTaskData['taskId']) ? databaseTaskData['taskId'] : '',
     'openId': validStr(databaseTaskData['openId']) ? databaseTaskData['openId'] : '',
     'status': databaseTaskData['status'] != undefined ? databaseTaskData['status'] : 0,
     'taskTitle': validStr(databaseTaskData['taskTitle']) ? databaseTaskData['taskTitle'] : '',
     'taskPlanDesc': validStr(databaseTaskData['taskPlanDesc']) ? databaseTaskData['taskPlanDesc'] : '',
-    'taskPlanUploadMediaList': [],  //这里需要在每次读取的时候，设置初始值，防止undefined影响数组逻辑
+    'taskPlanUploadMediaList': [], //这里需要在每次读取的时候，设置初始值，防止undefined影响数组逻辑
     'taskCompleteDesc': validStr(databaseTaskData['taskCompleteDesc']) ? databaseTaskData['taskCompleteDesc'] : '',
     'taskCompleteUploadMediaList': [], //这里需要在每次读取的时候，设置初始值，防止undefined影响数组逻辑
     'taskMediaList': validList(databaseTaskData['taskMediaList']) ? databaseTaskData['taskMediaList'] : [],
+    'taskMediaAndThumbDic': p_mediaAndThumbDicWithDatabaseTaskData(databaseTaskData),
+    'taskMediaAndMediaFileIdDic': {},
     'thumbImg': validStr(databaseTaskData['thumbImg']) ? databaseTaskData['thumbImg'] : '',
     'avatar': validStr(databaseTaskData['avatar']) ? databaseTaskData['avatar'] : '',
     'nickName': validStr(databaseTaskData['nickName']) ? databaseTaskData['nickName'] : '',
@@ -68,7 +108,7 @@ var convertDatabaseTaskToInnerTask = function (databaseTaskData) {
     'opposeUserList': validList(databaseTaskData['opposeUserList']) ? databaseTaskData['opposeUserList'] : [],
     'opposeUserAvatarList': validList(databaseTaskData['opposeUserAvatarList']) ? databaseTaskData['opposeUserAvatarList'] : [],
   };
-  // console.log(innerTaskData);
+  // console.log('convertDatabaseTaskToInnerTask end', innerTaskData);
   return innerTaskData;
 }
 
@@ -78,7 +118,7 @@ var batchConvertDatabaseTaskToInnerTask = function (databaseTaskDataList) {
   for (const key in databaseTaskDataList) {
     if (databaseTaskDataList.hasOwnProperty(key)) {
       const element = databaseTaskDataList[key];
-      innerTaskList.push(this.convertDatabaseTaskToInnerTask(element));
+      innerTaskList.push(convertDatabaseTaskToInnerTask(element));
     }
   }
   return innerTaskList;
@@ -94,7 +134,7 @@ var getUploadMediaList = function (openId, taskId, taskMediaList) {
     //匹配字符串，定位
     //本来就是顺序的，那就按照顺序来，未来移动图片后，依然还是顺序，与图片初始所带index无关
     if (element.match(openId + '_' + taskId + '_plan')) {
-      taskPlanUploadMediaList.push(element) ;
+      taskPlanUploadMediaList.push(element);
     } else if (element.match(openId + '_' + taskId + '_complete')) {
       taskCompleteUploadMediaList.push(element);
     }
@@ -159,12 +199,12 @@ var getTaskListWithStatusType = function (event) {
 
 //拉取下一屏 正在进行中/已结束 任务列表
 var getNextPageTaskListWithCurrentStatus = function (event) {
-  
+
   let currentLoadTaskList = event.currentTaskList;
   let taskNumOnePage = event.taskNumOnePage > 0 ? event.taskNumOnePage : 10;
   var currentLoadTaskListLastTaskPubTime;
   if (validList(currentLoadTaskList)) {
-    currentLoadTaskListLastTaskPubTime = currentLoadTaskList[currentLoadTaskList.length - 1].pubTime;  
+    currentLoadTaskListLastTaskPubTime = currentLoadTaskList[currentLoadTaskList.length - 1].pubTime;
   } else {
     currentLoadTaskListLastTaskPubTime = Date.parse(new Date()) / 1000;
   }
@@ -231,7 +271,7 @@ var getCurrentUserNewTaskId = function (event) {
   }
 }
 
-var p_generateNewTaskIdWithOldTaskList = function(oldTaskList) {
+var p_generateNewTaskIdWithOldTaskList = function (oldTaskList) {
   var newTaskId = 'task0';
   if (validList(oldTaskList)) {
     //如果数组不为空，则直接向后计算
@@ -276,7 +316,7 @@ var getCurrentUserTaskListWithStatusType = function (event) {
 //1.有传入openId，则直接查找
 //2.如果未传入openId，则需先查找openId，再查找用户任务列表
 //3.传入现有的任务列表
-var getUserDetailNextPageTaskListWithCurrentStatus = function(event) {
+var getUserDetailNextPageTaskListWithCurrentStatus = function (event) {
   let currentUserDetailLoadTaskList = event.currentUserDetailTaskList;
   let taskNumOnePage = event.taskNumOnePage > 0 ? event.taskNumOnePage : 10;
   let taskListType = validStr(event.taskListType) ? event.taskListType : 'all';
@@ -314,7 +354,7 @@ var getUserDetailNextPageTaskListWithCurrentStatus = function(event) {
   }
 }
 
-var p_getUserDetailNextPageTaskListWithCurrentStatus = function(event) {
+var p_getUserDetailNextPageTaskListWithCurrentStatus = function (event) {
   console.log('p_getUserDetailNextPageTaskListWithCurrentStatus invoked');
   wx.cloud.callFunction({
     // 要调用的云函数名称
@@ -367,12 +407,12 @@ var getCurrentUserTaskList = function (event) {
 }
 
 //判断用户是否登录
-var isLogin = function(event) {
+var isLogin = function (event) {
   getCurrentUserOpenId({
-    success: function(openId) {
+    success: function (openId) {
       event.success(true);
     },
-    fail: function(openId) {
+    fail: function (openId) {
       console.log('isLogout', openId)
       if (!validStr(openId)) {
         event.success(false);
@@ -382,7 +422,7 @@ var isLogin = function(event) {
 }
 
 //通过openId获取当前的用户信息
-var p_getCurrentUserInfoWithOpenId = function(event) {
+var p_getCurrentUserInfoWithOpenId = function (event) {
   console.log('p_getCurrentUserInfoWithOpenId openId', event.openId)
   userInfo.where({
     _openid: event.openId
@@ -429,7 +469,7 @@ var getCurrentUserInfo = function (event) {
   } else {
     console.log('getCurrentUserInfo 2', event);
     isLogin({
-      success: function(logined) {
+      success: function (logined) {
         if (logined) {
           console.log('getCurrentUserInfo logined');
           p_getCurrentUserInfoLogined(event)
@@ -438,7 +478,7 @@ var getCurrentUserInfo = function (event) {
           event.fail('user logout');
         }
       },
-    })  
+    })
   }
 }
 
@@ -470,33 +510,33 @@ var addUserOperationMsgWithOperateAndCurrentTaskInfo = function (userOperationMs
       var operateDesc = '';
       switch (operationType) {
         case 'create':
-          operateDesc = '创建了任务'+'「'+taskTitle+'」';
+          operateDesc = '创建了任务' + '「' + taskTitle + '」';
           break;
         case 'cancel':
-          operateDesc = '取消了任务'+'「'+taskTitle+'」';
+          operateDesc = '取消了任务' + '「' + taskTitle + '」';
           break;
         case 'modify':
-          operateDesc = '修改了任务'+'「'+taskTitle+'」';
+          operateDesc = '修改了任务' + '「' + taskTitle + '」';
           break;
         case 'giveup':
-          operateDesc = '放弃了任务'+'「'+taskTitle+'」';
+          operateDesc = '放弃了任务' + '「' + taskTitle + '」';
           break;
         case 'support':
-          operateDesc = '支持了任务'+'「'+taskTitle+'」';
+          operateDesc = '支持了任务' + '「' + taskTitle + '」';
           break;
         case 'oppose':
-          operateDesc = '反对了任务'+'「'+taskTitle+'」';
+          operateDesc = '反对了任务' + '「' + taskTitle + '」';
           break;
         case 'complete':
-          operateDesc = '修改任务'+'「'+taskTitle+'」状态成功';
+          operateDesc = '修改任务' + '「' + taskTitle + '」状态成功';
           break;
         case 'complete':
-          operateDesc = '修改任务'+'「'+taskTitle+'」状态失败';;
-          break;  
+          operateDesc = '修改任务' + '「' + taskTitle + '」状态失败';;
+          break;
         default:
           break;
       }
-    
+
       p_addUserOperationMsgToDatabase({
         taskId: taskId,
         taskTitle: taskTitle,
@@ -582,7 +622,7 @@ var getCurrentUserMsgList = function (event) {
 }
 
 //外部调用方法，拉起用户登录，并获取用户的个人信息
-var userLoginAndGetUserInfo = function(event) {
+var userLoginAndGetUserInfo = function (event) {
   console.log('userLoginAndGetUserInfo', event);
   //获取用户的授权情况
   wx.getSetting({
@@ -605,11 +645,11 @@ var userLoginAndGetUserInfo = function(event) {
 }
 
 // 微信已经授权过
-var userHasAuthorize = function(event) {
+var userHasAuthorize = function (event) {
   //此时已授权，则拉取用户的登录数据，检查是否需要 写入或者更新数据库
   console.log('userHasAuthorize', event);
   p_getOpenIdFromCloudAndWriteLocalStorage({
-    success: function(openId) {
+    success: function (openId) {
       console.log('userHasAuthorize success', event);
       event.userInfo['openId'] = openId;
       getUserAuth(openId, event);
@@ -619,7 +659,7 @@ var userHasAuthorize = function(event) {
 
 // 微信未授权，需要先获取授权（userInfo），再登录当前用户信息
 // 这里后续需要增加更多的授权能力
-var getUserAuthorize = function(event) {
+var getUserAuthorize = function (event) {
   //此时未授权，需要询问用户获取授权
   wx.authorize({
     scope: 'scope.userInfo',
@@ -628,7 +668,7 @@ var getUserAuthorize = function(event) {
     console.log('authorize success');
     //授权成功后第一步操作，使用云函数，请求用户对应的openId，该openId是用户的唯一标记
     p_getOpenIdFromCloudAndWriteLocalStorage({
-      success: function(openId) {
+      success: function (openId) {
         getUserAuth(openId);
       },
     });
@@ -647,12 +687,12 @@ var getUserAuthorize = function(event) {
 // 获取用户的登录信息
 // 目前只有 自己存储的 用户信息
 // 后续需要添加 登录票据
-var getUserAuth = function(openId, event) {
+var getUserAuth = function (openId, event) {
   //此处判断用户是否在数据库中，如果在的话，则直接读取，不在的话，则需要写入
   console.log('getUserAuth', openId, event);
   getCurrentUserInfo({
     openId: openId,
-    success: function(currentOpenId, remoteUserInfo) {
+    success: function (currentOpenId, remoteUserInfo) {
       console.log('getUserAuth getCurrentUserInfo', currentOpenId, remoteUserInfo, event);
       //因为本地无更新用户数据的功能，所以本地只有可能是创建用户
       //因为登录这里比较特殊，如果返回数据，则说明数据库已经有用户数据，可以直接返回
@@ -665,15 +705,15 @@ var getUserAuth = function(openId, event) {
       } else {
         //userInfo数据库中 无该用户，需要将用户数据，添加到数据库中
         p_uploadUserInfoToDatabase({
-          openId: remoteUserInfo.data.length > 0 ?currentOpenId : '',
+          openId: remoteUserInfo.data.length > 0 ? currentOpenId : '',
           data: event.userInfo,
-          success: function(userInfoDatabaseRes) {
+          success: function (userInfoDatabaseRes) {
             console.log('getUserAuth return', event, currentOpenId, remoteUserInfo, userInfoDatabaseRes)
             event.success(currentOpenId, event.userInfo);
             //隐藏loadingView
             wx.hideLoading();
           },
-          fail: function(err) {
+          fail: function (err) {
             console.log('getUserAuth error', err);
             console.error(err)
             //隐藏loadingView
@@ -685,7 +725,7 @@ var getUserAuth = function(openId, event) {
   });
 }
 
-var showToast = function(event) {
+var showToast = function (event) {
   if (event.type == 'text') {
     Toast(event.content);
   }
@@ -693,26 +733,26 @@ var showToast = function(event) {
 
 //////////////private method////////////////
 // 将从云端拉取的用户OpenId，写入本地磁盘，方便后续使用
-var p_getOpenIdFromCloudAndWriteLocalStorage = function(event) {
+var p_getOpenIdFromCloudAndWriteLocalStorage = function (event) {
   console.log('p_getOpenIdFromCloudAndWriteLocalStorage', event);
   wx.cloud.callFunction({
     // 要调用的云函数名称
     name: "login",
-  }).then(loginRes =>{
+  }).then(loginRes => {
     console.log('p_getOpenIdFromCloudAndWriteLocalStorage loginRes', loginRes);
     //这里当前js持有一份
     let currentOpenId = loginRes['result']['openid'];
     //写入到磁盘一份，方便下次启动时读取
     wx.setStorage({
-      key:'openid',
-      data:currentOpenId,          
+      key: 'openid',
+      data: currentOpenId,
     })
     event.success(currentOpenId);
   });
 }
 
 // 返回当前任务状态的判断，type = (all/doing/complete)
-var p_getStatusCondition = function(type) {
+var p_getStatusCondition = function (type) {
   if (type == 'all') {
     return _.in([0, 1, 2, 3, 4]);
   } else if (type == 'doing') {
@@ -722,7 +762,7 @@ var p_getStatusCondition = function(type) {
   }
 }
 
-var getCurrentStatusTypeWithStatus = function(status) {
+var getCurrentStatusTypeWithStatus = function (status) {
   if (status == 0 || status == 1 || status == 2) {
     return 'doing';
   } else if (status = 3 || status == 4) {
@@ -750,6 +790,7 @@ module.exports = {
   getCurrentUserMsgList: getCurrentUserMsgList,
   validStr: validStr,
   validList: validList,
+  validDic: validDic,
   userLoginAndGetUserInfo: userLoginAndGetUserInfo,
   isLogin: isLogin,
   showToast: showToast,
