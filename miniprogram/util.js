@@ -34,6 +34,46 @@ var validDic = function (inputDic) {
     Object.keys(inputDic).length == 0);
 }
 
+//获取有效的字符串
+var getValidStr = function(dataDict, key) {
+  if (validDic(dataDict) && validStr(key)) {
+    return validStr(dataDict[key]) ? dataDict[key] : '';  
+  }
+  return '';
+}
+
+//获取有效list
+var getValidList = function(dataDict, key) {
+  if (validDic(dataDict) && validStr(key)) {
+    return validList(dataDict[key]) ? dataDict[key] : [];
+  }
+  return [];
+}
+
+//获取有效dict
+var getValidDict = function(dataDict, key) {
+  if (validDic(dataDict) && validStr(key)) {
+    return validDic(dataDict[key]) ? dataDict[key] : {};
+  }
+  return {};
+}
+
+//获取有效的任务状态
+var getValidStatus = function(dataDict) {
+  if (validDic(dataDict)) {
+    return dataDict['status'] != undefined ? dataDict['status'] : 0;
+  }
+  return 0;
+}
+
+//获取有效的发布时间
+var getValidPubTime = function(dataDict) {
+  if (validDic(dataDict)) {
+    return dataDict['pubTime'] != undefined ? dataDict['pubTime'] : 0;
+  }
+  return 0;
+}
+
 //转换内部任务数据 到 数据库写入任务数据，方便数据传输
 //私有方法：生成taskMediaThumbList
 var p_mediaThumbListWithInnerTaskData = function (innerTaskData) {
@@ -88,25 +128,25 @@ var p_mediaAndThumbDicWithDatabaseTaskData = function (databaseTaskData) {
 var convertDatabaseTaskToInnerTask = function (databaseTaskData) {
   // console.log('convertDatabaseTaskToInnerTask start', databaseTaskData);
   let innerTaskData = {
-    'taskId': validStr(databaseTaskData['taskId']) ? databaseTaskData['taskId'] : '',
-    'openId': validStr(databaseTaskData['openId']) ? databaseTaskData['openId'] : '',
-    'status': databaseTaskData['status'] != undefined ? databaseTaskData['status'] : 0,
-    'taskTitle': validStr(databaseTaskData['taskTitle']) ? databaseTaskData['taskTitle'] : '',
-    'taskPlanDesc': validStr(databaseTaskData['taskPlanDesc']) ? databaseTaskData['taskPlanDesc'] : '',
+    'taskId': getValidStr(databaseTaskData, 'taskId'),
+    'openId': getValidStr(databaseTaskData, 'openId'),
+    'status': getValidStatus(databaseTaskData),
+    'taskTitle': getValidStr(databaseTaskData, 'taskTitle'),
+    'taskPlanDesc': getValidStr(databaseTaskData, 'taskPlanDesc'),
     'taskPlanUploadMediaList': [], //这里需要在每次读取的时候，设置初始值，防止undefined影响数组逻辑
-    'taskCompleteDesc': validStr(databaseTaskData['taskCompleteDesc']) ? databaseTaskData['taskCompleteDesc'] : '',
+    'taskCompleteDesc': getValidStr(databaseTaskData, 'taskCompleteDesc'),
     'taskCompleteUploadMediaList': [], //这里需要在每次读取的时候，设置初始值，防止undefined影响数组逻辑
-    'taskMediaList': validList(databaseTaskData['taskMediaList']) ? databaseTaskData['taskMediaList'] : [],
+    'taskMediaList': getValidList(databaseTaskData, 'taskMediaList'),
     'taskMediaAndThumbDic': p_mediaAndThumbDicWithDatabaseTaskData(databaseTaskData),
     'taskMediaAndMediaFileIdDic': {},
-    'thumbImg': validStr(databaseTaskData['thumbImg']) ? databaseTaskData['thumbImg'] : '',
-    'avatar': validStr(databaseTaskData['avatar']) ? databaseTaskData['avatar'] : '',
-    'nickName': validStr(databaseTaskData['nickName']) ? databaseTaskData['nickName'] : '',
-    'pubTime': databaseTaskData['pubTime'] != undefined ? databaseTaskData['pubTime'] : 0,
-    'supportUserList': validList(databaseTaskData['supportUserList']) ? databaseTaskData['supportUserList'] : [],
-    'supportUserAvatarList': validList(databaseTaskData['supportUserAvatarList']) ? databaseTaskData['supportUserAvatarList'] : [],
-    'opposeUserList': validList(databaseTaskData['opposeUserList']) ? databaseTaskData['opposeUserList'] : [],
-    'opposeUserAvatarList': validList(databaseTaskData['opposeUserAvatarList']) ? databaseTaskData['opposeUserAvatarList'] : [],
+    'thumbImg': getValidStr(databaseTaskData, 'thumbImg'),
+    'avatar': getValidStr(databaseTaskData, 'avatar'),
+    'nickName': getValidStr(databaseTaskData, 'nickName'),
+    'pubTime': getValidPubTime(databaseTaskData),
+    'supportUserList': getValidList(databaseTaskData, 'supportUserList'),
+    'supportUserAvatarList': getValidList(databaseTaskData, 'supportUserAvatarList'),
+    'opposeUserList': getValidList(databaseTaskData, 'opposeUserList'),
+    'opposeUserAvatarList': getValidList(databaseTaskData, 'opposeUserAvatarList'),
   };
   // console.log('convertDatabaseTaskToInnerTask end', innerTaskData);
   return innerTaskData;
@@ -773,6 +813,14 @@ var getCurrentStatusTypeWithStatus = function (status) {
 
 module.exports = {
   debugLog: debugLog,
+  validStr: validStr,
+  validList: validList,
+  validDic: validDic,
+  getValidStr: getValidStr,
+  getValidList: getValidList,
+  getValidDict: getValidDict,
+  getValidStatus: getValidStatus,
+  getValidPubTime: getValidPubTime,
   convertInnerTaskToDatabaseTask: convertInnerTaskToDatabaseTask,
   convertDatabaseTaskToInnerTask: convertDatabaseTaskToInnerTask,
   batchConvertDatabaseTaskToInnerTask: batchConvertDatabaseTaskToInnerTask,
@@ -788,9 +836,6 @@ module.exports = {
   getCurrentUserInfo: getCurrentUserInfo,
   addUserOperationMsgWithOperateAndCurrentTaskInfo: addUserOperationMsgWithOperateAndCurrentTaskInfo,
   getCurrentUserMsgList: getCurrentUserMsgList,
-  validStr: validStr,
-  validList: validList,
-  validDic: validDic,
   userLoginAndGetUserInfo: userLoginAndGetUserInfo,
   isLogin: isLogin,
   showToast: showToast,
