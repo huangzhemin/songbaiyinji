@@ -14,6 +14,12 @@ App({
       })
     }
 
-    this.globalData = {}
+    this.globalData = {};
+
+    wx.getSystemInfo({
+      success (res) {
+        console.log('currentSystemInfo', res);
+      }
+    });
   },
 })

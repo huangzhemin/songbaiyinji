@@ -1,0 +1,10 @@
+var validList = function(inputList) {
+  return !(typeof (inputList) == [] ||
+    inputList == undefined ||
+    inputList.length == 0);
+}
+
+var subList = function (list, start, end) {
+  return validList(list) && list.slice(start, end);
+}
+module.exports.subList = subList;

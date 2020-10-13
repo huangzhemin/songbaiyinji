@@ -4,3 +4,9 @@
 <button bindtap="requestSubscribeMessage">订阅请求</button>
 <button bindtap="adjustDicData">调整字典数据</button>
 <button open-type="getUserInfo" bindgetuserinfo="userLoginAndGetUserInfo">登录</button>
+
+<view style="display:flex; flex-direction:row; justify-content: space-between;">
+<view style="width:60px; height:100px; color:blue" >abc</view>
+<view style="width:60px; height:100px; color:blue" >def</view>
+<view style="width:60px; height:100px; color:blue" >def</view>
+</view>

@@ -49,10 +49,16 @@ Component({
     opposeUserAvatarList: [],
 
     isSelf: false,
-
     needLogin: false,
     showShare: false,
     loginPopupShow: false,
+
+    pageInfo: {
+      uploadImageWidth: 1,
+      uploadImageHeight: 1,
+      uploadImageSpacing: 1,
+    },
+
     options: 
     [
       [{
@@ -92,6 +98,10 @@ Component({
       this.data.openId = propertyOpenId;
       this.data.taskId = propertyTaskId;
 
+      //在每次打开页面的时候，需要根据当前设备信息，计算当前展示的页面信息
+      //包括设备尺寸，展示缩略图的尺寸
+      this.p_caculatePageInfo();
+      //通过传入的OpenId和taskId，展示当前的任务详情页
       this.p_taskDetailShowWithOpenIdAndTaskId(propertyOpenId, propertyTaskId);
     },
   },
@@ -100,6 +110,23 @@ Component({
    * 组件的方法列表
    */
   methods: {
+    p_caculatePageInfo: function() {
+      let that = this;
+      wx.getSystemInfo({
+        success (res) {
+          let windowWidth = res['windowWidth'];
+          //此处因为在布局上采用vantLayout，width被均分为24份
+          //起步的布局是在第1份，中间有22份的空间，图片与图片之间保持0.5的间距
+          let unitWidth = windowWidth / 24.0;
+          that.setData({
+            ['pageInfo.uploadImageWidth']: unitWidth * 7,
+            ['pageInfo.uploadImageHeight']: unitWidth * 7,
+            ['pageInfo.uploadImageSpacing']: unitWidth * 0.5,
+          });
+        }
+      });
+    },
+
     p_taskDetailShowWithOpenIdAndTaskId: function(propertyOpenId, propertyTaskId) {
       //这里propertyOpenId 和 propertyTaskId 均是任务创建者信息
       if (propertyOpenId && propertyTaskId) {         
