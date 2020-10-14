@@ -43,6 +43,7 @@
     "pm-find-task-list": "components/taskComponents/findTaskList/findTaskList",
     "pm-personal-task-list": "components/taskComponents/personalTaskList/personalTaskList",
     "pm-task-detail": "components/taskComponents/taskDetailComponents/taskDetailComponents",
+    "pm-task-detail-upload-media-poster": "components/taskComponents/taskDetailUploadMediaPosterComponents/taskDetailUploadMediaPosterComponents",
     "pm-announcement-cell": "components/guessComponents/announcementCell/announcementCell",
     "pm-announcement-list": "components/guessComponents/announcementList/announcementList",
     "pm-ranking-list": "components/rankingComponents/userRankingList/userRankingList",

@@ -1,0 +1,6 @@
+/* components/taskComponents/taskDetailUploadMediaPosterComponents/taskDetailUploadMediaPosterComponents.wxss */
+.mediaRow {
+  display:flex; 
+  flex-direction:row; 
+  justify-content: space-between;
+}

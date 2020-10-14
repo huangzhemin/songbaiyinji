@@ -1,5 +1,4 @@
 <!--components/taskComponents/taskDetailComponents/taskDetailComponents.wxml-->
-<wxs src="../../../wxsUtil.wxs" module="wxsUtil" />
 <!-- 未登录时的展示 -->
 <view class='loginView' wx:if="{{isSelf && needLogin}}">
   <button 
@@ -89,22 +88,11 @@
       border="{{ false }}"
       readonly
     />
-    <van-col class='taskPlanUpload' offset="1" span="22">
-      <view class='mediaRow' wx:for="{{ ((taskPlanUploadMediaPosterList.length - 1) / 3 | Int) + 1}}" wx:for-index="rowIdx" wx:key="rowIdx" style="width:{{pageInfo.uploadImageWidth * (taskPlanUploadMediaPosterList.length < (rowIdx + 1) * 3 ? taskPlanUploadMediaPosterList.length - rowIdx * 3 : 3) + pageInfo.uploadImageSpacing * (taskPlanUploadMediaPosterList.length < (rowIdx + 1) * 3 ? taskPlanUploadMediaPosterList.length - rowIdx * 3 - 1 : 2)}}px; height:{{pageInfo.uploadImageHeight + pageInfo.uploadImageSpacing}}px; ">
-        <block wx:for="{{wxsUtil.subList(taskPlanUploadMediaPosterList, rowIdx * 3, taskPlanUploadMediaPosterList.length < (rowIdx + 1) * 3 ? taskCompleteUploadMediaPosterList.length : (rowIdx + 1) * 3)}}" wx:for-index="idx" wx:key="idx">
-          <van-image 
-            width="{{pageInfo.uploadImageWidth}}"
-            height="{{pageInfo.uploadImageHeight}}"
-            src="{{item.poster}}"
-            fit="cover"
-            radius='7px'
-            data-index="{{rowIdx * 3 + idx}}" 
-            data-type="plan" 
-            data-url="{{item.url}}"
-            bindlongpress="deleteMedia"
-            bindtap="previewMedia"/>        
-        </block>
-      </view>
+    <van-col class='taskPlanUpload' wx:if="{{taskPlanUploadMediaPosterList.length>0}}" offset="1" span="22">
+      <pm-task-detail-upload-media-poster bind:taskDetailUploadDeleteMedia="deleteMedia"  bind:taskDetailUploadPreviewMedia="previewMedia" propertyUploadMediaPosterList='{{taskPlanUploadMediaPosterList}}' propertyPageInfoUploadImageWidth='{{pageInfoUploadImageWidth}}'
+      propertyPageInfoUploadImageHeight='{{pageInfoUploadImageHeight}}'
+      propertyPageInfoUploadImageSpacing='{{pageInfoUploadImageSpacing}}' propertyUploadType='plan'>
+      </pm-task-detail-upload-media-poster>
     </van-col>
     <!-- 如果是自己 而且 当前状态是进行中 则可添加照片 -->
     <block wx:if='{{isSelf && status==0}}' >
@@ -158,21 +146,10 @@
       readonly
     />
     <van-col class='taskCompleteUpload' wx:if="{{taskCompleteUploadMediaPosterList.length>0}}" offset="1" span="22">
-      <view class='mediaRow' wx:for="{{ ((taskCompleteUploadMediaPosterList.length - 1) / 3 | Int) + 1}}" wx:for-index="rowIdx" wx:key="rowIdx" style="width:{{pageInfo.uploadImageWidth * (taskCompleteUploadMediaPosterList.length < (rowIdx + 1) * 3 ? taskCompleteUploadMediaPosterList.length - rowIdx * 3 : 3) + pageInfo.uploadImageSpacing * (taskCompleteUploadMediaPosterList.length < (rowIdx + 1) * 3 ? taskCompleteUploadMediaPosterList.length - rowIdx * 3 - 1 : 2)}}px; height:{{pageInfo.uploadImageHeight + pageInfo.uploadImageSpacing}}px; ">
-        <block wx:for="{{wxsUtil.subList(taskCompleteUploadMediaPosterList, rowIdx * 3, taskCompleteUploadMediaPosterList.length < (rowIdx + 1) * 3 ? taskCompleteUploadMediaPosterList.length : (rowIdx + 1) * 3)}}" wx:for-index="idx" wx:key="idx">
-          <van-image 
-            width="{{pageInfo.uploadImageWidth}}"
-            height="{{pageInfo.uploadImageHeight}}"
-            src="{{item.poster}}"
-            fit="cover"
-            radius='7px'
-            data-index="{{rowIdx * 3 + idx}}" 
-            data-type="complete" 
-            data-url="{{item.url}}"
-            bindlongpress="deleteMedia"
-            bindtap="previewMedia"/>        
-        </block>
-      </view>
+      <pm-task-detail-upload-media-poster bind:taskDetailUploadDeleteMedia="deleteMedia"  bind:taskDetailUploadPreviewMedia="previewMedia" propertyUploadMediaPosterList='{{taskCompleteUploadMediaPosterList}}' propertyPageInfoUploadImageWidth='{{pageInfoUploadImageWidth}}'
+      propertyPageInfoUploadImageHeight='{{pageInfoUploadImageHeight}}'
+      propertyPageInfoUploadImageSpacing='{{pageInfoUploadImageSpacing}}' propertyUploadType='complete'>
+      </pm-task-detail-upload-media-poster>
     </van-col>
     <!-- 如果是自己 而且 当前状态是进行中 则可添加照片 -->
     <block wx:if='{{isSelf && status==0}}' >

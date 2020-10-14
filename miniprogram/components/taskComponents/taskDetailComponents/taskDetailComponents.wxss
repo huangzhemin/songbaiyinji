@@ -16,12 +16,6 @@
   margin: 0 8px 8px 0;
 }
 
-.mediaRow {
-  display:flex; 
-  flex-direction:row; 
-  justify-content: space-between;
-}
-
 .loginView {
   margin-top: 200rpx;
 }

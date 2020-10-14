@@ -53,11 +53,9 @@ Component({
     showShare: false,
     loginPopupShow: false,
 
-    pageInfo: {
-      uploadImageWidth: 1,
-      uploadImageHeight: 1,
-      uploadImageSpacing: 1,
-    },
+    pageInfoUploadImageWidth: 1,
+    pageInfoUploadImageHeight: 1,
+    pageInfoUploadImageSpacing: 1,
 
     options: 
     [
@@ -118,10 +116,11 @@ Component({
           //此处因为在布局上采用vantLayout，width被均分为24份
           //起步的布局是在第1份，中间有22份的空间，图片与图片之间保持0.5的间距
           let unitWidth = windowWidth / 24.0;
+          console.log('p_caculatePageInfo');
           that.setData({
-            ['pageInfo.uploadImageWidth']: unitWidth * 7,
-            ['pageInfo.uploadImageHeight']: unitWidth * 7,
-            ['pageInfo.uploadImageSpacing']: unitWidth * 0.5,
+            pageInfoUploadImageWidth: unitWidth * 7,
+            pageInfoUploadImageHeight: unitWidth * 7,
+            pageInfoUploadImageSpacing: unitWidth * 0.5,
           });
         }
       });
@@ -821,7 +820,7 @@ Component({
           console.log('openId', openId);
           console.log('propertyOpenId', that.properties.propertyOpenId);
           if (openId == that.properties.propertyOpenId) {
-            that.p_deleteMedia(event);
+            that.p_deleteMedia(event.detail);
           }
         },
         fail: function(err) {
@@ -898,7 +897,7 @@ Component({
     },
 
     previewMedia: function (event) {
-      let dataset = event.target.dataset;
+      let dataset = event.detail.target.dataset;
       var type = dataset['type'];
       var index = dataset['index'];
       var currentMediaList = [];
