@@ -23,6 +23,10 @@ Component({
     propertyUploadType: {
       type: String,
       value: "",
+    },
+    propertyExchangeFirstSelectIndex: {
+      type: Number,
+      value: -1,
     }
   },
 
@@ -35,10 +39,11 @@ Component({
     pageInfoUploadImageHeight: 1,
     pageInfoUploadImageSpacing: 1,
     uploadType: "",
+    exchangeFirstSelectIndex: -1,
   },
 
   observers: {
-    'propertyUploadMediaPosterList, propertyPageInfoUploadImageWidth, propertyPageInfoUploadImageHeight, propertyPageInfoUploadImageSpacing, propertyUploadType': function (propertyUploadMediaPosterList, propertyPageInfoUploadImageWidth, propertyPageInfoUploadImageHeight, propertyPageInfoUploadImageSpacing, propertyUploadType) {
+    'propertyUploadMediaPosterList, propertyPageInfoUploadImageWidth, propertyPageInfoUploadImageHeight, propertyPageInfoUploadImageSpacing, propertyUploadType, propertyIsExchangingMedia, propertyExchangeFirstSelectIndex': function (propertyUploadMediaPosterList, propertyPageInfoUploadImageWidth, propertyPageInfoUploadImageHeight, propertyPageInfoUploadImageSpacing, propertyUploadType, propertyIsExchangingMedia, propertyExchangeFirstSelectIndex) {
       console.log('uploadType', propertyUploadType);
       this.setData({
         uploadMediaPosterList: propertyUploadMediaPosterList,
@@ -46,6 +51,7 @@ Component({
         pageInfoUploadImageHeight:this.getValidUploadImageDataLength(propertyPageInfoUploadImageHeight),
         pageInfoUploadImageSpacing:this.getValidUploadImageDataLength(propertyPageInfoUploadImageSpacing),
         uploadType:propertyUploadType,
+        exchangeFirstSelectIndex:propertyExchangeFirstSelectIndex,
       });
     },
   },
@@ -63,8 +69,8 @@ Component({
       this.triggerEvent('taskDetailUploadDeleteMedia', event);
     },
 
-    previewMedia: function(event) {
-      this.triggerEvent('taskDetailUploadPreviewMedia', event);
-    },
+    mediaPicClick: function(event) {
+      this.triggerEvent('mediaPicClickEvent', event);
+    }
   }
 })

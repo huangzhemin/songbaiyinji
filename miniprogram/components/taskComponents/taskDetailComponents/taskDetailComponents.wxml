@@ -89,20 +89,40 @@
       readonly
     />
     <van-col class='taskPlanUpload' wx:if="{{taskPlanUploadMediaPosterList.length>0}}" offset="1" span="22">
-      <pm-task-detail-upload-media-poster bind:taskDetailUploadDeleteMedia="deleteMedia"  bind:taskDetailUploadPreviewMedia="previewMedia" propertyUploadMediaPosterList='{{taskPlanUploadMediaPosterList}}' propertyPageInfoUploadImageWidth='{{pageInfoUploadImageWidth}}'
-      propertyPageInfoUploadImageHeight='{{pageInfoUploadImageHeight}}'
-      propertyPageInfoUploadImageSpacing='{{pageInfoUploadImageSpacing}}' propertyUploadType='plan'>
+      <pm-task-detail-upload-media-poster 
+      id='taskDetailPlanUploadMediaPoster' 
+      bind:taskDetailUploadDeleteMedia="deleteMedia"  
+      bind:mediaPicClickEvent="mediaPicClick" 
+      propertyUploadMediaPosterList='{{taskPlanUploadMediaPosterList}}' 
+      propertyPageInfoUploadImageWidth='{{pageInfoUploadImageWidth}}'
+      propertyPageInfoUploadImageHeight='{{pageInfoUploadImageHeight}}' 
+      propertyPageInfoUploadImageSpacing='{{pageInfoUploadImageSpacing}}' 
+      propertyUploadType='plan' 
+      propertyExchangeFirstSelectIndex='{{planExchangeFirstSelectIndex}}'>
       </pm-task-detail-upload-media-poster>
     </van-col>
     <!-- 如果是自己 而且 当前状态是进行中 则可添加照片 -->
-    <block wx:if='{{isSelf && status==0}}' >
+    <view class='horizonFlow' 
+          wx:if='{{isSelf && status==0}}' 
+          style="width:400rpx; height:200rpx" >
       <view wx:if="{{ taskPlanShowUpload }}"
-              class='uploadPartSquare'
-              id='taskPlanUploadClick'
-              bindtap="chooseMedia">
-        <van-icon name="photograph" />
+            class='uploadPartSquare'
+            id='taskPlanUploadClick'
+            bindtap="chooseMedia">
+        <van-icon name="photograph" color='#CCCCCC'/>
       </view>
-    </block>
+      <view wx:if="{{ taskPlanUploadMediaPosterList.length > 1 }}"
+                class='uploadPartSquare'
+                id='taskPlanUploadClick'
+                bindtap="exchangeMedia">
+        <block wx:if="{{isPlanExchangingMedia}}">
+          <van-icon name="exchange" color='red' />
+        </block>
+        <block wx:else>
+          <van-icon name="exchange" color='#CCCCCC' />
+        </block>
+      </view>
+    </view>
   </van-row>
 
   <!-- 完成资料描述部分 -->
@@ -146,20 +166,39 @@
       readonly
     />
     <van-col class='taskCompleteUpload' wx:if="{{taskCompleteUploadMediaPosterList.length>0}}" offset="1" span="22">
-      <pm-task-detail-upload-media-poster bind:taskDetailUploadDeleteMedia="deleteMedia"  bind:taskDetailUploadPreviewMedia="previewMedia" propertyUploadMediaPosterList='{{taskCompleteUploadMediaPosterList}}' propertyPageInfoUploadImageWidth='{{pageInfoUploadImageWidth}}'
+      <pm-task-detail-upload-media-poster 
+      id='taskDetailCompleteUploadMediaPoster' 
+      bind:taskDetailUploadDeleteMedia="deleteMedia"  
+      bind:mediaPicClickEvent="mediaPicClick" 
+      propertyUploadMediaPosterList='{{taskCompleteUploadMediaPosterList}}' 
+      propertyPageInfoUploadImageWidth='{{pageInfoUploadImageWidth}}'
       propertyPageInfoUploadImageHeight='{{pageInfoUploadImageHeight}}'
-      propertyPageInfoUploadImageSpacing='{{pageInfoUploadImageSpacing}}' propertyUploadType='complete'>
+      propertyPageInfoUploadImageSpacing='{{pageInfoUploadImageSpacing}}' 
+      propertyUploadType='complete' 
+      propertyExchangeFirstSelectIndex='{{completeExchangeFirstSelectIndex}}'>
       </pm-task-detail-upload-media-poster>
     </van-col>
     <!-- 如果是自己 而且 当前状态是进行中 则可添加照片 -->
-    <block wx:if='{{isSelf && status==0}}' >
+    <view class='horizonFlow' wx:if='{{isSelf && status==0}}' style="width:400rpx; height:200rpx" >
       <view wx:if="{{ taskCompleteShowUpload }}"
                 class='uploadPartSquare'
                 id='taskCompleteUploadClick'
                 bindtap="chooseMedia">
-        <van-icon name="photograph" />
+        <van-icon name="photograph" color='#CCCCCC'/>
       </view>
-    </block>
+      <view wx:if="{{ taskCompleteUploadMediaPosterList.length > 1 }}"
+                class='uploadPartSquare'
+                id='taskCompleteUploadClick'
+                data-type="complete" 
+                bindtap="exchangeMedia">
+        <block wx:if="{{isCompleteExchangingMedia}}">
+          <van-icon name="exchange" color='red' />
+        </block>
+        <block wx:else>
+          <van-icon name="exchange" color='#CCCCCC' />
+        </block>
+      </view>
+    </view>
   </van-row>
 
   <block wx:if='{{supportUserAvatarList.length > 0 || opposeUserAvatarList.length > 0}}'>

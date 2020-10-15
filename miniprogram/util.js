@@ -147,6 +147,8 @@ var convertDatabaseTaskToInnerTask = function (databaseTaskData) {
     'supportUserAvatarList': getValidList(databaseTaskData, 'supportUserAvatarList'),
     'opposeUserList': getValidList(databaseTaskData, 'opposeUserList'),
     'opposeUserAvatarList': getValidList(databaseTaskData, 'opposeUserAvatarList'),
+    'planExchangeFirstSelectIndex': -1, //默认为-1，代码中根据这里来判断选中的为第几张plan poster
+    'completeExchangeFirstSelectIndex': -1, //默认为-1，代码中根据这里来判断选中的为第几张complete poster
   };
   // console.log('convertDatabaseTaskToInnerTask end', innerTaskData);
   return innerTaskData;
@@ -184,6 +186,16 @@ var getUploadMediaList = function (openId, taskId, taskMediaList) {
     'taskPlan': taskPlanUploadMediaList,
     'taskComplete': taskCompleteUploadMediaList,
   };
+}
+
+var exchangeTaskMediaList = function(taskMediaList, exchangeMedia1, exchangeMedia2) {
+  console.log('exchangeMedia1, exchangeMedia2', exchangeMedia1, exchangeMedia2);
+  console.log('taskMediaList start', taskMediaList);
+  let exchangeMediaIndex1 = taskMediaList.indexOf(exchangeMedia1);
+  let exchangeMediaIndex2 = taskMediaList.indexOf(exchangeMedia2);
+  taskMediaList[exchangeMediaIndex1] = exchangeMedia2;
+  taskMediaList[exchangeMediaIndex2] = exchangeMedia1;
+  console.log('taskMediaList end', taskMediaList);
 }
 
 //更新当前数据库中的用户数据，如果携带openId，则update，未携带add添加
@@ -825,6 +837,7 @@ module.exports = {
   convertDatabaseTaskToInnerTask: convertDatabaseTaskToInnerTask,
   batchConvertDatabaseTaskToInnerTask: batchConvertDatabaseTaskToInnerTask,
   getUploadMediaList: getUploadMediaList,
+  exchangeTaskMediaList: exchangeTaskMediaList,
   getAllTaskList: getAllTaskList,
   getTaskListWithStatusType: getTaskListWithStatusType,
   getNextPageTaskListWithCurrentStatus: getNextPageTaskListWithCurrentStatus,

@@ -57,6 +57,14 @@ Component({
     pageInfoUploadImageHeight: 1,
     pageInfoUploadImageSpacing: 1,
 
+    isPlanExchangingMedia: false,
+    planExchangeFirstSelectIndex: -1,
+
+    isCompleteExchangingMedia: false,
+    completeExchangeFirstSelectIndex: -1,
+
+    exchangeMediaFirstSelectIndex: -1,
+
     options: 
     [
       [{
@@ -812,6 +820,81 @@ Component({
       })
     },
 
+    exchangeMedia: function (event) {
+      let that = this;
+      util.getCurrentUserOpenId({
+        success: function(openId) {
+          //如果成功，则将当前用户的openId与传入的propertyOpenId对比，判断是否为当前用户，只有当前用户可以调整自己的media
+          console.log('openId', openId);
+          console.log('propertyOpenId', that.properties.propertyOpenId);
+          if (openId == that.properties.propertyOpenId) {
+            that.p_exchangeMedia(event);
+          }
+        },
+        fail: function(err) {
+          //如果失败，则说明当前用户未登录，不可能有删除图片的能力
+          return;
+        }
+      });
+    },
+
+    p_exchangeMedia: function (event) {
+      if (util.getCurrentStatusTypeWithStatus(this.data.status) != 'doing') {
+        return;
+      }
+      console.log('exchangeMedia');
+      
+      let that = this;
+      if (this.p_isExchangingMedia(event)) {
+        console.log('用户点击取消交换')
+        that.p_confirmExchangeMedia(event);
+      } else {
+        let targetId = event.currentTarget['id'];
+        var content = '';
+        if (targetId == 'taskPlanUploadClick') {
+          content = '请依次点击「计划」需要交换的图片\n再次点击取消';
+        } else if (targetId == 'taskCompleteUploadClick') {
+          content = '请依次点击「完成」需要交换的图片\n再次点击取消';
+        }
+        
+        wx.showModal({
+          title: '提示',
+          content: content,
+          success (res) {
+            if (res.confirm) {
+              console.log('用户点击确定交换')
+              that.p_confirmExchangeMedia(event);
+            }
+          }
+        })
+      }
+    },
+
+    p_isExchangingMedia: function(event) {
+      let isExchangingMedia = false;
+      let targetId = event.currentTarget['id'];
+      if (targetId == 'taskPlanUploadClick') {
+        isExchangingMedia = this.data.isPlanExchangingMedia;  
+      } else if (targetId == 'taskCompleteUploadClick') {
+        isExchangingMedia = this.data.isCompleteExchangingMedia;
+      }
+      return isExchangingMedia;
+    },
+
+    p_confirmExchangeMedia: function(event) {
+      if (event.currentTarget['id'] == 'taskPlanUploadClick') {
+        this.data.isPlanExchangingMedia = !this.data.isPlanExchangingMedia;
+        this.setData({
+          isPlanExchangingMedia: this.data.isPlanExchangingMedia,
+        });
+      } else if (event.currentTarget['id'] == 'taskCompleteUploadClick') {
+        this.data.isCompleteExchangingMedia = !this.data.isCompleteExchangingMedia;
+        this.setData({
+          isCompleteExchangingMedia: this.data.isCompleteExchangingMedia,
+        });
+      }
+    },
+
     deleteMedia: function (event) {
       let that = this;
       util.getCurrentUserOpenId({
@@ -834,14 +917,14 @@ Component({
       if (util.getCurrentStatusTypeWithStatus(this.data.status) != 'doing') {
         return;
       }
-      console.log('deleteImage');
+      console.log('deleteMedia');
       let that = this;
       wx.showModal({
         title: '提示',
         content: '确定要删除吗？',
         success (res) {
           if (res.confirm) {
-            console.log('用户点击确定')
+            console.log('用户点击确定删除')
             that.p_confirmDeleteMedia(event);
           }
         }
@@ -894,6 +977,81 @@ Component({
       if (deleteIndex != -1) {
         mediaList.splice(deleteIndex, 1);
       }
+    },
+
+    exchangeMediaPicClick: function(event) {
+      console.log('event', event.detail);
+      let type = event.detail.target.dataset.type;
+      let currentSelectIndex = event.detail.target.dataset.index;
+
+      let exchangeFirstSelectIndex = -1;
+      if (type == 'plan') {
+        exchangeFirstSelectIndex = this.data.planExchangeFirstSelectIndex;
+        console.log('planExchangeFirstSelectIndex', exchangeFirstSelectIndex);
+      } else if (type = 'complete') {
+        exchangeFirstSelectIndex = this.data.completeExchangeFirstSelectIndex;
+        console.log('completeExchangeFirstSelectIndex', exchangeFirstSelectIndex);
+      }
+
+      if(exchangeFirstSelectIndex == -1) {
+        //此时说明为选中的第一张图片，需要将选中的图片上做一些变白处理
+        if (type == 'plan') {
+          this.data.planExchangeFirstSelectIndex = currentSelectIndex;
+          //此时需要将变白的index set到UI上
+          this.setData({
+            planExchangeFirstSelectIndex: this.data.planExchangeFirstSelectIndex,
+          });
+        } else if (type == 'complete') {
+          this.data.completeExchangeFirstSelectIndex = currentSelectIndex;
+          //此时需要将变白的index set到UI上
+          this.setData({
+            completeExchangeFirstSelectIndex: this.data.completeExchangeFirstSelectIndex,
+          });
+        }
+      } else {
+        this.p_exchangeMediaPic(type, 
+                                exchangeFirstSelectIndex, 
+                                currentSelectIndex);
+      }
+    },
+
+    p_exchangeMediaPic: function(type, 
+                                 firstSelectIndex, 
+                                 secondSelectIndex) {
+      //内部数据调整
+      //taskMediaList的调整
+      var taskUploadMediaList = [];
+      if (type == 'plan') {
+        taskUploadMediaList = this.data.taskPlanUploadMediaList;
+        this.data.isPlanExchangingMedia = !this.data.isPlanExchangingMedia;
+      } else if (type == 'complete') {
+        taskUploadMediaList = this.data.taskCompleteUploadMediaList;
+        this.data.isCompleteExchangingMedia = !this.data.isCompleteExchangingMedia;
+      }
+      util.exchangeTaskMediaList(this.data.taskMediaList, 
+                                 taskUploadMediaList[firstSelectIndex],
+                                 taskUploadMediaList[secondSelectIndex]);
+      //展示调整
+      let tempMediaPic = taskUploadMediaList[firstSelectIndex];
+      taskUploadMediaList[firstSelectIndex] = taskUploadMediaList[secondSelectIndex];
+      taskUploadMediaList[secondSelectIndex] = tempMediaPic;
+      //UI刷新
+      if (type == 'plan') {
+        this.setData({
+          taskPlanUploadMediaList: taskUploadMediaList,
+          taskPlanUploadMediaPosterList: this.p_generatePreviewMediaList(taskUploadMediaList),
+          isPlanExchangingMedia: this.data.isPlanExchangingMedia,
+        });
+      } else if (type == 'complete') {
+        this.setData({
+          taskCompleteUploadMediaList: taskUploadMediaList,
+          taskCompleteUploadMediaPosterList: this.p_generatePreviewMediaList(taskUploadMediaList),
+          isCompleteExchangingMedia: this.data.isCompleteExchangingMedia,
+        });
+      }
+      //还原exchangeFirstSelectIndex初始值
+      this.data.planExchangeFirstSelectIndex = -1;
+      this.data.completeExchangeFirstSelectIndex = -1;
     },
 
     previewMedia: function (event) {
@@ -979,6 +1137,30 @@ Component({
       }
       console.log('type', type, posterUrl);
       return posterUrl;
+    },
+
+    mediaPicClick: function(event) {
+      console.log('mediaPicClick', event);
+      let mediaPicClickID = event.currentTarget['id'];
+      if (mediaPicClickID == 'taskDetailPlanUploadMediaPoster') {
+        //计划上传部分点击
+        if (this.data.isPlanExchangingMedia) {
+          //exchange开关打开
+          this.exchangeMediaPicClick(event);
+        } else {
+          //exchange开关关闭
+          this.previewMedia(event);
+        }
+      } else if (mediaPicClickID == 'taskDetailCompleteUploadMediaPoster') {
+        //完成上传部分点击
+        if (this.data.isCompleteExchangingMedia) {
+          //exchange开关打开
+          this.exchangeMediaPicClick(event);
+        } else {
+          //exchange开关关闭
+          this.previewMedia(event);
+        }
+      }
     },
     ////////////////////////////////////
 
