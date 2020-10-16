@@ -345,18 +345,25 @@ Component({
 
     //将上传资源生成的fileID，进行管理
     generateMediaListWithMediaFileIDRes: function(mediasRes) {
+      // warning 预留，后续删除
+      // if (mediasRes && mediasRes.length > 0) {
+      //   for (const key in mediasRes) {
+      //     const mediaElementRes = mediasRes[key];
+      //     if (util.validDic(mediaElementRes)) {
+      //       //只有当返回的字典有效时，才加入taskMediaList
+      //       //主要用来处理视频伴随的缩略图上传，会在上传成功时，人为调整返回结果为{}，只保存视频与缩略图的映射关系
+      //       this.data.taskMediaList.push(mediaElementRes['fileID']);
+      //     }
+      //   }
+      // }
+      console.log('taskPlanUploadMediaList, taskCompleteUploadMediaList', this.data.taskPlanUploadMediaList, this.data.taskCompleteUploadMediaList);
+      this.data.taskMediaList = [];
+      this.data.taskMediaList = this.data.taskMediaList.concat(this.data.taskPlanUploadMediaList);
+      this.data.taskMediaList = this.data.taskMediaList.concat(this.data.taskCompleteUploadMediaList);
+
+      console.log('generateMediaListWithMediaFileIDRes end', mediasRes, this.data.taskMediaList);
       
-      if (mediasRes && mediasRes.length > 0) {
-        for (const key in mediasRes) {
-          const mediaElementRes = mediasRes[key];
-          if (util.validDic(mediaElementRes)) {
-            //只有当返回的字典有效时，才加入taskMediaList
-            //主要用来处理视频伴随的缩略图上传，会在上传成功时，人为调整返回结果为{}，只保存视频与缩略图的映射关系
-            this.data.taskMediaList.push(mediaElementRes['fileID']);  
-          }
-        }
-      }
-      
+      //获取缩略图
       this.data.thumbImg = '';
       if (util.validList(this.data.taskMediaList)) {
         var thumbImg = '';
@@ -619,6 +626,28 @@ Component({
   
       Promise.all(this.data.promiseArr).then((result) => {
         this.data.promiseArr = [];
+        
+        //此处先将taskPlanUploadMediaList 和 taskCompleteUploadMediaList
+        //使用映射表taskMediaAndMediaFileIdDic调整一下内容
+        // taskPlanUploadMediaList
+        console.log('taskPlanUploadMediaList, taskCompleteUploadMediaList start', this.data.taskPlanUploadMediaList, this.data.taskCompleteUploadMediaList);
+        for (const key in this.data.taskPlanUploadMediaList) {
+          const taskPlanUploadMedia = this.data.taskPlanUploadMediaList[key];
+          let taskPlanUploadMediaFileId = this.data.taskMediaAndMediaFileIdDic[taskPlanUploadMedia];
+          if (taskPlanUploadMediaFileId != undefined) {
+            this.data.taskPlanUploadMediaList[key] = taskPlanUploadMediaFileId;
+          }
+        }
+        // taskCompleteUploadMediaList
+        for (const key in this.data.taskCompleteUploadMediaList) {
+          const taskCompleteUploadMedia = this.data.taskCompleteUploadMediaList[key];
+          let taskCompleteUploadMediaFileId = this.data.taskMediaAndMediaFileIdDic[taskCompleteUploadMedia];
+          if (taskCompleteUploadMediaFileId != undefined) {
+            this.data.taskCompleteUploadMediaList[key] = taskCompleteUploadMediaFileId;
+          }
+        }
+        console.log('taskPlanUploadMediaList, taskCompleteUploadMediaList end', this.data.taskPlanUploadMediaList, this.data.taskCompleteUploadMediaList);
+
         //在批量上传结束的时候，更新taskMediaAndMediaFileIdDic
         //将现有的存储在 taskMediaAndThumbDic 中的原数据url ：poster url（OLD）
         //通过 taskMediaAndMediaFileIdDic 映射替换成为新的fileID字典 （原fileID：poster fileID）(NEW)
@@ -1030,9 +1059,6 @@ Component({
         this.data.isCompleteExchangingMedia = !this.data.isCompleteExchangingMedia;
         this.data.completeExchangeFirstSelectIndex = -1;
       }
-      util.exchangeTaskMediaList(this.data.taskMediaList, 
-                                 taskUploadMediaList[firstSelectIndex],
-                                 taskUploadMediaList[secondSelectIndex]);
       //展示调整
       let tempMediaPic = taskUploadMediaList[firstSelectIndex];
       taskUploadMediaList[firstSelectIndex] = taskUploadMediaList[secondSelectIndex];
