@@ -4,3 +4,11 @@
   flex-direction:row; 
   justify-content: space-between;
 }
+
+.whiteMask {
+  background-color: white;
+  z-index: 1001;
+  -moz-opacity: 0.5;
+  opacity: 0.50;
+  filter: alpha(opacity=50);
+}

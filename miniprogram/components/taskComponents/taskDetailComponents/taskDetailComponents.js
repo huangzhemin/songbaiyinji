@@ -1024,9 +1024,11 @@ Component({
       if (type == 'plan') {
         taskUploadMediaList = this.data.taskPlanUploadMediaList;
         this.data.isPlanExchangingMedia = !this.data.isPlanExchangingMedia;
+        this.data.planExchangeFirstSelectIndex = -1;
       } else if (type == 'complete') {
         taskUploadMediaList = this.data.taskCompleteUploadMediaList;
         this.data.isCompleteExchangingMedia = !this.data.isCompleteExchangingMedia;
+        this.data.completeExchangeFirstSelectIndex = -1;
       }
       util.exchangeTaskMediaList(this.data.taskMediaList, 
                                  taskUploadMediaList[firstSelectIndex],
@@ -1035,23 +1037,23 @@ Component({
       let tempMediaPic = taskUploadMediaList[firstSelectIndex];
       taskUploadMediaList[firstSelectIndex] = taskUploadMediaList[secondSelectIndex];
       taskUploadMediaList[secondSelectIndex] = tempMediaPic;
-      //UI刷新
+      //UI刷新，并还原还原exchangeFirstSelectIndex初始值
       if (type == 'plan') {
         this.setData({
           taskPlanUploadMediaList: taskUploadMediaList,
           taskPlanUploadMediaPosterList: this.p_generatePreviewMediaList(taskUploadMediaList),
           isPlanExchangingMedia: this.data.isPlanExchangingMedia,
+          planExchangeFirstSelectIndex: this.data.planExchangeFirstSelectIndex,
         });
       } else if (type == 'complete') {
         this.setData({
           taskCompleteUploadMediaList: taskUploadMediaList,
           taskCompleteUploadMediaPosterList: this.p_generatePreviewMediaList(taskUploadMediaList),
           isCompleteExchangingMedia: this.data.isCompleteExchangingMedia,
+          completeExchangeFirstSelectIndex: this.data.completeExchangeFirstSelectIndex,
         });
       }
       //还原exchangeFirstSelectIndex初始值
-      this.data.planExchangeFirstSelectIndex = -1;
-      this.data.completeExchangeFirstSelectIndex = -1;
     },
 
     previewMedia: function (event) {
