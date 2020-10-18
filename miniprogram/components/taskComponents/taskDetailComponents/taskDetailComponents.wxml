@@ -125,39 +125,38 @@
     </view>
   </van-row>
 
-  <!-- 完成资料描述部分 -->
-  <van-row>
-    <van-col class='taskCompleteDesc' span="24">
-    <!-- 如果是自己 而且 当前状态是进行中 则可修改 -->
-      <block wx:if='{{isSelf && status==0}}' >
-        <van-field
-          value="{{ taskCompleteDesc }}"
-          label="计划完成描述"
-          type="textarea"
-          placeholder="请输入计划完成描述"
-          autosize
-          border="{{ true }}"
-          id="taskCompleteDesc"
-          bind:input="onContentChange"
-        />
-      </block>
-      <block wx:else>
-        <van-field
-          value="{{ taskCompleteDesc }}"
-          label="计划完成描述"
-          type="textarea"
-          placeholder="请输入计划完成描述"
-          autosize
-          readonly
-          border="{{ true }}"
-          id="taskCompleteDesc"
-          bind:input="onContentChange"
-        />
-      </block>
-    </van-col>
-  </van-row>
-
-  <block wx:if="{{isSelf && taskId!=''}}">
+  <block wx:if="{{taskId!=''}}">
+    <!-- 完成资料描述部分 -->
+    <van-row>
+      <van-col class='taskCompleteDesc' span="24">
+      <!-- 如果是自己 而且 当前状态是进行中 则可修改 -->
+        <block wx:if='{{isSelf && status==0}}' >
+          <van-field
+            value="{{ taskCompleteDesc }}"
+            label="计划完成描述"
+            type="textarea"
+            placeholder="请输入计划完成描述"
+            autosize
+            border="{{ true }}"
+            id="taskCompleteDesc"
+            bind:input="onContentChange"
+          />
+        </block>
+        <block wx:else>
+          <van-field
+            value="{{ taskCompleteDesc }}"
+            label="计划完成描述"
+            type="textarea"
+            placeholder="请输入计划完成描述"
+            autosize
+            readonly
+            border="{{ true }}"
+            id="taskCompleteDesc"
+            bind:input="onContentChange"
+          />
+        </block>
+      </van-col>
+    </van-row>
     <!-- 完成资料上传部分 -->
     <van-row>
       <van-field
