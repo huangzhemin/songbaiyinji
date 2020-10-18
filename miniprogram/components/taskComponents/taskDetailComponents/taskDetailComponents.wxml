@@ -157,49 +157,51 @@
     </van-col>
   </van-row>
 
-  <!-- 完成资料上传部分 -->
-  <van-row>
-    <van-field
-      value="{{ value }}"
-      label="完成资料上传"
-      border="{{ false }}"
-      readonly
-    />
-    <van-col class='taskCompleteUpload' wx:if="{{taskCompleteUploadMediaPosterList.length>0}}" offset="1" span="22">
-      <pm-task-detail-upload-media-poster 
-      id='taskDetailCompleteUploadMediaPoster' 
-      bind:taskDetailUploadDeleteMedia="deleteMedia"  
-      bind:mediaPicClickEvent="mediaPicClick" 
-      propertyUploadMediaPosterList='{{taskCompleteUploadMediaPosterList}}' 
-      propertyPageInfoUploadImageWidth='{{pageInfoUploadImageWidth}}'
-      propertyPageInfoUploadImageHeight='{{pageInfoUploadImageHeight}}'
-      propertyPageInfoUploadImageSpacing='{{pageInfoUploadImageSpacing}}' 
-      propertyUploadType='complete' 
-      propertyExchangeFirstSelectIndex='{{completeExchangeFirstSelectIndex}}'>
-      </pm-task-detail-upload-media-poster>
-    </van-col>
-    <!-- 如果是自己 而且 当前状态是进行中 则可添加照片 -->
-    <view class='horizonFlow' wx:if='{{isSelf && status==0}}' style="width:400rpx; height:200rpx" >
-      <view wx:if="{{ taskCompleteShowUpload }}"
-                class='uploadPartSquare'
-                id='taskCompleteUploadClick'
-                bindtap="chooseMedia">
-        <van-icon name="photograph" color='#CCCCCC'/>
+  <block wx:if="{{isSelf && status==0 && taskId!=''}}">
+    <!-- 完成资料上传部分 -->
+    <van-row>
+      <van-field
+        value="{{ value }}"
+        label="完成资料上传"
+        border="{{ false }}"
+        readonly
+      />
+      <van-col class='taskCompleteUpload' wx:if="{{taskCompleteUploadMediaPosterList.length>0}}" offset="1" span="22">
+        <pm-task-detail-upload-media-poster 
+        id='taskDetailCompleteUploadMediaPoster' 
+        bind:taskDetailUploadDeleteMedia="deleteMedia"  
+        bind:mediaPicClickEvent="mediaPicClick" 
+        propertyUploadMediaPosterList='{{taskCompleteUploadMediaPosterList}}' 
+        propertyPageInfoUploadImageWidth='{{pageInfoUploadImageWidth}}'
+        propertyPageInfoUploadImageHeight='{{pageInfoUploadImageHeight}}'
+        propertyPageInfoUploadImageSpacing='{{pageInfoUploadImageSpacing}}' 
+        propertyUploadType='complete' 
+        propertyExchangeFirstSelectIndex='{{completeExchangeFirstSelectIndex}}'>
+        </pm-task-detail-upload-media-poster>
+      </van-col>
+      <!-- 如果是自己 而且 当前状态是进行中 则可添加照片 -->
+      <view class='horizonFlow' wx:if='{{isSelf && status==0}}' style="width:400rpx; height:200rpx" >
+        <view wx:if="{{ taskCompleteShowUpload }}"
+                  class='uploadPartSquare'
+                  id='taskCompleteUploadClick'
+                  bindtap="chooseMedia">
+          <van-icon name="photograph" color='#CCCCCC'/>
+        </view>
+        <view wx:if="{{ taskCompleteUploadMediaPosterList.length > 1 }}"
+                  class='uploadPartSquare'
+                  id='taskCompleteUploadClick'
+                  data-type="complete" 
+                  bindtap="exchangeMedia">
+          <block wx:if="{{isCompleteExchangingMedia}}">
+            <van-icon name="exchange" color='red' />
+          </block>
+          <block wx:else>
+            <van-icon name="exchange" color='#CCCCCC' />
+          </block>
+        </view>
       </view>
-      <view wx:if="{{ taskCompleteUploadMediaPosterList.length > 1 }}"
-                class='uploadPartSquare'
-                id='taskCompleteUploadClick'
-                data-type="complete" 
-                bindtap="exchangeMedia">
-        <block wx:if="{{isCompleteExchangingMedia}}">
-          <van-icon name="exchange" color='red' />
-        </block>
-        <block wx:else>
-          <van-icon name="exchange" color='#CCCCCC' />
-        </block>
-      </view>
-    </view>
-  </van-row>
+    </van-row>
+  </block>
 
   <block wx:if='{{supportUserAvatarList.length > 0 || opposeUserAvatarList.length > 0}}'>
     <van-divider></van-divider>
@@ -267,6 +269,8 @@
       open-type="share"
     />
   </van-row>
+
+  <pm-space-line customHeight='30'></pm-space-line>
 
   <!-- 提交取消 -->
   <block wx:if="{{isSelf && status==0 && taskId==''}}">
