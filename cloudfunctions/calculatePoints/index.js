@@ -35,17 +35,41 @@ function p_batchJudgeYesterdayDoingTaskList(yesterdayDoingTaskList) {
       //三心二意
       doingTask.status = (doingTask.supportUserList.length - doingTask.opposeUserList.length >= 0) ? 3 : 4;
     } else if (validList(doingTask.opposeUserList)) {
-      //只有反对票，如果是1票，则仍然算成功，如果>1票，则算失败
+      //只有反对票，如果是1票，则需要判断任务完成media材料是否上传，上传成功，未上传失败，如果>1票，则算失败
       //二心二意
-      doingTask.status = doingTask.opposeUserList.length > 1 ? 4 : 3;
-    } else {
-      //只有支持票，则成功(自己是默认的支持者)
+      if (doingTask.opposeUserList.length > 1) {
+        doingTask.status = 4;
+      } else {
+        doingTask.status = p_hasCompleteTask(doingTask.taskMediaList) ? 3 : 4;
+      }
+    } else if (validList(doingTask.supportUserList) && doingTask.supportUserList.length > 0) {
+      //无反对票，不止自己支持，则成功(自己是默认的支持者)
       //一心一意
       doingTask.status = 3;
+    } else {
+      //只有自己支持时，需要检查完成材料判断
+      doingTask.status = p_hasCompleteTask(doingTask.taskMediaList) ? 3 : 4;
     }
   });
   return yesterdayDoingTaskList;
 }
+
+function p_hasCompleteTask(taskMediaList) {
+  if (!validList(taskMediaList)) {
+    return false;
+  }
+  //遍历taskMediaList，检查path中是否有命中'_complete_'关键字
+  var hasMatchComplete = false;
+  for (const key in taskMediaList) {
+    const taskMedia = taskMediaList[key];
+    if (validStr(taskMedia) && taskMedia.match('_complete_')) {
+      hasMatchComplete = true;
+      break;
+    }
+  }
+  return hasMatchComplete;
+}
+
 // 云函数入口函数
 exports.main = async (event, context) => {
   //此处拉取今天0点之前的所有的任务列表

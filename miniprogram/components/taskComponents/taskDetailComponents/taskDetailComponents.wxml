@@ -157,7 +157,7 @@
     </van-col>
   </van-row>
 
-  <block wx:if="{{isSelf && status==0 && taskId!=''}}">
+  <block wx:if="{{isSelf && taskId!=''}}">
     <!-- 完成资料上传部分 -->
     <van-row>
       <van-field
